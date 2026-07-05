@@ -1,0 +1,41 @@
+import { StringsStandard } from "./constants"
+import { Notes } from "./constants"
+
+// get the octave of a note given index of string and the fret num
+export function getOctave(stringIndex, fretNumber) {
+
+    if (fretNumber === null) {
+        return null
+    }
+
+    let stringOctave = StringsStandard[stringIndex].octave
+    let newOctave = stringOctave + Math.floor(fretNumber / 12)
+    return newOctave
+}
+
+// take movable chord basic, move all notes in that chord to fit the root note (ie, move E shape up 2 frets to make G in CAGED)
+export function shiftVoicing(voicing, rootFret) {
+    return voicing.map((offset) => {
+        if (offset === null) {
+            return null
+        }
+        return offset + rootFret
+    })
+}
+
+// recieves a letter, returns the chromatic scale number
+export function getNoteNumber(noteLetter) {
+    return Notes.findIndex((notePair) => notePair.includes(noteLetter))
+}
+
+export function getNoteName(chromaticNum, key, sharpOrFlat) {
+    const keyNumber = getNoteNumber(key)
+    const actualIndex = (chromaticNum + keyNumber) % 12 
+    const noteName = Notes[actualIndex][sharpOrFlat]
+    return noteName 
+}
+
+
+
+
+
