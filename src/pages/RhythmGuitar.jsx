@@ -12,9 +12,9 @@ function RhythmGuitar() {
   return (
     <div className="Rhythm-Guitar">
       <div className="Header">
-        <button class="back">Back</button>
-        <button class="save">Save</button>
-        <button class="about">About</button>
+        <button className="back">Back</button>
+        <button className="save">Save</button>
+        <button className="about">About</button>
 
         <select id="scale-dropdown">
           <option>C</option>

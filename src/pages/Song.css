@@ -1,0 +1,70 @@
+* {
+  height: 100vh;
+  width: 100vw;
+}
+
+.song {
+  display: flex;
+  flex-direction: row;
+  width: 100vw;
+  height: 100vh;
+  box-sizing: border-box;
+  gap: 12px; /* spacing between left-container and instrument column */
+}
+
+.left-container {
+  width: 35vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 16px; /* spacing between stacked buttons */
+  padding: 24px 0;
+  box-sizing: border-box;
+}
+
+.left-container-button {
+  width: 80%;
+  padding: 14px 0;
+  border: none;
+  border-radius: 8px;
+  background-color: #2a2a2a;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+/* Play All button: circle with a play triangle */
+.left-container-button.play {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #1db954;
+  margin-top: auto; /* pushes it to bottom of the stack, remove if you don't want this */
+}
+
+.right-container {
+  width: 65vw;
+  height: 100vh;
+  display:flex;
+  flex-direction: column;
+  gap: 16px; /* spacing between stacked buttons */
+  padding: 24px 0;
+}
+
+#drums-container,
+#bass-container,
+#rhythm-guitar-container,
+#lead-guitar-container {
+  width: 65vw;
+  padding: 20px 0;
+  height: 20vh;
+  box-sizing: border-box;
+  background-color: black;
+  border-radius: 8px;
+}
