@@ -5,14 +5,17 @@ import playChord from '../components/ChordPlayer';
 import Fretboard from '../components/Fretboard';
 import { basic } from '../components/ChordShapes';
 import { shiftVoicing } from '../components/utils';
+import { useNavigate } from 'react-router-dom';
 import "./RhythmGuitar.css"
 
 
 function RhythmGuitar() {
+  const navigate = useNavigate();
+
   return (
     <div className="Rhythm-Guitar">
       <div className="Header">
-        <button className="back">Back</button>
+        <button className="back" onClick={() => navigate('/song')}>Back</button>
         <button className="save">Save</button>
         <button className="about">About</button>
 

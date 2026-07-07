@@ -1,6 +1,5 @@
 * {
-  height: 100vh;
-  width: 100vw;
+  box-sizing:border-box
 }
 
 .song {
@@ -61,10 +60,23 @@
 #bass-container,
 #rhythm-guitar-container,
 #lead-guitar-container {
+  display:flex;
   width: 65vw;
   padding: 20px 0;
   height: 20vh;
+  opacity:50%;
   box-sizing: border-box;
   background-color: black;
   border-radius: 8px;
+}
+
+#rhythm-guitar-container h2,
+#drums-container h2,
+#lead-guitar-container h2,
+#bass-container h2 {
+  height: 80%;  
+  color: white;
+  opacity:100%;
+  width:50%;
+  cursor:pointer;
 }
