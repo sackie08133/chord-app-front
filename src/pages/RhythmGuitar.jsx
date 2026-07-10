@@ -1,6 +1,4 @@
 
-
-
 import playChord from '../components/ChordPlayer';
 import Fretboard from '../components/Fretboard';
 import { basic } from '../components/ChordShapes';
