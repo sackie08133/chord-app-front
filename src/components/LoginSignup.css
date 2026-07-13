@@ -43,7 +43,7 @@ header {
 
 .close-button {
     display:inline-block;
-    padding:10px 16px;
+    padding:2% 2%;
     border:1px solid #4e6096;
     background-color:#7892c2;
     border-radius:24px;
@@ -63,7 +63,7 @@ header {
     height: 60px;
     width: 300px;
     margin: 20px auto;
-    box-shadow: 10px 10px 30px rgb(254, 215, 188);
+    box-shadow: 10px 10px 30px rgb(175, 153, 224);
     border-radius: 50px;
     display: flex;
     justify-content: space-around;
@@ -85,8 +85,8 @@ header {
     width: 150px;
     border-radius: 50px;
     background-image: linear-gradient(to right,
-            rgb(255, 195, 110),
-            rgb(255, 146, 91));
+            rgb(76, 76, 205),
+            rgb(122, 143, 247));
     position: absolute;
     top: 0px;
     left: 0px;
@@ -139,8 +139,8 @@ header {
     width: 150px;
     border-radius: 50px;
     background-image: linear-gradient(to right,
-            rgb(255, 195, 110),
-            rgb(255, 146, 91));
+            rgb(76, 76, 205),
+            rgb(122, 143, 247));
     font-size: 22px;
     border: none;
     cursor: pointer;
