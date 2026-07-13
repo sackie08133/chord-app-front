@@ -1,5 +1,6 @@
 import { StringsStandard } from "./constants"
 import { Notes } from "./constants"
+import { API_URL } from './constants'
 
 // get the octave of a note given index of string and the fret num
 export function getOctave(stringIndex, fretNumber) {
@@ -35,6 +36,28 @@ export function getNoteName(chromaticNum, key, sharpOrFlat) {
     return noteName 
 }
 
+
+export async function apiRequest(path, body, token) {
+  const headers = { 'Content-Type': 'application/json' }
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`
+  }
+
+  const response = await fetch(`${API_URL}${path}`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(body)
+  })
+
+  const data = await response.json()
+
+  if (!response.ok) {
+    throw new Error(data.message || 'Something went wrong')
+  }
+
+  return data
+}
 
 
 

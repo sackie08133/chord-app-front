@@ -70,3 +70,5 @@ export const scales = {
   mixolydian: { pattern: [2, 2, 1, 2, 2, 1, 2] },
   locrian: { pattern: [1, 2, 2, 1, 2, 2, 2] }
 }
+
+export const API_URL = 'http://localhost:3001'

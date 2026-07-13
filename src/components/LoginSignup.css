@@ -41,24 +41,6 @@ header {
     overflow: hidden;
 }
 
-.close-button {
-    display:inline-block;
-    padding:2% 2%;
-    border:1px solid #4e6096;
-    background-color:#7892c2;
-    border-radius:24px;
-    margin: 2% 0 0 90%;
-    cursor:pointer;
-}
-
-.close-button:hover {
-	background-color:#476e9e;
-}
-.close-button:active {
-	position:relative;
-	top:1px;
-}
-
 .login-signup-toggle {
     height: 60px;
     width: 300px;
@@ -123,17 +105,7 @@ header {
 .signup-box {
     gap: 30px;
 }
-.element {
-    height: 60px;
-    width: 400px;
-    outline: none;
-    border: none;
-    color: rgb(77, 77, 77);
-    background-color: rgb(240, 240, 240);
-    border-radius: 50px;
-    padding-left: 30px;
-    font-size: 18px;
-}
+
 .login-signup-button {
     height: 60px;
     width: 150px;
@@ -185,11 +157,7 @@ header {
         height: 100%;
         width: 300px;
     }
-    .element {
-        height: 50px;
-        width: 250px;
-        font-size: 15px;
-    }
+    
     .login-signup-button {
         height: 50px;
         width: 130px;

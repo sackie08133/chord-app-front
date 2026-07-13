@@ -1,0 +1,15 @@
+.create-song-container {
+  background-color: white;
+  border-radius: 12px;
+  padding: 30px 40px;
+  box-shadow: 8px 8px 20px rgba(128, 128, 128, 0.5);
+  position: relative;
+  width: 400px;
+}
+
+.song-modal {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 20px;
+}
