@@ -1,30 +1,68 @@
 import "./SongList.css";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import LoginSignup from "../components/LoginSignup";
 import NewSong from "../components/NewSong"
+import { apiRequest } from "../components/utils";
 
 function SongList() {
   const [showLogin, setShowLogin] = useState(false)
   const [showCreate, setShowCreate] = useState(false)
   const [token, setToken] = useState(null)
+  const [songs, setSongs] = useState([])
+
+  
+  const handleLogout = () => {
+    setToken(null)
+  }
+  
+  const fetchSongs = async() => {
+    try {
+      const data = await apiRequest('/songs', null, token, 'GET')
+      setSongs(data)
+    } catch (error) {
+      console.error(error.message)
+    }
+  }
+
+  const handleDeleteSong = async(songId) => {
+    try {
+      await apiRequest('/delete', { id: songId }, token)
+      fetchSongs()
+    } catch (error) {
+      alert(error.message)
+    }
+  }
+  
+  useEffect(() => {
+    fetchSongs()
+  }, [token]) 
+
 
   return (
     <div className="song-list">
       {showLogin && (
         <LoginSignup 
         onClose={() => setShowLogin(false)} 
-        onLoginSuccess={(token) => setToken(token)}
-      />)}
-      {showCreate && <NewSong onClose ={() => setShowCreate(false)}/>}
+        onLoginSuccess={(token) => setToken(token)}/>
+        )
+      }
+      {showCreate && (
+        <NewSong 
+        onClose={() => setShowCreate(false)} 
+        token={token} 
+        onSongCreated={fetchSongs} /> 
+        )
+      }
+
 
       <div className="header">
         <button
           className="login-signup"
           id="login"
-          onClick={() => setShowLogin(true)}
-        > Login / Sign Up </button>
+          onClick={() => token ?  handleLogout(): setShowLogin(true)}
+        >{token ?  'Logout' : 'Login / Sign Up'} </button>
       </div>
       
 
@@ -33,16 +71,15 @@ function SongList() {
         onClick = {() => setShowCreate(true) }
         >+</button>
      
-      <div className="song-object">
-        <div id="song-description-left">
-          <h1>
-            <Link to="/song">Title</Link>
-          </h1>
-          <h2>BPM, Last Edited</h2>
+      {songs.map((song) => (
+        <div className="song-object" key = {song.id}>
+          <div id="song-description-left">
+            <h1> <Link to={`/song/${song.id}`}>{song.title}</Link> </h1>
+            <h2> {song.bpm} BPM, {song.last_edited.split('T')[0]}</h2>
+            <button onClick={() => handleDeleteSong(song.id)} className = "delete-song-button">Delete Song</button>
+          </div>
         </div>
-      </div>
-
-      
+      ))}
     </div>
   );
 }

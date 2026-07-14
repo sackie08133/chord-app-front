@@ -36,20 +36,23 @@ export function getNoteName(chromaticNum, key, sharpOrFlat) {
     return noteName 
 }
 
-
-export async function apiRequest(path, body, token) {
+export async function apiRequest(path, body, token, method = 'POST') {
   const headers = { 'Content-Type': 'application/json' }
 
   if (token) {
     headers.Authorization = `Bearer ${token}`
   }
 
-  const response = await fetch(`${API_URL}${path}`, {
-    method: 'POST',
-    headers,
-    body: JSON.stringify(body)
-  })
+  const options = {
+    method,
+    headers
+  }
+  
+  if (body) {
+    options.body = JSON.stringify(body)
+  }
 
+  const response = await fetch(`${API_URL}${path}`, options)
   const data = await response.json()
 
   if (!response.ok) {

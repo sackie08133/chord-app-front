@@ -1,10 +1,10 @@
 import {Dialog, DialogPanel, DialogTitle} from '@headlessui/react'
-import {useState} from 'react'
+import {useState, useEffect} from 'react'
 import { apiRequest } from './utils.jsx'
 import './Modal.css'
 import './NewSong.css'
 
-function NewSong({onClose, token}) {
+function NewSong({onClose, token, onSongCreated}) {
     const [title, setTitle] = useState('')
     const [bpm, setBPM] = useState('')
     
@@ -14,6 +14,7 @@ function NewSong({onClose, token}) {
                 title: title,
                 bpm: bpm,
             }, token)
+            onSongCreated()
             onClose()
         } catch (error) {
             alert(error.message)

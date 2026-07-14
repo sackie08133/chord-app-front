@@ -14,36 +14,35 @@ function LoginSignup({onClose, onLoginSuccess}) {
   const [confirmPassword, setConfirmPassword] = useState('')
 
 
-const handleLogin = async () => {
-  try {
-    const data = await apiRequest('/login', {
-      username: loginUsername,
-      password: loginPassword
-    })
-    onLoginSuccess(data.token)
-    onClose()
-  } catch (error) {
-    alert(error.message)
-  }
-}
-
-const handleSignup = async () => {
-  if (signupPassword !== confirmPassword) {
-    alert('Passwords do not match')
-    return
+  const handleLogin = async () => {
+    try {
+      const data = await apiRequest('/login', {
+        username: loginUsername,
+        password: loginPassword, 
+      })
+      onLoginSuccess(data.token)
+      onClose()
+    } catch (error) {
+      alert(error.message)
+    }
   }
 
-  try {
-    const data = await apiRequest('/signup', {
+  const handleSignup = async () => {
+    if (signupPassword !== confirmPassword) {
+      alert('Passwords do not match')
+      return
+    }
+
+    try {
+      const data = await apiRequest('/signup', {
       username: signupUsername,
       password: signupPassword
     })
     onLoginSuccess(data.token)
     onClose()
-  } catch (error) {
-    alert(error.message)
+    } catch (error) {
+      alert(error.message)}
   }
-}
 
   return (
     <div className = "modal-backdrop">
