@@ -1,13 +1,33 @@
-import {BrowserRouter, Routes, Route, Link} from 'react-router-dom'
-import { useNavigate } from 'react-router-dom';
+import {BrowserRouter, Routes, Route, Link, useParams, useNavigate} from 'react-router-dom'
+import {useState, useContext, createContext, useEffect} from 'react'
+import { apiRequest } from '../components/utils'
+import { useAuth } from '../components/Context'
+
 import './Song.css'
 
 function Song() {
     const navigate = useNavigate()
+    const {id} = useParams()
+    const [song, setSong] = useState(null)
+    const {token} = useAuth()
+
+    const fetchSong = async() => {
+        try {
+            const data = await apiRequest(`/songs/${id}`, null , token, 'GET')
+            setSong(data)
+        } catch (error) {
+            alert(error.message)
+        }
+    }
+
+    useEffect(() => {
+        fetchSong()
+    }, [token, id])
 
     return (
         <div className="song">
             <div className="left-container">
+                <h1> {song?.title} </h1>
                 <button className="left-container-button back" onClick={() => navigate('/')}>Back</button>
                 <button className="left-container-button save">Save</button>
                 <button className="left-container-button" id="title-change">Title</button>
@@ -38,7 +58,7 @@ function Song() {
                 </div>
                 <div id="rhythm-guitar-container">
                    <h2 
-                    onClick={() => navigate('/song/rhythm-guitar')}
+                    onClick={() => navigate(`/song/${id}/rhythm-guitar`)}
                     style={{ cursor: 'pointer' }}
                    > Rhythm Guitar </h2>
                    {/* future buttons/faders/sliders go here, as siblings to the h2 */}

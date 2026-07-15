@@ -4,12 +4,13 @@ import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import LoginSignup from "../components/LoginSignup";
 import NewSong from "../components/NewSong"
+import { useAuth } from "../components/Context";
 import { apiRequest } from "../components/utils";
 
 function SongList() {
   const [showLogin, setShowLogin] = useState(false)
   const [showCreate, setShowCreate] = useState(false)
-  const [token, setToken] = useState(null)
+  const {token, setToken} = useAuth()
   const [songs, setSongs] = useState([])
 
   
@@ -56,7 +57,6 @@ function SongList() {
         )
       }
 
-
       <div className="header">
         <button
           className="login-signup"
@@ -65,7 +65,6 @@ function SongList() {
         >{token ?  'Logout' : 'Login / Sign Up'} </button>
       </div>
       
-
       <button 
         className="fab" 
         onClick = {() => setShowCreate(true) }
