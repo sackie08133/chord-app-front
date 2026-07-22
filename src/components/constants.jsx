@@ -22,6 +22,9 @@ export const Notes = [
     ["B"]
 ]
 
+export const noteNamesSharps = ['D#', 'D', 'C#', 'C', 'B', 'A#', 'A', 'G#', 'G', 'F#', 'F', 'E']
+export const noteNamesFlats = ['Eb', 'D', 'Db', 'C', 'B', 'Bb', 'A', 'Ab', 'G', 'Gb', 'F', 'E']
+
 // ViewBox dimensions
 export const viewBoxWidth = 1000;
 export const viewBoxHeight = 400;

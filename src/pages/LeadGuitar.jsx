@@ -1,14 +1,16 @@
 import { useState } from 'react'
 import { useNavigate } from "react-router-dom";
 import './LeadGuitar.css'
+import { noteNamesSharps,noteNamesFlats } from '../components/Constants';
+import { playNote } from '../components/ChordPlayer';
 
-const noteNames = ['E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B', 'C', 'C#', 'D', 'D#']
 const steps = 32
 
 function LeadGuitar() {
     const [octave, setOctave] = useState(1)
     const navigate = useNavigate()
     const [activeCells, setActiveCells] = useState({})
+    const bIndex = noteNamesSharps.indexOf('B')
 
     const toggleCell = (row, col) => {
         const key = `${row}-${col}`
@@ -16,6 +18,15 @@ function LeadGuitar() {
             ...prev,
             [key]: !prev[key]
         }))
+    }
+
+    function playColumn(colIndex) {
+        for (let i = 0;  i < noteNamesSharps.length; i++) {
+            const key = `${i}-${colIndex}`
+            if (activeCells[key]) {
+                playNote(noteNamesSharps[i], octave)
+            }
+        }
     }
 
     return (
@@ -35,18 +46,21 @@ function LeadGuitar() {
 
             <div className='lead-piano-roll'>
                 <div className="lead-note-names">
-                    {noteNames.map((note) => (
-                        <div key={note}>{note}{octave}</div>
+                    {noteNamesSharps.map((note, rowIndex) => (
+                        <div key={note}>{note}{rowIndex < bIndex ? octave + 1: octave}</div>
                     ))}
                 </div>
 
                 <div className="lead-grid-container">
-                    {noteNames.map((note, rowIndex) => (
+                    {noteNamesSharps.map((note, rowIndex) => (
                         Array.from({ length: steps }).map((_, colIndex) => (
                             <div
                                 key={`${rowIndex}-${colIndex}`}
                                 className={`lead-grid-cell ${activeCells[`${rowIndex}-${colIndex}`] ? 'active' : ''}`}
-                                onClick={() => toggleCell(rowIndex, colIndex)}
+                                onClick={() => {
+                                    toggleCell(rowIndex, colIndex)
+                                    playNote(note, octave)
+                                }}
                             />
                         ))
                     ))}

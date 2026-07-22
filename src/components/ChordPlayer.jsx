@@ -22,4 +22,10 @@ function playChord(chordVoicing) {
   });
 }
 
+export function playNote(noteName, octave) {
+  const now = Tone.now();
+  polysynth.triggerAttackRelease(noteName + octave, "8n");
+}
+
+
 export default playChord;
