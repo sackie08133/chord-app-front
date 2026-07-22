@@ -8,7 +8,7 @@
   z-index: 1000;
 }
 
-.close-button {
+.modal-close-button {
     display:inline-block;
     padding:2% 2%;
     border:1px solid #4e6096;
@@ -18,15 +18,15 @@
     cursor:pointer;
 }
 
-.close-button:hover {
+.modal-close-button:hover {
 	background-color:#476e9e;
 }
-.close-button:active {
+.modal-close-button:active {
 	position:relative;
 	top:1px;
 }
 
-.element {
+.modal-element {
     height: 15%;
     width: 90%;
     outline: none;

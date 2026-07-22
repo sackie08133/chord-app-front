@@ -4,17 +4,17 @@
     text-align: center;
 }
 
-.header {
+.rhythem-guitar-header {
   height: 10vh;
   width: 100vw;
 }
 
-.fretboard {
+.rhythm-guitar-fretboard {
   height: 50vh;
   width: 100vw;
 }
 
-.chord-list {
+.rhythm-guitar-chord-list {
   height: 30vh;
   width:100vw;
   display: flex;
@@ -23,14 +23,14 @@
 
 }
 
-.chord {
+.rhythm-guitar-chord {
   width: 25vw;
   outline-width: 3px;
   outline-color: black;
   stroke-width: 5px;
 }
 
-.footer {
+.rhythm-guitar-footer {
   height: 10vh;
   width: 100vw;
   display: flex;
@@ -38,6 +38,6 @@
   align-content: center;
 }
 
-.footer > div {
+.rhythm-guitar-footer > div {
   width: 50%;
 }

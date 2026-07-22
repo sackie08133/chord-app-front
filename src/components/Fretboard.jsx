@@ -1,12 +1,12 @@
-import React from 'react';
-import TriangleMarker from './FretboardMarkers.jsx'
-import FretboardNotes from './FretboardNotes.jsx'
-import { basic } from './ChordShapes.jsx';
-import { shiftVoicing } from './utils.jsx';
+import React from "react";
+import TriangleMarker from "./FretboardMarkers.jsx";
+import FretboardNotes from "./FretboardNotes.jsx";
+import { basic } from "./ChordShapes.jsx";
+import { shiftVoicing } from "./Utils.jsx";
 
-import { 
-  StringsStandard, 
-  fretPos, 
+import {
+  StringsStandard,
+  fretPos,
   fretboardMarkerPos,
   viewBoxWidth,
   viewBoxHeight,
@@ -15,16 +15,19 @@ import {
   stringStartY,
   stringSpacing,
   endX,
-  markerY
-} from './constants.jsx'
+  markerY,
+} from "./Constants.jsx";
 
 function Fretboard() {
+  const voicing = basic.major[2].voicing;
+  const shiftedVoicing = shiftVoicing(voicing, 3); // 3 = rootFret, for testing
 
-  const voicing = basic.major[2].voicing
-  const shiftedVoicing = shiftVoicing(voicing, 3) // 3 = rootFret, for testing
-
-  return (  
-    <svg width="80%" height="auto" viewBox={`0 0 ${viewBoxWidth} ${viewBoxHeight}`}>
+  return (
+    <svg
+      width="80%"
+      height="auto"
+      viewBox={`0 0 ${viewBoxWidth} ${viewBoxHeight}`}
+    >
       {/* Top line */}
       <line
         x1={0}
@@ -90,7 +93,7 @@ function Fretboard() {
             stringIndex={stringIndex}
             fretNumber={fretNumber}
           />
-        ))
+        )),
       )}
     </svg>
   );

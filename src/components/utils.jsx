@@ -1,67 +1,62 @@
-import { StringsStandard } from "./constants"
-import { Notes } from "./constants"
-import { API_URL } from './constants'
+import { StringsStandard } from "./Constants";
+import { Notes } from "./Constants";
+import { API_URL } from "./Constants";
 
 // get the octave of a note given index of string and the fret num
 export function getOctave(stringIndex, fretNumber) {
+  if (fretNumber === null) {
+    return null;
+  }
 
-    if (fretNumber === null) {
-        return null
-    }
-
-    let stringOctave = StringsStandard[stringIndex].octave
-    let newOctave = stringOctave + Math.floor(fretNumber / 12)
-    return newOctave
+  let stringOctave = StringsStandard[stringIndex].octave;
+  let newOctave = stringOctave + Math.floor(fretNumber / 12);
+  return newOctave;
 }
 
 // take movable chord basic, move all notes in that chord to fit the root note (ie, move E shape up 2 frets to make G in CAGED)
 export function shiftVoicing(voicing, rootFret) {
-    return voicing.map((offset) => {
-        if (offset === null) {
-            return null
-        }
-        return offset + rootFret
-    })
+  return voicing.map((offset) => {
+    if (offset === null) {
+      return null;
+    }
+    return offset + rootFret;
+  });
 }
 
 // recieves a letter, returns the chromatic scale number
 export function getNoteNumber(noteLetter) {
-    return Notes.findIndex((notePair) => notePair.includes(noteLetter))
+  return Notes.findIndex((notePair) => notePair.includes(noteLetter));
 }
 
 export function getNoteName(chromaticNum, key, sharpOrFlat) {
-    const keyNumber = getNoteNumber(key)
-    const actualIndex = (chromaticNum + keyNumber) % 12 
-    const noteName = Notes[actualIndex][sharpOrFlat]
-    return noteName 
+  const keyNumber = getNoteNumber(key);
+  const actualIndex = (chromaticNum + keyNumber) % 12;
+  const noteName = Notes[actualIndex][sharpOrFlat];
+  return noteName;
 }
 
-export async function apiRequest(path, body, token, method = 'POST') {
-  const headers = { 'Content-Type': 'application/json' }
+export async function apiRequest(path, body, token, method = "POST") {
+  const headers = { "Content-Type": "application/json" };
 
   if (token) {
-    headers.Authorization = `Bearer ${token}`
+    headers.Authorization = `Bearer ${token}`;
   }
 
   const options = {
     method,
-    headers
-  }
-  
+    headers,
+  };
+
   if (body) {
-    options.body = JSON.stringify(body)
+    options.body = JSON.stringify(body);
   }
 
-  const response = await fetch(`${API_URL}${path}`, options)
-  const data = await response.json()
+  const response = await fetch(`${API_URL}${path}`, options);
+  const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(data.message || 'Something went wrong')
+    throw new Error(data.message || "Something went wrong");
   }
 
-  return data
+  return data;
 }
-
-
-
-

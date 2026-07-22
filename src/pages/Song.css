@@ -11,7 +11,7 @@
   gap: 12px; /* spacing between left-container and instrument column */
 }
 
-.left-container {
+.song-left-container {
   width: 35vw;
   height: 100vh;
   display: flex;
@@ -23,7 +23,7 @@
   box-sizing: border-box;
 }
 
-.left-container-button {
+.song-left-container-button {
   width: 80%;
   padding: 14px 0;
   border: none;
@@ -35,7 +35,7 @@
 }
 
 /* Play All button: circle with a play triangle */
-.left-container-button.play {
+.song-left-container-button.play {
   width: 70px;
   height: 70px;
   border-radius: 50%;
@@ -47,7 +47,7 @@
   margin-top: auto; /* pushes it to bottom of the stack, remove if you don't want this */
 }
 
-.right-container {
+.song-right-container {
   width: 65vw;
   height: 100vh;
   display:flex;
@@ -56,10 +56,10 @@
   padding: 24px 0;
 }
 
-#drums-container,
-#bass-container,
-#rhythm-guitar-container,
-#lead-guitar-container {
+#song-drums-container,
+#song-bass-container,
+#song-rhythm-guitar-container,
+#song-lead-guitar-container {
   display:flex;
   width: 65vw;
   padding: 20px 0;
@@ -70,10 +70,10 @@
   border-radius: 8px;
 }
 
-#rhythm-guitar-container h2,
-#drums-container h2,
-#lead-guitar-container h2,
-#bass-container h2 {
+#song-rhythm-guitar-container h2,
+#song-drums-container h2,
+#song-lead-guitar-container h2,
+#song-bass-container h2 {
   height: 80%;  
   color: white;
   opacity:100%;

@@ -25,14 +25,14 @@ header {
     justify-content: center;
     gap: 8px;
 }
-.heading {
+.modal-heading {
     color: green;
 }
-.title {
+.modal-title {
     font-weight: 400;
     letter-spacing: 1.5px;
 }
-.form-container {
+.modal-form-container {
     height: 600px;
     width: 500px;
     background-color: white;
@@ -41,7 +41,7 @@ header {
     overflow: hidden;
 }
 
-.login-signup-toggle {
+.modal-login-signup-toggle {
     height: 60px;
     width: 300px;
     margin: 20px auto;
@@ -52,8 +52,8 @@ header {
     align-items: center;
     position: relative;
 }
-.login,
-.signup {
+.modal-login,
+.modal-signup {
     font-size: 22px;
     border: none;
     outline: none;
@@ -62,7 +62,7 @@ header {
     cursor: pointer;
     z-index: 1;
 }
-.slider {
+.modal-slider {
     height: 60px;
     width: 150px;
     border-radius: 50px;
@@ -74,10 +74,10 @@ header {
     left: 0px;
     transition: all 0.5s ease-in-out;
 }
-.moveslider {
+.modal-moveslider {
     left: 150px;
 }
-.form-section {
+.modal-form-section {
     height: 500px;
     width: 1000px;
     padding: 20px 0;
@@ -86,11 +86,11 @@ header {
     transition: all 0.5s ease-in-out;
     left: 0px;
 }
-.form-section-move {
+.modal-form-section-move {
     left: -500px;
 }
-.login-box,
-.signup-box {
+.modal-login-box,
+.modal-signup-box {
     height: 100%;
     width: 500px;
     display: flex;
@@ -99,14 +99,14 @@ header {
     justify-content: center;
     padding: 0px 40px;
 }
-.login-box {
+.modal-login-box {
     gap: 50px;
 }
-.signup-box {
+.modal-signup-box {
     gap: 30px;
 }
 
-.login-signup-button {
+.modal-login-signup-button {
     height: 60px;
     width: 150px;
     border-radius: 50px;
@@ -119,100 +119,100 @@ header {
 }
 /* For Responsiveness of the page */
 @media screen and (max-width: 650px) {
-    .form-container {
+    .modal-form-container {
         height: 600px;
         width: 300px;
     }
 
-    .title {
+    .modal-title {
         font-size: 15px;
     }
 
-    .login-signup-toggle {
+    .modal-login-signup-toggle {
         height: 50px;
         width: 200px;
         margin: 20px auto;
     }
-    .login,
-    .signup {
+    .modal-login,
+    .modal-signup {
         font-size: 19px;
     }
-    .slider {
+    .modal-slider {
         height: 50px;
         width: 100px;
         left: 0px;
     }
-    .moveslider {
+    .modal-moveslider {
         left: 100px;
     }
-    .form-section {
+    .modal-form-section {
         height: 500px;
         width: 600px;
     }
-    .form-section-move {
+    .modal-form-section-move {
         left: -300px;
     }
-    .login-box,
-    .signup-box {
+    .modal-login-box,
+    .modal-signup-box {
         height: 100%;
         width: 300px;
     }
     
-    .login-signup-button {
+    .modal-login-signup-button {
         height: 50px;
         width: 130px;
         font-size: 19px;
     }
 }
 @media screen and (max-width: 320px) {
-    .form-container {
+    .modal-form-container {
         height: 600px;
         width: 250px;
     }
-    .heading {
+    .modal-heading {
         font-size: 30px;
     }
-    .title {
+    .modal-title {
         font-size: 10px;
     }
-    .login-signup-toggle {
+    .modal-login-signup-toggle {
         height: 50px;
         width: 200px;
         margin: 20px auto;
     }
-    .login,
-    .signup {
+    .modal-login,
+    .modal-signup {
         font-size: 19px;
     }
-    .slider {
+    .modal-slider {
         height: 50px;
         width: 90px;
         left: 0px;
     }
-    .moveslider {
+    .modal-moveslider {
         left: 90px;
     }
-    .form-section {
+    .modal-form-section {
         height: 500px;
         width: 500px;
     }
-    .form-section-move {
+    .modal-form-section-move {
         left: -250px;
     }
 
-    .login-box,
-    .signup-box {
+    .modal-login-box,
+    .modal-signup-box {
         height: 100%;
         width: 250px;
     }
 
-    .element {
+    .modal-element {
         height: 50px;
         width: 220px;
         font-size: 15px;
     }
 
-    .login-signup-button {
+    .modal-login-signup-button {
         height: 50px;
         width: 130px;
         font-size: 19px;
