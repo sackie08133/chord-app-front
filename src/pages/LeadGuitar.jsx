@@ -59,7 +59,7 @@ function LeadGuitar() {
                                 className={`lead-grid-cell ${activeCells[`${rowIndex}-${colIndex}`] ? 'active' : ''}`}
                                 onClick={() => {
                                     toggleCell(rowIndex, colIndex)
-                                    playNote(note, octave)
+                                    playNote(note, octave) 
                                 }}
                             />
                         ))

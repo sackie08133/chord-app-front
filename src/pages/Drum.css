@@ -102,5 +102,5 @@ html, body {
 
 /* visually separate every 4th step, like a real sequencer grouping beats */
 .drum-shot:nth-child(4n + 1):not(:first-child) {
-  border-left: 3px solid #f8f6f6;
+  border-left: 3px solid #c0baba;
 }

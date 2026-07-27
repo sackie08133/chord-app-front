@@ -20,7 +20,7 @@ const hihatSynth = new Tone.NoiseSynth({
   envelope: { attack: 0.001, decay: 0.05, sustain: 0 },
 }).connect(hihatFilter);
 
-const synth = {
+const synths = {
   poly: polysynth,
   membrane: membraneSynth,
   snare: snareSynth,

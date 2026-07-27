@@ -46,7 +46,8 @@ function Bass() {
 
             <div className='bass-piano-roll'>
                 <div className="bass-note-names">
-                    { noteNamesSharps.map((note, rowIndex) => (  
+                    {
+                    noteNamesSharps.map((note, rowIndex) => (  
                         <div key={note}>{note}{rowIndex < bIndex ? octave + 1: octave}</div>
                     ))}
                 </div>
