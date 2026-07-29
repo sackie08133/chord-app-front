@@ -8,6 +8,8 @@ function Drum() {
     const [activeCells, setActiveCells] = useState({})
     const steps = 16;
     const drumSynthTypes = ['membrane', 'snare', 'hihat'] // membrane === kick
+    const drumTypeNames = ['kick', 'snare', 'hihat']
+    console.log('current activeCells:', activeCells)
 
     const toggleCell = (row, col) => {
         const key = `${row}-${col}`
@@ -20,6 +22,19 @@ function Drum() {
     function playDrumSound(drumType) {
         playNote(null, null, drumSynthTypes[drumType])
     }
+
+    function makeDrumHitArray() {
+        return Object.keys(activeCells) // gets the property name of active cells "1-2, 2-1" from {"2-1" :true, "2-3: false"}
+            .filter((key) => activeCells[key]) // filter out all the trues 
+                .map((key) => {
+                    const [row, col] = key.split("-")
+                    return {
+                        drum_type: drumTypeNames[row],
+                        col: Number(col)
+                    }
+                })  
+    }
+
 
     function makeDivArray(rowIndex) {
         return Array.from({ length: steps }).map((_, colIndex) => {
@@ -48,6 +63,24 @@ function Drum() {
                     onClick={() => {
                         navigate(-1)
                     }}> Back </button>
+                <button
+                    className = "drum-play-all-button"
+                    onClick = {() => {
+                        console.log("Play-All")
+                    }} 
+                    >Play All</button>
+                <button
+                    className = "drum-loop-button"
+                    onClick = {() => {
+                        console.log("Loop")
+                    }}>Loop</button>
+                <button
+                    className = "drum-save-button"
+                    onClick= {() => {
+                        console.log(makeDrumHitArray())
+                    }}
+                >Save</button>
+                
             </div>
 
             <div className='drum-sequencer'>

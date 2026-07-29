@@ -24,7 +24,7 @@ html, body {
   background-color: #fcfafa;
 }
 
-.drum-back-button {
+.drum-back-button, .drum-save-button,.drum-play-all-button, .drum-loop-button {
   background-color: #2563eb;
   color: white;
   border: none;
