@@ -1,16 +1,22 @@
 import "./Drum.css"
-import { useState } from 'react'
-import { useNavigate } from "react-router-dom";
-import { playNote } from '../components/ChordPlayer';
+import { useState, useEffect} from 'react'
+import { useAuth } from "../components/Context"
+import { useParams } from 'react-router-dom'
+import { useNavigate } from "react-router-dom"
+import { playNote } from '../components/ChordPlayer'
+import { apiRequest } from "../components/Utils"
 
 function Drum() {
     const navigate = useNavigate()
     const [activeCells, setActiveCells] = useState({})
+    const [tracks, setTracks] = useState([])
+    const {id} = useParams()
     const steps = 16;
     const drumSynthTypes = ['membrane', 'snare', 'hihat'] // membrane === kick
     const drumTypeNames = ['kick', 'snare', 'hihat']
-    console.log('current activeCells:', activeCells)
-
+    const { token, setToken } = useAuth();
+    
+    
     const toggleCell = (row, col) => {
         const key = `${row}-${col}`
         setActiveCells(prev => ({
@@ -35,6 +41,58 @@ function Drum() {
                 })  
     }
 
+    const handleSave = async() => {
+        const trackTitle = prompt("Drum Track Title?", "Track")
+        const drumHitArray = makeDrumHitArray()
+
+        if (!id || !trackTitle || drumHitArray.length === 0) {
+            return alert("Song id, track title, or drum hits failed to save")
+        }
+
+        try {
+            const data = await apiRequest('/drum-tracks', {
+                song_id: id,
+                track_name: trackTitle,
+                drum_hits: drumHitArray
+            }, token)
+        } catch (error) {
+            alert(error.message)
+        }
+    }
+
+    const fetchDrumTracks = async(songId) => {
+        try {
+            const data = await apiRequest(`/drum-tracks/${id}`, null, token, "GET")   
+            setTracks(data)
+        } catch (error) {
+            alert(error.message)
+        }
+    }
+
+    const fetchDrumHits = async (trackId) => {
+        try {
+            const data = await apiRequest(
+                `/drum-tracks/${trackId}/hits`, null, token, "GET")
+
+        const loadedCells = {}
+        for (const hit of data) {
+            const row = drumTypeNames.indexOf(hit.drum_type)
+            if (row !== -1) {
+                const key = `${row}-${hit.col}`
+                loadedCells[key] = true
+            }
+        }
+
+setActiveCells(loadedCells)
+        } catch (error) {
+            alert(error.message)
+        }
+    }
+
+    useEffect(() => {
+        fetchDrumTracks()
+    }, [token])
+    
 
     function makeDivArray(rowIndex) {
         return Array.from({ length: steps }).map((_, colIndex) => {
@@ -54,6 +112,7 @@ function Drum() {
             )
         })
     }
+    
 
     return (
         <div className='drum-page'>
@@ -76,10 +135,28 @@ function Drum() {
                     }}>Loop</button>
                 <button
                     className = "drum-save-button"
-                    onClick= {() => {
-                        console.log(makeDrumHitArray())
-                    }}
+                    onClick= {handleSave}
                 >Save</button>
+                
+                <select
+                    id="drum-show-tracks-button"
+                    onChange={(e) => fetchDrumHits(e.target.value)}
+                >
+                    {tracks.map((track) => {
+                    return (
+                        <option className="track-options" key={track.id} value={track.id}>
+                            {track.name}
+                        </option>
+                    );
+                    })}
+                </select>
+
+                <button
+                    className = "drum-track-delete-button"
+                    onClick = {() => {
+                        console.log("Delete")
+                    }}
+                >Delete</button>
                 
             </div>
 
