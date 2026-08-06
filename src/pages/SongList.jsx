@@ -1,21 +1,21 @@
-import "./SongList.css";
-import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
-import LoginSignup from "../components/LoginSignup";
-import NewSong from "../components/NewSong";
-import { useAuth } from "../components/Context";
-import { apiRequest } from "../components/Utils";
+import "./SongList.css"
+import { Link } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
+import { useState, useEffect } from "react"
+import LoginSignup from "../components/LoginSignup"
+import NewSong from "../components/NewSong"
+import { useAuth } from "../components/Context"
+import { apiRequest } from "../components/Utils"
 
 function SongList() {
-  const [showLogin, setShowLogin] = useState(false);
-  const [showCreate, setShowCreate] = useState(false);
-  const { token, setToken } = useAuth();
-  const [songs, setSongs] = useState([]);
+  const [showLogin, setShowLogin] = useState(false)
+  const [showCreate, setShowCreate] = useState(false)
+  const { token, setToken } = useAuth()
+  const [songs, setSongs] = useState([])
 
   const handleLogout = () => {
-    setToken(null);
-  };
+    setToken(null)
+  }
 
   const fetchSongs = async () => {
     try {
@@ -24,8 +24,8 @@ function SongList() {
     } catch (error) {
       console.error(error.message);
     }
-  };
-
+  }
+  
   const handleDeleteSong = async (songId) => {
     try {
       await apiRequest("/delete", { id: songId }, token);
@@ -51,7 +51,6 @@ function SongList() {
         <NewSong
           onClose={() => setShowCreate(false)}
           token={token}
-          onSongCreated={fetchSongs}
         />
       )}
 

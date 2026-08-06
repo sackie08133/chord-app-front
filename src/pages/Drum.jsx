@@ -83,7 +83,7 @@ function Drum() {
             }
         }
 
-setActiveCells(loadedCells)
+    setActiveCells(loadedCells)
         } catch (error) {
             alert(error.message)
         }
@@ -107,8 +107,8 @@ setActiveCells(loadedCells)
                         if (!wasActive) {
                             playDrumSound(rowIndex)
                         }
-                    }}
-                ></div>
+                    }}>
+                    </div>
             )
         })
     }
@@ -118,30 +118,30 @@ setActiveCells(loadedCells)
         <div className='drum-page'>
             <div className='drum-header'>
                 <button
-                    className="drum-back-button"
+                    id="drum-back-button"
                     onClick={() => {
                         navigate(-1)
                     }}> Back </button>
                 <button
-                    className = "drum-play-all-button"
+                    id = "drum-play-all-button"
                     onClick = {() => {
                         console.log("Play-All")
                     }} 
                     >Play All</button>
                 <button
-                    className = "drum-loop-button"
+                    id = "drum-loop-button"
                     onClick = {() => {
                         console.log("Loop")
                     }}>Loop</button>
                 <button
-                    className = "drum-save-button"
+                    id = "drum-save-button"
                     onClick= {handleSave}
                 >Save</button>
                 
                 <select
                     id="drum-show-tracks-button"
                     onChange={(e) => fetchDrumHits(e.target.value)}
-                >
+                > Delete
                     {tracks.map((track) => {
                     return (
                         <option className="track-options" key={track.id} value={track.id}>
@@ -151,12 +151,18 @@ setActiveCells(loadedCells)
                     })}
                 </select>
 
-                <button
-                    className = "drum-track-delete-button"
-                    onClick = {() => {
-                        console.log("Delete")
-                    }}
-                >Delete</button>
+                <select
+                    id="drum-delete-tracks-button"
+        
+                >
+                    {tracks.map((track) => {
+                    return (
+                        <option className="track-options" key={track.id} value={track.id}>
+                            {track.name}
+                        </option>
+                    );
+                    })}
+                </select>
                 
             </div>
 

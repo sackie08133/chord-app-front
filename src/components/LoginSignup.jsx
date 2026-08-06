@@ -4,32 +4,32 @@ import "./Modal.css";
 import "./LoginSignup.css";
 
 function LoginSignup({ onClose, onLoginSuccess }) {
-  const [isSignup, setIsSignup] = useState(false);
+  const [isSignup, setIsSignup] = useState(false)
 
-  const [loginUsername, setLoginUsername] = useState("");
-  const [loginPassword, setLoginPassword] = useState("");
+  const [loginUsername, setLoginUsername] = useState("")
+  const [loginPassword, setLoginPassword] = useState("")
 
-  const [signupUsername, setSignupUsername] = useState("");
-  const [signupPassword, setSignupPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [signupUsername, setSignupUsername] = useState("")
+  const [signupPassword, setSignupPassword] = useState("")
+  const [confirmPassword, setConfirmPassword] = useState("")
 
   const handleLogin = async () => {
     try {
       const data = await apiRequest("/login", {
         username: loginUsername,
         password: loginPassword,
-      });
-      onLoginSuccess(data.token);
-      onClose();
+      })
+      onLoginSuccess(data.token)
+      onClose()
     } catch (error) {
-      alert(error.message);
+      alert(error.message)
     }
-  };
+  }
 
   const handleSignup = async () => {
     if (signupPassword !== confirmPassword) {
-      alert("Passwords do not match");
-      return;
+      alert("Passwords do not match")
+      return
     }
 
     try {
@@ -37,10 +37,10 @@ function LoginSignup({ onClose, onLoginSuccess }) {
         username: signupUsername,
         password: signupPassword,
       });
-      onLoginSuccess(data.token);
-      onClose();
+      onLoginSuccess(data.token)
+      onClose()
     } catch (error) {
-      alert(error.message);
+      alert(error.message)
     }
   };
 

@@ -24,12 +24,12 @@ html, body {
   background-color: #fcfafa;
 }
 
-.drum-back-button, 
-.drum-save-button,
-.drum-play-all-button, 
-.drum-loop-button, 
+#drum-back-button, 
+#drum-save-button,
+#drum-play-all-button, 
+#drum-loop-button, 
 #drum-show-tracks-button,
-.drum-track-delete-button {
+#drum-delete-tracks-button {
   background-color: #2563eb;
   color: white;
   border: none;

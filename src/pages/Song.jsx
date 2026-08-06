@@ -10,28 +10,38 @@ import { useState, useContext, createContext, useEffect } from "react";
 import { apiRequest } from "../components/Utils";
 import { useAuth } from "../components/Context";
 import "./Song.css";
+import EditSong from "../components/EditSong";
 
 function Song() {
-  const navigate = useNavigate();
-  const { id } = useParams();
-  const [song, setSong] = useState(null);
-  const { token } = useAuth();
+  const navigate = useNavigate()
+  const { id } = useParams()
+  const [song, setSong] = useState(null)
+  const { token } = useAuth()
+  const [showEdit, setShowEdit] = useState(false)
 
   const fetchSong = async () => {
     try {
-      const data = await apiRequest(`/songs/${id}`, null, token, "GET");
-      setSong(data);
+      const data = await apiRequest(`/songs/${id}`, null, token, "GET")
+      setSong(data)
     } catch (error) {
-      alert(error.message);
+      alert(error.message)
     }
   };
 
   useEffect(() => {
-    fetchSong();
-  }, [token, id]);
+    fetchSong()
+  }, [token, id])
 
   return (
     <div className="song">
+      {showEdit && (
+        <EditSong
+          onClose={() => setShowEdit(false)}
+          songId = {id}
+          onSongEdited={fetchSong()}
+        />
+      )}
+      
       <div className="song-left-container">
         <h1> {song?.title} </h1>
         <button
@@ -41,18 +51,18 @@ function Song() {
           Back
         </button>
         <button className="song-left-container-button save">Save</button>
-        <button className="song-left-container-button" id="title-change">
-          Title
+        <button className="song-left-container-button" 
+                id="edit-song"
+                onClick={() => {
+                      setShowEdit(true)
+                  }}
+                >
+          Edit Song
         </button>
         <button className="song-left-container-button" id="automation">
           Automation
         </button>
-        <button className="song-left-container-button" id="tempo-change">
-          Tempo
-        </button>
-        <button className="song-left-container-button" id="lyrics-change">
-          Lyrics
-        </button>
+        
         <button className="song-left-container-button play">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
             <path d="M8 5v14l11-7z" />
