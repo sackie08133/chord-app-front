@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from "react-router-dom";
 import './Bass.css'
-import {playNote} from '../components/ChordPlayer';
+import {playNoteAtTime} from '../components/ChordPlayer';
 import { noteNamesFlats, noteNamesSharps } from '../components/Constants';
 
 const steps = 32
@@ -60,7 +60,7 @@ function Bass() {
                                 className={`bass-grid-cell ${activeCells[`${rowIndex}-${colIndex}`] ? 'active' : ''}`}
                                 onClick={() => {
                                     toggleCell(rowIndex, colIndex)
-                                    playNote(note, octave)
+                                    playNoteAtTime(note, octave, 'poly', '8n')
                                 }}
                             />
                         ))

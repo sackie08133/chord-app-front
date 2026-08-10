@@ -22,6 +22,9 @@ export const Notes = [
     ["B"]
 ]
 
+export const drumTypeNames = ['kick', 'snare', 'hihat']
+export const drumSynthTypes = ['membrane', 'snare', 'hihat'] // membrane === kick
+
 export const noteNamesSharps = ['D#', 'D', 'C#', 'C', 'B', 'A#', 'A', 'G#', 'G', 'F#', 'F', 'E']
 export const noteNamesFlats = ['Eb', 'D', 'Db', 'C', 'B', 'Bb', 'A', 'Ab', 'G', 'Gb', 'F', 'E']
 

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from "react-router-dom";
 import './LeadGuitar.css'
 import { noteNamesSharps,noteNamesFlats } from '../components/Constants';
-import { playNote } from '../components/ChordPlayer';
+import { playNoteAtTime } from '../components/ChordPlayer';
 
 const steps = 32
 

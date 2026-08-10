@@ -4,18 +4,20 @@ import { getOctave, shiftVoicing } from "./Utils";
 import * as Tone from "tone";
 import { getNoteName } from "./Utils";
 
-const polysynth = new Tone.PolySynth(Tone.Synth).toDestination()
-const membraneSynth = new Tone.MembraneSynth().toDestination()
+export const polysynth = new Tone.PolySynth(Tone.Synth).toDestination()
+export const membraneSynth = new Tone.MembraneSynth({
+  envelope: { attack: 0.01, decay: 0.01, sustain: 0, release: 0.1 }
+}).toDestination()
+membraneSynth.volume.value = 6 // boost by 6 dB, adjust to taste
 
-// Snare: short noise burst with a bit of body
-const snareSynth = new Tone.NoiseSynth({
+export const snareSynth = new Tone.NoiseSynth({
   noise: { type: "white" },
   envelope: { attack: 0.001, decay: 0.15, sustain: 0 },
 }).toDestination();
 
 // HiHat: very short, bright noise, filtered to sound thinner/tighter
-const hihatFilter = new Tone.Filter(7000, "highpass").toDestination();
-const hihatSynth = new Tone.NoiseSynth({
+export const hihatFilter = new Tone.Filter(4000, "highpass").toDestination();
+export const hihatSynth = new Tone.NoiseSynth({
   noise: { type: "white" },
   envelope: { attack: 0.001, decay: 0.05, sustain: 0 },
 }).connect(hihatFilter);
@@ -28,7 +30,7 @@ const synths = {
 }
 
 // plays the parameter chordVoicing
-function playChord(chordVoicing) {
+export function playChord(chordVoicing) {
   const now = Tone.now();
   chordVoicing.forEach((fret, string) => {
     if (fret === null) {
@@ -44,7 +46,7 @@ function playChord(chordVoicing) {
   });
 }
 
-export function playNote(noteName, octave, synthType = "poly") {
+export function playNoteAtTime(noteName, octave, synthType = "poly", time = undefined) {
   const synth = synths[synthType];
 
   if (!synth) {
@@ -52,11 +54,11 @@ export function playNote(noteName, octave, synthType = "poly") {
     return;
   }
 
-  if (synthType === "snare" || synthType === "hihat") {
+  if (synthType === "snare" || synthType === "hihat" || synthType === "membrane") {
     // NoiseSynth has no pitch — just trigger a hit
-    synth.triggerAttackRelease("8n");
+    synth.triggerAttackRelease("8n",time)
   } else {
-    synth.triggerAttackRelease(noteName + octave, "8n");
+    synth.triggerAttackRelease(noteName + octave, time);
   }
 }
 

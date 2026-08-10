@@ -1,21 +1,32 @@
 import "./Drum.css"
-import { useState, useEffect} from 'react'
+import { useState, useEffect, useRef} from 'react'
 import { useAuth } from "../components/Context"
 import { useParams } from 'react-router-dom'
 import { useNavigate } from "react-router-dom"
-import { playNote } from '../components/ChordPlayer'
+import { playNoteAtTime } from '../components/ChordPlayer'
 import { apiRequest } from "../components/Utils"
-
+import { drumTypeNames, drumSynthTypes } from "../components/Constants"
+import { playDrumTrack } from "../components/Playback"
+import * as Tone from "tone"
+ 
 function Drum() {
     const navigate = useNavigate()
     const [activeCells, setActiveCells] = useState({})
     const [tracks, setTracks] = useState([])
+    const [bpm, setBPM] = useState([])
     const {id} = useParams()
-    const steps = 16;
-    const drumSynthTypes = ['membrane', 'snare', 'hihat'] // membrane === kick
-    const drumTypeNames = ['kick', 'snare', 'hihat']
-    const { token, setToken } = useAuth();
+    const steps = 16
+    const {token, setToken} = useAuth()
+    const seqRef = useRef(null)
     
+    const fetchBpm = async() => {
+        try {
+            const data = await apiRequest(`/songs/${id}`, null, token, "GET")
+            setBPM(data.bpm)
+        } catch (error) {
+            alert(error.message)
+        }
+    }
     
     const toggleCell = (row, col) => {
         const key = `${row}-${col}`
@@ -23,22 +34,6 @@ function Drum() {
             ...prev,
             [key]: !prev[key]
         }))
-    }
-
-    function playDrumSound(drumType) {
-        playNote(null, null, drumSynthTypes[drumType])
-    }
-
-    function makeDrumHitArray() {
-        return Object.keys(activeCells) // gets the property name of active cells "1-2, 2-1" from {"2-1" :true, "2-3: false"}
-            .filter((key) => activeCells[key]) // filter out all the trues 
-                .map((key) => {
-                    const [row, col] = key.split("-")
-                    return {
-                        drum_type: drumTypeNames[row],
-                        col: Number(col)
-                    }
-                })  
     }
 
     const handleSave = async() => {
@@ -74,25 +69,35 @@ function Drum() {
             const data = await apiRequest(
                 `/drum-tracks/${trackId}/hits`, null, token, "GET")
 
-        const loadedCells = {}
-        for (const hit of data) {
-            const row = drumTypeNames.indexOf(hit.drum_type)
-            if (row !== -1) {
-                const key = `${row}-${hit.col}`
-                loadedCells[key] = true
+            const loadedCells = {}
+            for (const hit of data) {
+                const row = drumTypeNames.indexOf(hit.drum_type)
+                if (row !== -1) {
+                    const key = `${row}-${hit.col}`
+                    loadedCells[key] = true
+                }
             }
-        }
-
-    setActiveCells(loadedCells)
+            setActiveCells(loadedCells)
         } catch (error) {
             alert(error.message)
         }
     }
-
-    useEffect(() => {
-        fetchDrumTracks()
-    }, [token])
     
+    function playDrumSound(drumType) {
+        playNoteAtTime(null, null, drumSynthTypes[drumType])
+    }
+
+    function makeDrumHitArray() {
+        return Object.keys(activeCells) // gets the property name of active cells "1-2, 2-1" from {"2-1" :true, "2-3: false"}
+            .filter((key) => activeCells[key]) // filter out all the trues 
+                .map((key) => {
+                    const [row, col] = key.split("-")
+                    return {
+                        drum_type: drumTypeNames[row],
+                        col: Number(col)
+                    }
+                })  
+    }
 
     function makeDivArray(rowIndex) {
         return Array.from({ length: steps }).map((_, colIndex) => {
@@ -112,7 +117,13 @@ function Drum() {
             )
         })
     }
-    
+
+
+    useEffect(() => {
+        fetchDrumTracks()
+        fetchBpm()
+    }, [token, id])
+
 
     return (
         <div className='drum-page'>
@@ -122,17 +133,43 @@ function Drum() {
                     onClick={() => {
                         navigate(-1)
                     }}> Back </button>
+
                 <button
-                    id = "drum-play-all-button"
-                    onClick = {() => {
-                        console.log("Play-All")
-                    }} 
-                    >Play All</button>
+                    id="drum-play-all-button"
+                    onClick={async () => {
+                        if (seqRef.current) {
+                            seqRef.current.stop()
+                            seqRef.current.dispose()
+                            seqRef.current = null
+                            Tone.Transport.stop()
+                        }
+
+                    await Tone.start()
+                    const seq = playDrumTrack(makeDrumHitArray(), bpm, 0, false)
+                    seqRef.current = seq
+                    }}
+            >Play All</button>
+
                 <button
-                    id = "drum-loop-button"
-                    onClick = {() => {
-                        console.log("Loop")
-                    }}>Loop</button>
+                    id="drum-loop-button"
+                    onClick={async () => {
+                        if (seqRef.current) { 
+                        // prevent infinite playback from single reqRef, make fully play or stopped before allowing using reqRef on other buttons
+                        // Tradeoff: no need for 2 seperate seqRef, however prevents infinite, unstoppable playback
+                        seqRef.current.stop()
+                        seqRef.current.dispose()
+                        seqRef.current = null
+                        Tone.Transport.stop()
+                    return
+                }
+
+                await Tone.start()
+                const seq = playDrumTrack(makeDrumHitArray(), bpm, 0, true)
+                seqRef.current = seq
+                }}
+            >{seqRef.current ? "Stop" : "Loop"}</button>
+
+
                 <button
                     id = "drum-save-button"
                     onClick= {handleSave}
@@ -153,7 +190,6 @@ function Drum() {
 
                 <select
                     id="drum-delete-tracks-button"
-        
                 >
                     {tracks.map((track) => {
                     return (
@@ -163,7 +199,6 @@ function Drum() {
                     );
                     })}
                 </select>
-                
             </div>
 
             <div className='drum-sequencer'>
