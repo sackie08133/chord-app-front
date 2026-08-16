@@ -1,10 +1,9 @@
 import "./Drum.css"
 import { useState, useEffect, useRef} from 'react'
 import { useAuth } from "../components/Context"
-import { useParams } from 'react-router-dom'
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import { playNoteAtTime } from '../components/ChordPlayer'
-import { apiRequest } from "../components/Utils"
+import { apiRequest, fetchBpm } from "../components/Utils"
 import { drumTypeNames, drumSynthTypes } from "../components/Constants"
 import { playDrumTrack } from "../components/Playback"
 import * as Tone from "tone"
@@ -18,15 +17,6 @@ function Drum() {
     const steps = 16
     const {token, setToken} = useAuth()
     const seqRef = useRef(null)
-    
-    const fetchBpm = async() => {
-        try {
-            const data = await apiRequest(`/songs/${id}`, null, token, "GET")
-            setBPM(data.bpm)
-        } catch (error) {
-            alert(error.message)
-        }
-    }
     
     const toggleCell = (row, col) => {
         const key = `${row}-${col}`
@@ -118,10 +108,12 @@ function Drum() {
         })
     }
 
-
     useEffect(() => {
-        fetchDrumTracks()
-        fetchBpm()
+        fetchDrumTracks(id)
+        const loadBPM = async() => {
+            const bpmValue = await fetchBpm(id, token)
+            setBPM(bpmValue)
+        }
     }, [token, id])
 
 

@@ -51,7 +51,7 @@ function LoginSignup({ onClose, onLoginSuccess }) {
           X
         </button>
         <div className="modal-login-signup-toggle">
-          <div className={`modal-slider ${isSignup ? "moveslider" : ""}`}></div>
+          <div className={`modal-slider ${isSignup ? "modal-moveslider" : ""}`}></div>
           <button className="modal-login" onClick={() => setIsSignup(false)}>
             Login
           </button>
@@ -59,7 +59,7 @@ function LoginSignup({ onClose, onLoginSuccess }) {
             Sign Up
           </button>
         </div>
-        <div className={`modal-form-section ${isSignup ? "form-section-move" : ""}`}>
+        <div className={`modal-form-section ${isSignup ? "modal-form-section-move" : ""}`}>
           <div className="modal-login-box">
             <input
               type="text"

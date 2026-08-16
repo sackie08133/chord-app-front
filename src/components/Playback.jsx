@@ -34,3 +34,7 @@ export function playDrumTrack(hits, bpm, offset = 0, loop = false) {
 
     return seq
 }
+
+export function playGuitarTrack (notes, bpm, offset = 0, loop = false) {
+    
+}

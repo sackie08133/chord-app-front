@@ -18,7 +18,7 @@ function NewSong({ onClose, token, onSongCreated }) {
         },
         token,
       )
-      onSongCreated()
+      onSongCreated
       onClose()
     } catch (error) {
       alert(error.message);

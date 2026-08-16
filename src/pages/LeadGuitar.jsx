@@ -24,7 +24,7 @@ function LeadGuitar() {
         for (let i = 0;  i < noteNamesSharps.length; i++) {
             const key = `${i}-${colIndex}`
             if (activeCells[key]) {
-                playNote(noteNamesSharps[i], octave)
+                playNoteAtTime(noteNamesSharps[i], octave)
             }
         }
     }
@@ -59,7 +59,7 @@ function LeadGuitar() {
                                 className={`lead-grid-cell ${activeCells[`${rowIndex}-${colIndex}`] ? 'active' : ''}`}
                                 onClick={() => {
                                     toggleCell(rowIndex, colIndex)
-                                    playNote(note, octave) 
+                                    playNoteAtTone(note, octave) 
                                 }}
                             />
                         ))
