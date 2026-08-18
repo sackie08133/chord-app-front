@@ -13,18 +13,14 @@ export function getOctave(stringIndex, fretNumber) {
   return newOctave;
 }
 
-export const fetchBpm = async(id, token) => {     
-  if (token) {
-    headers.Authorization = `Bearer ${token}`;
-  }
-  
-  try {
-    const data = await apiRequest(`/songs/${id}`, null, token, "GET")
-    setBPM(data.bpm)
-  } catch (error) {
-    alert(error.message)
+export const fetchBpm = async (id, token) => {
+    try {
+        const data = await apiRequest(`/songs/${id}`, null, token, "GET")
+        return data.bpm
+    } catch (error) {
+        alert(error.message)
     }
-  }
+}
 
 // take movable chord basic, move all notes in that chord to fit the root note (ie, move E shape up 2 frets to make G in CAGED)
 export function shiftVoicing(voicing, rootFret) {

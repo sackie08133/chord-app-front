@@ -12,7 +12,7 @@ function Drum() {
     const navigate = useNavigate()
     const [activeCells, setActiveCells] = useState({})
     const [tracks, setTracks] = useState([])
-    const [bpm, setBPM] = useState([])
+    const [bpm, setBPM] = useState(null)
     const {id} = useParams()
     const steps = 16
     const {token, setToken} = useAuth()
@@ -114,7 +114,20 @@ function Drum() {
             const bpmValue = await fetchBpm(id, token)
             setBPM(bpmValue)
         }
+        loadBPM()
     }, [token, id])
+
+    useEffect(() => {
+            return () => {
+            if (seqRef.current) {
+                seqRef.current.stop()
+                seqRef.current.dispose()
+                seqRef.current = null
+            }
+            Tone.Transport.stop()
+            Tone.Transport.cancel()
+            }
+        }, [])
 
 
     return (
@@ -128,7 +141,10 @@ function Drum() {
 
                 <button
                     id="drum-play-all-button"
+                    disabled = {!bpm} // prevent bpm load / click race condition
                     onClick={async () => {
+                        console.log("play once clicked")
+                        console.log(`${bpm}`, Tone.context.state)
                         if (seqRef.current) {
                             seqRef.current.stop()
                             seqRef.current.dispose()
@@ -136,15 +152,18 @@ function Drum() {
                             Tone.Transport.stop()
                         }
 
-                    await Tone.start()
-                    const seq = playDrumTrack(makeDrumHitArray(), bpm, 0, false)
-                    seqRef.current = seq
+                        await Tone.start()
+                       
+                        const seq = playDrumTrack(makeDrumHitArray(), bpm, 0, false)
+                        seqRef.current = seq
                     }}
             >Play All</button>
 
                 <button
                     id="drum-loop-button"
+                    disabled = {!bpm} // prevent bpm load / click race condition
                     onClick={async () => {
+                        console.log("loop clicked")
                         if (seqRef.current) { 
                         // prevent infinite playback from single reqRef, make fully play or stopped before allowing using reqRef on other buttons
                         // Tradeoff: no need for 2 seperate seqRef, however prevents infinite, unstoppable playback
@@ -156,6 +175,7 @@ function Drum() {
                 }
 
                 await Tone.start()
+                console.log("tone started")
                 const seq = playDrumTrack(makeDrumHitArray(), bpm, 0, true)
                 seqRef.current = seq
                 }}

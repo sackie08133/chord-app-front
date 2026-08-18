@@ -58,7 +58,7 @@ export function playNoteAtTime(noteName, octave, synthType = "poly", time = unde
     // NoiseSynth has no pitch — just trigger a hit
     synth.triggerAttackRelease("8n",time)
   } else {
-    synth.triggerAttackRelease(noteName + octave, time);
+    synth.triggerAttackRelease(noteName + octave, "8n", time);
   }
 }
 

@@ -1,10 +1,10 @@
 import * as Tone from "tone";
 import { playNoteAtTime } from "./ChordPlayer";
-import { drumTypeNames, drumSynthTypes } from "./Constants";
+import { drumTypeNames, drumSynthTypes, noteNamesSharps, instrumentRanges } from "./Constants";
 
-const steps = 16
+const stepsDrums = 16
+const stepsGuitar = 32
 
-// function to play a drum track given hits from backend
 export function playDrumTrack(hits, bpm, offset = 0, loop = false) {
     const hitsSequence = {}
     for (const hit of hits) {
@@ -14,7 +14,7 @@ export function playDrumTrack(hits, bpm, offset = 0, loop = false) {
         hitsSequence[key] = true
     }
 
-    const values = Array.from({ length: steps }).map((_, colIndex) => colIndex) 
+    const values = Array.from({ length: stepsDrums }).map((_, colIndex) => colIndex)
 
     function callbackStep(time, col) {
         for (let row = 0; row < drumTypeNames.length; row++) {
@@ -35,6 +35,38 @@ export function playDrumTrack(hits, bpm, offset = 0, loop = false) {
     return seq
 }
 
-export function playGuitarTrack (notes, bpm, offset = 0, loop = false) {
-    
+export function playGuitarTrack(notes, bpm, offset = 0, loop = false, instrument = "guitar") {
+    const notesSequence = {}
+    for (const note of notes) {
+        const row = noteNamesSharps.indexOf(note.row)
+        const col = note.col
+        const octave = note.octave
+        const key = `${row}-${col}-${octave}`
+        notesSequence[key] = true
+    }
+
+    const { min, max } = instrumentRanges[instrument]
+
+    const values = Array.from({ length: stepsGuitar }).map((_, colIndex) => colIndex)
+
+    function callbackStep(time, col) {
+        for (let row = 0; row < noteNamesSharps.length; row++) {
+            for (let oct = min; oct <= max; oct++) {
+                const key = `${row}-${col}-${oct}`
+                if (notesSequence[key]) {
+                    console.log('triggering', noteNamesSharps[row], oct, 'at time', time)
+                    playNoteAtTime(noteNamesSharps[row], oct, undefined, time)
+                }
+            }
+        }
+    }
+
+    Tone.Transport.bpm.value = bpm
+
+    const seq = new Tone.Sequence(callbackStep, values, "16n")
+    seq.loop = loop
+    seq.start(offset)
+    Tone.Transport.start()
+
+    return seq
 }
