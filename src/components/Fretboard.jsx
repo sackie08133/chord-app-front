@@ -16,11 +16,34 @@ import {
   stringSpacing,
   endX,
   markerY,
+  scales, 
+  noteNamesSharps, 
+  noteNamesFlats 
 } from "./Constants.jsx";
 
 function Fretboard() {
   const voicing = basic.major[2].voicing;
   const shiftedVoicing = shiftVoicing(voicing, 3); // 3 = rootFret, for testing
+  
+function getPattern(scaleName) {
+  return scales[scaleName]?.pattern;
+}
+
+function changeScale(scaleName, rootNote, sharpOrFlat) {
+  const scaleFormat = getPattern(scaleName)
+  const notes = {}
+  let semitoneOffset = 0
+  notes[0] = getNoteName(semitoneOffset, rootNote, sharpOrFlat)
+
+  scaleFormat.forEach((interval, index) => {
+    semitoneOffset += interval
+    notes[index + 1] = getNoteName(semitoneOffset, rootNote, sharpOrFlat)
+  })
+
+  return notes
+}
+
+
 
   return (
     <svg
@@ -75,7 +98,7 @@ function Fretboard() {
         strokeWidth="2"
       />
 
-      {/* Fretboard markers */}
+      {/*Fretboard markers */}
       {fretboardMarkerPos.map((x, i) => (
         <g key={`marker-${i}`} opacity={0.7}>
           <g transform={`translate(${x}, ${markerY})`}>

@@ -4,9 +4,12 @@ import { useState } from "react";
 import { getOctave } from "./Utils.jsx";
 import { basic } from "./ChordShapes.jsx";
 
-const FretboardNotes = ({ stringIndex, fretNumber, expectedFret }) => {
+const FretboardNotes = ({ stringIndex, fretNumber, expectedFret, mode = "highlight" }) => {
   const [isHovered, setIsHovered] = useState(false);
-  if (expectedFret !== undefined && fretNumber !== expectedFret) {
+
+  const isInScale = expectedFret === undefined || fretNumber === expectedFret;
+  // mode "filter": hide anything not matching expectedFret
+  if (mode === "filter" && !isInScale) {
     return null;
   }
 
@@ -30,7 +33,8 @@ const FretboardNotes = ({ stringIndex, fretNumber, expectedFret }) => {
       onMouseLeave={() => setIsHovered(false)}
     >
       <circle
-        fill={isHovered ? "blue" : "skyblue"}
+        className={isInScale ? "fretboard-notes-in-scale" : "fretboard-notes-non-scale"}
+        fill={isHovered ? "blue" : (isInScale ? "#FFE5B4" : "skyblue")}
         cx={fretNumber === 0 ? startX - 80 : fretMidPoint}
         cy={fretYPos}
         r="13"

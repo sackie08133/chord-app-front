@@ -1,5 +1,6 @@
 import playChord from "../components/ChordPlayer";
 import Fretboard from "../components/Fretboard";
+import { scales, noteNamesSharps, noteNamesFlats } from "../components/Constants"
 import { basic } from "../components/ChordShapes";
 import { shiftVoicing } from "../components/Utils";
 import { useNavigate } from "react-router-dom";
@@ -41,6 +42,7 @@ function RhythmGuitar() {
           <option>G shape</option>
           <option>E shape</option>
           <option>D shape</option>
+  
         </select>
       </div>
 
