@@ -1,4 +1,4 @@
-import { basic } from "./ChordShapes";
+import { chordShapes } from "./ChordShapes";
 import { StringsStandard } from "./Constants";
 import { getOctave, shiftVoicing } from "./Utils";
 import * as Tone from "tone";

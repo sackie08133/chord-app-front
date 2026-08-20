@@ -19,7 +19,7 @@
   width:100vw;
   display: flex;
   flex-direction: row;
-  align-content: center;
+  justify-items: center;
 
 }
 

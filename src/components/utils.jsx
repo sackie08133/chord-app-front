@@ -39,9 +39,10 @@ export function getNoteNumber(noteLetter) {
 
 export function getNoteName(chromaticNum, key, sharpOrFlat) {
   const keyNumber = getNoteNumber(key);
-  const actualIndex = (chromaticNum + keyNumber) % 12;
-  const noteName = Notes[actualIndex][sharpOrFlat];
-  return noteName;
+  if (keyNumber === -1) return null;
+
+  const actualIndex = ((chromaticNum + keyNumber) % 12 + 12) % 12;
+  return Notes[actualIndex][sharpOrFlat];
 }
 
 

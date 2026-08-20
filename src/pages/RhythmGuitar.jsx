@@ -1,7 +1,7 @@
 import playChord from "../components/ChordPlayer";
 import Fretboard from "../components/Fretboard";
 import { scales, noteNamesSharps, noteNamesFlats } from "../components/Constants"
-import { basic } from "../components/ChordShapes";
+import { chordShapes } from "../components/ChordShapes";
 import { shiftVoicing } from "../components/Utils";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../components/Context";

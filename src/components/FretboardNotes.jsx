@@ -2,7 +2,7 @@ import { StringsStandard, Notes, fretPos, startX } from "./Constants.jsx";
 import * as Tone from "tone";
 import { useState } from "react";
 import { getOctave } from "./Utils.jsx";
-import { basic } from "./ChordShapes.jsx";
+import { chordShapes } from "./ChordShapes.jsx";
 
 const FretboardNotes = ({ stringIndex, fretNumber, expectedFret, mode = "highlight" }) => {
   const [isHovered, setIsHovered] = useState(false);
