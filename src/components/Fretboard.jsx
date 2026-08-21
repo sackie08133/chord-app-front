@@ -1,9 +1,6 @@
 import React from "react";
 import TriangleMarker from "./FretboardMarkers.jsx";
 import FretboardNotes from "./FretboardNotes.jsx";
-import { chordShapes } from "./ChordShapes.jsx";
-import { shiftVoicing, getNoteName } from "./Utils.jsx";
-
 import {
   StringsStandard,
   fretPos,
@@ -16,38 +13,16 @@ import {
   stringSpacing,
   endX,
   markerY,
-  scales,
-  noteNamesSharps,
-  noteNamesFlats
 } from "./Constants.jsx";
 
-function Fretboard() {
-  const voicing = chordShapes.major[1]?.voicing;
-  const shiftedVoicing = voicing ? shiftVoicing(voicing, 3) : [];
-
-  function getPattern(scaleName) {
-    return scales[scaleName]?.pattern ?? [];
-  }
-
-  function changeScale(scaleName, rootNote, sharpOrFlat = "sharps") {
-    const scaleFormat = getPattern(scaleName);
-    const notes = {};
-    let semitoneOffset = 0;
-
-    notes[0] = getNoteName(semitoneOffset, rootNote, sharpOrFlat);
-
-    scaleFormat.forEach((interval, index) => {
-      semitoneOffset += interval;
-      notes[index + 1] = getNoteName(semitoneOffset, rootNote, sharpOrFlat);
-    });
-
-    return notes;
-  }
-
+function Fretboard({ voicing = [], rootNote, chordType, shapeId, selectedShape }) {
   return (
     <svg
-      width="80%"
+      style={{ width: "100%", height: "auto" }}
       viewBox={`0 0 ${viewBoxWidth} ${viewBoxHeight}`}
+      preserveAspectRatio="xMidYMid meet"
+      aria-label={`Fretboard for ${rootNote} ${chordType}`}
+      role="img"
     >
       <line
         x1={0}
@@ -104,9 +79,13 @@ function Fretboard() {
         fretPos.map((_, fretNumber) => (
           <FretboardNotes
             key={`${stringIndex}-${fretNumber}`}
-            expectedFret={shiftedVoicing[stringIndex]}
+            expectedFret={voicing[stringIndex]}
             stringIndex={stringIndex}
             fretNumber={fretNumber}
+            rootNote={rootNote}
+            chordType={chordType}
+            shapeId={shapeId}
+            selectedShape={selectedShape}
           />
         ))
       )}
