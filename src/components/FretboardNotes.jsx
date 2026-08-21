@@ -2,20 +2,23 @@ import { StringsStandard, Notes, fretPos, startX } from "./Constants.jsx";
 import * as Tone from "tone";
 import { useState } from "react";
 import { getOctave } from "./Utils.jsx";
-import { chordShapes } from "./ChordShapes.jsx";
 
 const FretboardNotes = ({ stringIndex, fretNumber, expectedFret, mode = "highlight" }) => {
   const [isHovered, setIsHovered] = useState(false);
 
+  if (expectedFret === null) {
+    return null;
+  }
+
   const isInScale = expectedFret === undefined || fretNumber === expectedFret;
-  // mode "filter": hide anything not matching expectedFret
+
   if (mode === "filter" && !isInScale) {
     return null;
   }
 
   const chromScaleNum = StringsStandard[stringIndex].chromScaleNum;
   const noteIndex = (chromScaleNum + fretNumber) % 12;
-  const noteName = Notes[noteIndex][0]; // 0 for sharps, 1 for flats
+  const noteName = Notes[noteIndex][0];
   const fretMidPoint =
     fretPos[fretNumber - 1] +
     (fretPos[fretNumber] - fretPos[fretNumber - 1]) / 2;
@@ -34,7 +37,7 @@ const FretboardNotes = ({ stringIndex, fretNumber, expectedFret, mode = "highlig
     >
       <circle
         className={isInScale ? "fretboard-notes-in-scale" : "fretboard-notes-non-scale"}
-        fill={isHovered ? "blue" : (isInScale ? "#FFE5B4" : "skyblue")}
+        fill={isHovered ? "blue" : isInScale ? "#FFE5B4" : "skyblue"}
         cx={fretNumber === 0 ? startX - 80 : fretMidPoint}
         cy={fretYPos}
         r="13"
