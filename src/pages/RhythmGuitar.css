@@ -1,12 +1,17 @@
-.RhythmGuitar {
-    height: 100vh;
-    width: 100vh;
-    text-align: center;
+.Rhythm-Guitar {
+  height: 100vh;
+  width: 100vw;
+  text-align: center;
 }
 
-.rhythem-guitar-header {
+.rhythm-guitar-header {
   height: 10vh;
   width: 100vw;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 .rhythm-guitar-fretboard {
@@ -14,20 +19,104 @@
   width: 100vw;
 }
 
+.rhythm-guitar-no-chord {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #888;
+}
+
 .rhythm-guitar-chord-list {
   height: 30vh;
-  width:100vw;
+  width: 100vw;
   display: flex;
   flex-direction: row;
   justify-items: center;
-
+  align-items: stretch;
+  overflow-x: auto;
 }
 
 .rhythm-guitar-chord {
   width: 25vw;
-  outline-width: 3px;
-  outline-color: black;
-  stroke-width: 5px;
+  min-width: 220px;
+  outline: 3px solid black;
+  border-radius: 6px;
+  margin: 4px;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+
+.rhythm-guitar-chord.active {
+  outline-color: #2d7dff;
+  background-color: rgba(45, 125, 255, 0.08);
+}
+
+.rhythm-guitar-chord-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 4px;
+}
+
+.rhythm-guitar-chord-header button {
+  flex: 1;
+  font-size: 0.75rem;
+}
+
+.rhythm-guitar-chord-lock.locked {
+  background-color: #ffd54f;
+}
+
+.rhythm-guitar-chord-controls {
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+  margin: 6px 0;
+}
+
+.rhythm-guitar-chord-controls select {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.75rem;
+}
+
+.rhythm-guitar-chord-controls select:disabled {
+  opacity: 0.5;
+}
+
+.rhythm-guitar-chord-name {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.rhythm-guitar-chord-faders {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  gap: 8px;
+}
+
+.rhythm-guitar-fader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 0.7rem;
+  flex: 1;
+}
+
+.rhythm-guitar-fader input[type="range"] {
+  width: 100%;
+}
+
+.rhythm-guitar-chord-add {
+  width: 8vw;
+  min-width: 100px;
+  margin: 4px;
+  align-self: center;
 }
 
 .rhythm-guitar-footer {
