@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import Fretboard from "../components/Fretboard";
-import { chordShapes } from "../components/ChordShapes";
+import { chordShapes, chordProgressions } from "../components/ChordShapes";
 import { shiftVoicing } from "../components/Utils";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../components/Context";
@@ -45,60 +45,65 @@ function getAllShapeOptions() {
           chordType: chord.name,
           shapeId: shape.id,
           familyName: chordTypeToFamily[chord.name] || "",
-        });
+        })
       }
     }
   }
-  return out;
+  return out
 }
 
 function findShape(chordType, shapeId) {
-  const familyName = chordTypeToFamily[chordType];
+  const familyName = chordTypeToFamily[chordType]
   if (!familyName || !chordShapes[familyName]) return null;
 
-  const chord = chordShapes[familyName].find((item) => item.name === chordType);
-  if (!chord) return null;
+  const chord = chordShapes[familyName].find((item) => item.name === chordType)
+  if (!chord) return null
 
-  return chord.shapes.find((shape) => shape.id === shapeId) || null;
+  return chord.shapes.find((shape) => shape.id === shapeId) || null
 }
 
+
 function RhythmGuitar() {
-  const navigate = useNavigate();
-  const { token } = useAuth();
+  const navigate = useNavigate()
+  const { token } = useAuth()
 
-  const allShapeOptions = useMemo(() => getAllShapeOptions(), []);
+  const allShapeOptions = useMemo(() => getAllShapeOptions(), [])
 
-  const [selectedRoot, setSelectedRoot] = useState("C");
-  const [selectedChordType, setSelectedChordType] = useState("maj7");
-  const [selectedShapeId, setSelectedShapeId] = useState("maj7-6-root");
+  const [selectedRoot, setSelectedRoot] = useState("C")
+  const [selectedChordType, setSelectedChordType] = useState("maj7")
+  const [selectedShapeId, setSelectedShapeId] = useState("maj7-6-root")
 
   const selectedShape = useMemo(() => {
     return findShape(selectedChordType, selectedShapeId);
-  }, [selectedChordType, selectedShapeId]);
+  }, [selectedChordType, selectedShapeId])
 
   const shiftedVoicing = useMemo(() => {
     if (!selectedShape) return [];
     const rootFret = rootFretMap[selectedRoot] ?? 0;
-    return shiftVoicing(selectedShape.voicing, rootFret);
-  }, [selectedShape, selectedRoot]);
+    return shiftVoicing(selectedShape.voicing, rootFret)
+  }, [selectedShape, selectedRoot])
 
   const filteredShapes = useMemo(() => {
-    return allShapeOptions.filter((shape) => shape.chordType === selectedChordType);
-  }, [allShapeOptions, selectedChordType]);
+    return allShapeOptions.filter((shape) => shape.chordType === selectedChordType)
+  }, [allShapeOptions, selectedChordType])
 
   const handleChordTypeChange = (e) => {
-    const nextType = e.target.value;
-    setSelectedChordType(nextType);
+    const nextType = e.target.value
+    setSelectedChordType(nextType)
 
-    const nextOptions = allShapeOptions.filter((shape) => shape.chordType === nextType);
+    const nextOptions = allShapeOptions.filter((shape) => shape.chordType === nextType)
     if (nextOptions.length > 0) {
-      setSelectedShapeId(nextOptions[0].shapeId);
+      setSelectedShapeId(nextOptions[0].shapeId)
     }
-  };
+  }
 
   const handleShapeChange = (e) => {
-    setSelectedShapeId(e.target.value);
-  };
+    setSelectedShapeId(e.target.value)
+  }
+
+  function returnChordProgression() {
+
+  }
 
   return (
     <div className="Rhythm-Guitar">
@@ -186,11 +191,9 @@ function RhythmGuitar() {
               <div className="rhythm-guitar-chord-header">
                 <button className="rhythm-guitar-chord-about">?</button>
                 <button className="rhythm-guitar-chord-lock">Lock</button>
+                <button className = "rhythm-guitar-chord-select">Select</button>
               </div>
               <div className="rhythm-guitar-chord-name">{type}</div>
-              <div className="rhythm-guitar-chord-subtitle">
-                {previewShape ? previewShape.shapeId : "No shape"}
-              </div>
             </div>
           );
         })}

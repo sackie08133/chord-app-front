@@ -31,19 +31,19 @@ const synths = {
 
 // plays the parameter chordVoicing
 export function playChord(chordVoicing) {
-  const now = Tone.now();
+  const now = Tone.now()
   chordVoicing.forEach((fret, string) => {
     if (fret === null) {
-      return;
+      return
     }
     const octave = getOctave(string, fret);
     const noteName = getNoteName(
       fret + StringsStandard[string].chromScaleNum,
       "C",
       0,
-    );
+    )
     polysynth.triggerAttackRelease(noteName + octave, "8n", now + string * 0.1); // add delay to replicate strum
-  });
+  })
 }
 
 export function playNoteAtTime(noteName, octave, synthType = "poly", time = undefined) {

@@ -35,23 +35,23 @@ const FretboardNotes = ({ stringIndex, fretNumber, expectedFret, mode = "highlig
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <circle
-        className={isInScale ? "fretboard-notes-in-scale" : "fretboard-notes-non-scale"}
-        fill={isHovered ? "blue" : isInScale ? "#FFE5B4" : "skyblue"}
-        cx={fretNumber === 0 ? startX - 80 : fretMidPoint}
-        cy={fretYPos}
-        r="13"
-      />
+    <circle
+      className={isInScale ? "fretboard-notes-in-scale" : "fretboard-notes-non-scale"}
+      fill={isHovered ? "blue" : isInScale ? "#FFE5B4" : "skyblue"}
+      cx={fretNumber === 0 ? startX - 80 : fretMidPoint}
+      cy={fretYPos}
+      r="13"
+    />
 
-      <text
-        x={fretNumber === 0 ? startX - 80 : fretMidPoint}
-        y={fretYPos}
-        textAnchor="middle"
-        dominantBaseline="middle"
-      >
-        {noteName}
-      </text>
-    </g>
+    <text
+      x={fretNumber === 0 ? startX - 80 : fretMidPoint}
+      y={fretYPos}
+      textAnchor="middle"
+      dominantBaseline="middle"
+    >
+    {noteName}
+    </text>
+  </g>
   );
 };
 

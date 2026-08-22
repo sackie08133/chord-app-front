@@ -416,7 +416,7 @@ export const chordProgressions = {
     ["I", "bVII", "IV", "I"],
     ["I", "bVI", "bVII", "I"],
     ["I", "IV", "bVII", "IV"],
-    ["I", "bIII", "bVII", "I"],
+    ["I", "bIII", "bVII", "I"], 
     ["i", "bII", "bVII", "i"],
     ["i", "bVI", "bVII", "i"],
     ["I", "II", "IV", "I"],
