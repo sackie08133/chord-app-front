@@ -11,6 +11,7 @@ const rootFretMap = {
   "F#/Gb": 2, G: 3, "G#/Ab": 4, A: 5, "A#/Bb": 6, B: 7,
 }
 const ROOT_OPTIONS = Object.keys(rootFretMap)
+const strummingSteps = 8
 
 const chordTypeToFamily = {
   maj: "major", maj7: "seventh", "7": "seventh", m7: "seventh",
@@ -18,6 +19,14 @@ const chordTypeToFamily = {
   sus4: "suspended", "11": "extended", m11: "extended",
 }
 const CHORD_TYPE_OPTIONS = Object.keys(chordTypeToFamily);
+
+const strumTypes =['rest', 'down', 'up', 'muted']
+const strumSymbols = {
+    down: '↓',
+    up: '↑',
+    muted: '✕',
+    rest: ''
+}
 
 function getAllShapeOptions() {
   const out = [];
@@ -70,7 +79,7 @@ function createSlot(allShapeOptions, { root = "C", chordType = "maj7" } = {}) {
 function RhythmGuitar() {
   const navigate = useNavigate()
   const { token } = useAuth()
-
+  const [strumPattern, setStrumPattern] = useState({})
   const allShapeOptions = useMemo(() => getAllShapeOptions(), [])
 
   const [chordSlots, setChordSlots] = useState(() => [
@@ -79,24 +88,56 @@ function RhythmGuitar() {
     createSlot(allShapeOptions, { chordType: "m7" }),
     createSlot(allShapeOptions, { chordType: "sus4" }),
   ])
+  
 
   const [activeSlotId, setActiveSlotId] = useState(() => chordSlots[0]?.id ?? null)
 
   const activeSlot = useMemo(
     () => chordSlots.find((slot) => slot.id === activeSlotId) || null,
     [chordSlots, activeSlotId]
-  );
+  )
 
   const activeShape = useMemo(() => {
     if (!activeSlot) return null;
     return findShape(activeSlot.chordType, activeSlot.shapeId)
-  }, [activeSlot]);
+  }, [activeSlot])
 
   const shiftedVoicing = useMemo(() => {
     if (!activeShape || !activeSlot) return [];
     const rootFret = rootFretMap[activeSlot.root] ?? 0
     return shiftVoicing(activeShape.voicing, rootFret)
   }, [activeShape, activeSlot])
+
+  const cycleStrum = (colIndex) => {
+    const current = strumPattern[colIndex] || 'rest' // default to rest
+    console.log('BEFORE:', current, 'strumPattern:', strumPattern)
+    const currentIndex = strumTypes.indexOf(current)
+    console.log('currentIndex:', currentIndex, 'strumTypes:', strumTypes)
+    const nextIndex = (currentIndex + 1) % strumTypes.length
+    const next = strumTypes[nextIndex]
+    console.log('AFTER, setting to:', next)
+
+    setStrumPattern(prev => ( {
+      ...prev,
+      [colIndex]: next
+    }))
+  }
+
+  function makeDivArray() {
+    return Array.from({ length: strummingSteps }).map((_, colIndex) => {
+        const key = `${colIndex}`
+        const current = strumPattern[key] || 'rest'
+        return (
+            <div
+                className={`strum strum-${current}`}
+                key={key}
+                onClick={() => cycleStrum(key)}
+            >
+                {strumSymbols[current]}
+            </div>
+        )
+    })
+  }
 
   function updateSlot(slotId, updates) {
     setChordSlots((prev) =>
@@ -247,7 +288,9 @@ function RhythmGuitar() {
       </div>
 
       <div className="rhythm-guitar-footer">
-        <div className="rhythm-guitar-strumming-pattern">Strumming Pattern</div>
+        <div className="rhythm-guitar-strum-row">
+          {makeDivArray()}
+        </div>
       </div>
     </div>
   )
