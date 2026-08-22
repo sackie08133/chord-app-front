@@ -5,7 +5,7 @@
 }
 
 .rhythm-guitar-header {
-  height: 10vh;
+  height: 5vh;
   width: 100vw;
   display: flex;
   flex-direction: row;
@@ -123,8 +123,8 @@
   height: 10vh;
   width: 100vw;
   display: flex;
-  flex-direction: row;
-  align-content: center;
+  flex-direction: column;
+  align-items: center;
 }
 
 .rhythm-guitar-footer > div {
@@ -135,10 +135,8 @@
   display: grid;
   grid-template-columns: repeat(8, 1fr);
   gap: 6px;
-  padding: 12px;
   border-radius: 8px;
   max-width: 500px;
-  margin-top: 8px;
 }
 
 .strum {

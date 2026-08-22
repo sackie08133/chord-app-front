@@ -288,6 +288,7 @@ function RhythmGuitar() {
       </div>
 
       <div className="rhythm-guitar-footer">
+        <h3>Strumming Pattern</h3>
         <div className="rhythm-guitar-strum-row">
           {makeDivArray()}
         </div>
