@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from "react"
+import React, { useMemo, useState, useEffect, useRef} from "react"
 import Fretboard from "../components/Fretboard"
 import { chordShapes, chordProgressions } from "../components/ChordShapes"
 import { shiftVoicing } from "../components/Utils"
@@ -7,6 +7,8 @@ import { apiRequest, fetchBpm } from "../components/Utils"
 import { useAuth } from "../components/Context"
 import playChord, { playChordAtTime } from "../components/ChordPlayer"
 import "./RhythmGuitar.css"
+import * as Tone from "tone"
+import { playRhythmTrack } from "../components/Playback"
 
 const rootFretMap = {
   C: 8, "C#/Db": 9, D: 10, "D#/Eb": 11, E: 0, F: 1,
@@ -78,6 +80,22 @@ function createSlot(allShapeOptions, { root = "C", chordType = "maj7" } = {}) {
   };
 }
 
+export function buildBeats (chordSlots, strumPattern) {
+    const beats = []
+    
+    for (const slot of chordSlots) {
+      const shape = findShape(slot.chordType, slot.shapeId)
+      const rootFret = rootFretMap[slot.root] ?? 0
+      const voicing = shiftVoicing(shape.voicing, rootFret)
+      
+      for (let step = 0; step < strummingSteps; step++) {
+        const strumType = strumPattern[step] || "rest"   // ← bug here
+        beats.push({voicing, strumType})
+      }
+    }
+    return beats
+}
+
 function RhythmGuitar() {
   const navigate = useNavigate()
   const { token } = useAuth()
@@ -86,6 +104,7 @@ function RhythmGuitar() {
   const {id} = useParams()
   const [bpm, setBPM] = useState(null)
   const [tracks, setTracks] = useState([])
+  const seqRef = useRef(null)
 
   const [chordSlots, setChordSlots] = useState(() => [
     createSlot(allShapeOptions, { chordType: "maj7" }),
@@ -93,7 +112,6 @@ function RhythmGuitar() {
     createSlot(allShapeOptions, { chordType: "m7" }),
     createSlot(allShapeOptions, { chordType: "sus4" }),
   ])
-  
 
   const [activeSlotId, setActiveSlotId] = useState(() => chordSlots[0]?.id ?? null)
 
@@ -205,22 +223,6 @@ function RhythmGuitar() {
     setStrumPattern(selectedTrack.strum_pattern)
   }
 
-  function buildBeats (chordSlots, strumPattern) {
-    const beats = []
-    
-    for (const slot of chordSlots) {
-      const shape = findShape(slot.chordType, slot.shapeId)
-      const rootFret = rootFretMap[slot.root] ?? 0 // if null or undefined give 0 (open)
-      const voicing = shiftVoicing(shape.voicing, rootFret)
-      
-      for (let step = 0; step < strummingSteps; step++) {
-        const strumType = strumTypes[step] || "rest"
-        beats.push({voicing, strumType})
-      }
-    }
-    return beats
-  }
-
   useEffect(() => {
     fetchGuitarTracks(id)
     const loadBPM = async() => {
@@ -230,24 +232,71 @@ function RhythmGuitar() {
     loadBPM()
     }, [token, id])
 
+  useEffect(() => {
+          return () => {
+          if (seqRef.current) {
+              seqRef.current.stop()
+              seqRef.current.dispose()
+              seqRef.current = null
+          }
+          Tone.Transport.stop()
+          Tone.Transport.cancel()
+          }
+      }, [])
+
   return (
     <div className="Rhythm-Guitar">
       <div className="rhythm-guitar-header">
         <button className="rhythm-guitar-back" onClick={() => navigate(-1)}>Back</button>
         <button className="rhythm-guitar-save" onClick = {handleSave}>Save</button>
-        <select 
-          className="rhythm-guitar-tracks"
-          onChange={(e) => loadTrack(e.target.value)}
-        > No Tracks
-          {tracks.map((track) => {
-                    return (
-                        <option className="track-options" key={track.id} value={track.id}>
-                            {track.name}
-                        </option>
-                    )
-          })}
-        </select>
+        <button
+          id="rhythm-play-all-button"
+          disabled={!bpm}
+          onClick={async () => {
+            if (seqRef.current) {
+              seqRef.current.stop()
+              seqRef.current.dispose()
+              seqRef.current = null
+              Tone.Transport.stop()
+            }
+            
+           await Tone.start()
+           
+           const seq = playRhythmTrack(chordSlots, strumPattern, bpm, 0, false)
+           seqRef.current = seq
+          }}
+        >Play All</button>
 
+      <button
+        id="rhythm-loop-button"
+        disabled={!bpm}
+        onClick={async () => {
+            if (seqRef.current) {
+              seqRef.current.stop()
+              seqRef.current.dispose()
+              seqRef.current = null
+              Tone.Transport.stop()
+            }
+            
+            await Tone.start()
+           
+            const seq = playRhythmTrack(chordSlots, strumPattern, bpm, 0, true)
+            seqRef.current = seq
+            }}
+      >{seqRef.current ? "Stop" : "Loop"}</button>
+
+      <select 
+        className="rhythm-guitar-tracks"
+        onChange={(e) => loadTrack(e.target.value)}
+      > No Tracks
+        {tracks.map((track) => {
+          return (
+            <option className="track-options" key={track.id} value={track.id}>
+              {track.name}
+            </option>
+          )
+        })}
+      </select>
       </div>
 
       <div className="rhythm-guitar-fretboard">

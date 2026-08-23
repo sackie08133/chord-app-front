@@ -45,7 +45,7 @@ export function getNoteName(chromaticNum, key, sharpOrFlat) {
   return Notes[actualIndex][sharpOrFlat]
 }
 
-
+let isRedirecting = false
 export async function apiRequest(path, body, token, method = "POST") {
   const headers = { "Content-Type": "application/json" }
 
@@ -56,18 +56,28 @@ export async function apiRequest(path, body, token, method = "POST") {
   const options = {
     method,
     headers,
+    cache: "no-store",
   }
 
   if (body) {
     options.body = JSON.stringify(body)
   }
 
-  const response = await fetch(`${API_URL}${path}`, options)
+  const response = await fetch(`${API_URL}${path}`, options);
+
+  if ((response.status === 401 || response.status === 403) && token) {
+    if (!isRedirecting) {
+      isRedirecting = true
+      window.location.href = "/"
+    }
+    return
+  }
+
   const data = await response.json()
 
   if (!response.ok) {
     throw new Error(data.message || "Something went wrong")
   }
 
-  return data
+  return data;
 }

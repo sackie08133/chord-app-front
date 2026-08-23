@@ -1,6 +1,7 @@
 import * as Tone from "tone";
-import { playNoteAtTime } from "./ChordPlayer";
+import { playNoteAtTime, playChordAtTime } from "./ChordPlayer";
 import { drumTypeNames, drumSynthTypes, noteNamesSharps, instrumentRanges } from "./Constants";
+import { buildBeats } from "../pages/RhythmGuitar";
 
 const stepsDrums = 16
 const stepsGuitar = 32
@@ -64,6 +65,26 @@ export function playGuitarTrack(notes, bpm, offset = 0, loop = false, instrument
     Tone.Transport.bpm.value = bpm
 
     const seq = new Tone.Sequence(callbackStep, values, "16n")
+    seq.loop = loop
+    seq.start(offset)
+    Tone.Transport.start()
+
+    return seq
+}
+
+export function playRhythmTrack(chordSlots, strumPattern, bpm, offset = 0, loop = false) {
+    const beats = buildBeats(chordSlots, strumPattern)
+
+    const values = Array.from({ length: beats.length }).map((_, i) => i)
+
+    function callbackStep(time, i) {
+        const beat = beats[i]
+        playChordAtTime(beat.voicing, beat.strumType, time)
+    }
+
+    Tone.Transport.bpm.value = bpm
+
+    const seq = new Tone.Sequence(callbackStep, values, "8n")
     seq.loop = loop
     seq.start(offset)
     Tone.Transport.start()

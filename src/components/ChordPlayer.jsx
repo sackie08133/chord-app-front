@@ -4,7 +4,7 @@ import { getOctave, shiftVoicing } from "./Utils";
 import * as Tone from "tone";
 import { getNoteName } from "./Utils";
 
-export const polysynth = new Tone.PolySynth(Tone.Synth).toDestination()
+export const polysynth = new Tone.PolySynth(Tone.Synth, { maxPolyphony: 64 }).toDestination()
 export const membraneSynth = new Tone.MembraneSynth({
   envelope: { attack: 0.01, decay: 0.01, sustain: 0, release: 0.1 }
 }).toDestination()
@@ -42,7 +42,7 @@ export function playChord(chordVoicing) {
       "C",
       0,
     )
-    polysynth.triggerAttackRelease(noteName + octave, "8n", now + string * 0.1); // add delay to replicate strum
+    polysynth.triggerAttackRelease(noteName + octave, "8n", now + string * 0.01); // add delay to replicate strum
   })
 }
 
@@ -65,9 +65,11 @@ export function playNoteAtTime(noteName, octave, synthType = "poly", time = unde
 export function playChordAtTime(chordVoicing, strumType, time) {
   if (strumType === "rest") return
 
-  const stringOrder = strumType === "up" ? chordVoicing.entries().toReversed() : chordVoicing.entries()
+  const stringOrder = strumType === "up" 
+    ? [...chordVoicing.entries()].reverse() 
+    : [...chordVoicing.entries()]
   const duration = strumType === 'muted' ? '32n' : '8n'
-  const stagger = strumType === 'muted' ? 0.02 : 0.05
+  const stagger = strumType === 'muted' ? 0.001 : 0.002
 
   stringOrder.forEach(([string, fret]) => {
     if (fret === null) return

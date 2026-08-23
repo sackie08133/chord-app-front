@@ -130,7 +130,6 @@ function Bass() {
                     id="bass-play-all-button"
                     disabled = {!bpm}
                     onClick={async () => {
-                        
                         if (seqRef.current) {
                             seqRef.current.stop()
                             seqRef.current.dispose()
@@ -140,7 +139,6 @@ function Bass() {
 
                         await Tone.start()
                         const notes = makeGuitarNotesArray()
-                        console.log('about to play:', notes)
                         const seq = playGuitarTrack(makeGuitarNotesArray(), bpm, 0, false, "bass")
                         seqRef.current = seq
                     }}
