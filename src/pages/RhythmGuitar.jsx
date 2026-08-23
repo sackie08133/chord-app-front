@@ -2,8 +2,10 @@ import React, { useMemo, useState } from "react"
 import Fretboard from "../components/Fretboard"
 import { chordShapes, chordProgressions } from "../components/ChordShapes"
 import { shiftVoicing } from "../components/Utils"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
+import { apiRequest, fetchBpm } from "../components/Utils"
 import { useAuth } from "../components/Context"
+
 import "./RhythmGuitar.css"
 
 const rootFretMap = {
@@ -81,6 +83,7 @@ function RhythmGuitar() {
   const { token } = useAuth()
   const [strumPattern, setStrumPattern] = useState({})
   const allShapeOptions = useMemo(() => getAllShapeOptions(), [])
+  const {id} = useParams()
 
   const [chordSlots, setChordSlots] = useState(() => [
     createSlot(allShapeOptions, { chordType: "maj7" }),
@@ -168,16 +171,31 @@ function RhythmGuitar() {
     })
   }
 
-  function returnChordProgression() {
+  const handleSave = async() => {
+    const trackTitle = prompt("Drum Track Title?", "Track")
 
+    if (!trackTitle || !id) {
+      return alert("Drum track title or track id was not found")
+    }
+
+    try {
+      const data = await apiRequest(`/rhythm-guitar/${id}`, {
+          trackName: trackTitle, 
+          chordSlots: chordSlots,
+          strumPattern: strumPattern
+      }, token)
+    } catch (error) {
+      alert(error.message)
+    }
   }
 
   return (
     <div className="Rhythm-Guitar">
       <div className="rhythm-guitar-header">
         <button className="rhythm-guitar-back" onClick={() => navigate(-1)}>Back</button>
-        <button className="rhythm-guitar-save">Save</button>
+        <button className="rhythm-guitar-save" onClick = {handleSave}>Save</button>
         <button className="rhythm-guitar-about">About</button>
+
       </div>
 
       <div className="rhythm-guitar-fretboard">

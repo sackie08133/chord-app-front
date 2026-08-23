@@ -196,7 +196,7 @@ function Drum() {
                         <option className="track-options" key={track.id} value={track.id}>
                             {track.name}
                         </option>
-                    );
+                    )
                     })}
                 </select>
 
