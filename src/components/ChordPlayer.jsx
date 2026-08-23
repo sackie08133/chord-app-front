@@ -62,6 +62,21 @@ export function playNoteAtTime(noteName, octave, synthType = "poly", time = unde
   }
 }
 
+export function playChordAtTime(chordVoicing, strumType, time) {
+  if (strumType === "rest") return
+
+  const stringOrder = strumType === "up" ? chordVoicing.entries().toReversed() : chordVoicing.entries()
+  const duration = strumType === 'muted' ? '32n' : '8n'
+  const stagger = strumType === 'muted' ? 0.02 : 0.05
+
+  stringOrder.forEach(([string, fret]) => {
+    if (fret === null) return
+    const octave = getOctave(string, fret)
+    const noteName = getNoteName(fret + StringsStandard[string].chromScaleNum, "C", 0)
+    polysynth.triggerAttackRelease(noteName + octave, duration, time + string * stagger)
+  })
+}
+
 
 
 export default playChord;

@@ -5,7 +5,7 @@ import { shiftVoicing } from "../components/Utils"
 import { useNavigate, useParams } from "react-router-dom"
 import { apiRequest, fetchBpm } from "../components/Utils"
 import { useAuth } from "../components/Context"
-
+import playChord, { playChordAtTime } from "../components/ChordPlayer"
 import "./RhythmGuitar.css"
 
 const rootFretMap = {
@@ -205,6 +205,22 @@ function RhythmGuitar() {
     setStrumPattern(selectedTrack.strum_pattern)
   }
 
+  function buildBeats (chordSlots, strumPattern) {
+    const beats = []
+    
+    for (const slot of chordSlots) {
+      const shape = findShape(slot.chordType, slot.shapeId)
+      const rootFret = rootFretMap[slot.root] ?? 0 // if null or undefined give 0 (open)
+      const voicing = shiftVoicing(shape.voicing, rootFret)
+      
+      for (let step = 0; step < strummingSteps; step++) {
+        const strumType = strumTypes[step] || "rest"
+        beats.push({voicing, strumType})
+      }
+    }
+    return beats
+  }
+
   useEffect(() => {
     fetchGuitarTracks(id)
     const loadBPM = async() => {
@@ -258,7 +274,16 @@ function RhythmGuitar() {
               className={`rhythm-guitar-chord ${activeSlotId === slot.id ? "active" : ""}`}
             >
               <div className="rhythm-guitar-chord-header">
-                <button className="rhythm-guitar-chord-about">?</button>
+                <button 
+                  className="rhythm-guitar-chord-about"
+                  onClick={() => {
+                    const shape = findShape(slot.chordType, slot.shapeId)
+                    if (!shape) return
+                    const rootFret = rootFretMap[slot.root] ?? 0
+                    const voicing = shiftVoicing(shape.voicing, rootFret)
+                    playChord(voicing)
+                  }}
+                >▶</button>
                 <button
                   className={`rhythm-guitar-chord-lock ${slot.locked ? "locked" : ""}`}
                   onClick={() => toggleSlotLock(slot.id)}

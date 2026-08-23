@@ -1,7 +1,7 @@
 import { StringsStandard, Notes, fretPos, startX } from "./Constants.jsx";
-import * as Tone from "tone";
 import { useState } from "react";
 import { getOctave } from "./Utils.jsx";
+import { polysynth } from "./ChordPlayer.jsx";
 
 const FretboardNotes = ({ stringIndex, fretNumber, expectedFret, mode = "highlight" }) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -24,13 +24,12 @@ const FretboardNotes = ({ stringIndex, fretNumber, expectedFret, mode = "highlig
     (fretPos[fretNumber] - fretPos[fretNumber - 1]) / 2;
   const fretYPos = 70 + stringIndex * 30;
 
-  const synth = new Tone.PolySynth(Tone.Synth).toDestination();
   let noteOctave = getOctave(stringIndex, fretNumber);
 
   return (
     <g
       onClick={() => {
-        synth.triggerAttackRelease(noteName + noteOctave, "8n");
+        polysynth.triggerAttackRelease(noteName + noteOctave, "8n");
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
