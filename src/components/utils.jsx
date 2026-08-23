@@ -38,36 +38,36 @@ export function getNoteNumber(noteLetter) {
 }
 
 export function getNoteName(chromaticNum, key, sharpOrFlat) {
-  const keyNumber = getNoteNumber(key);
-  if (keyNumber === -1) return null;
+  const keyNumber = getNoteNumber(key)
+  if (keyNumber === -1) return null
 
   const actualIndex = ((chromaticNum + keyNumber) % 12 + 12) % 12;
-  return Notes[actualIndex][sharpOrFlat];
+  return Notes[actualIndex][sharpOrFlat]
 }
 
 
 export async function apiRequest(path, body, token, method = "POST") {
-  const headers = { "Content-Type": "application/json" };
+  const headers = { "Content-Type": "application/json" }
 
   if (token) {
-    headers.Authorization = `Bearer ${token}`;
+    headers.Authorization = `Bearer ${token}`
   }
 
   const options = {
     method,
     headers,
-  };
+  }
 
   if (body) {
-    options.body = JSON.stringify(body);
+    options.body = JSON.stringify(body)
   }
 
-  const response = await fetch(`${API_URL}${path}`, options);
-  const data = await response.json();
+  const response = await fetch(`${API_URL}${path}`, options)
+  const data = await response.json()
 
   if (!response.ok) {
-    throw new Error(data.message || "Something went wrong");
+    throw new Error(data.message || "Something went wrong")
   }
 
-  return data;
+  return data
 }

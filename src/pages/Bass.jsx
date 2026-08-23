@@ -101,12 +101,12 @@ function Bass() {
     }
 
     useEffect(() => {
-            fetchBassTracks(id)
-            const loadBPM = async() => {
-                const bpmValue = await fetchBpm(id, token)
-                setBPM(bpmValue)
-            }
-            loadBPM()
+        fetchBassTracks(id)
+        const loadBPM = async() => {
+            const bpmValue = await fetchBpm(id, token)
+            setBPM(bpmValue)
+        }
+        loadBPM()
         }, [token, id])
 
     useEffect(() => {

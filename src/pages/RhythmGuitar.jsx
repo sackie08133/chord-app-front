@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react"
+import React, { useMemo, useState, useEffect } from "react"
 import Fretboard from "../components/Fretboard"
 import { chordShapes, chordProgressions } from "../components/ChordShapes"
 import { shiftVoicing } from "../components/Utils"
@@ -84,6 +84,8 @@ function RhythmGuitar() {
   const [strumPattern, setStrumPattern] = useState({})
   const allShapeOptions = useMemo(() => getAllShapeOptions(), [])
   const {id} = useParams()
+  const [bpm, setBPM] = useState(null)
+  const [tracks, setTracks] = useState([])
 
   const [chordSlots, setChordSlots] = useState(() => [
     createSlot(allShapeOptions, { chordType: "maj7" }),
@@ -113,12 +115,9 @@ function RhythmGuitar() {
 
   const cycleStrum = (colIndex) => {
     const current = strumPattern[colIndex] || 'rest' // default to rest
-    console.log('BEFORE:', current, 'strumPattern:', strumPattern)
     const currentIndex = strumTypes.indexOf(current)
-    console.log('currentIndex:', currentIndex, 'strumTypes:', strumTypes)
     const nextIndex = (currentIndex + 1) % strumTypes.length
     const next = strumTypes[nextIndex]
-    console.log('AFTER, setting to:', next)
 
     setStrumPattern(prev => ( {
       ...prev,
@@ -189,12 +188,49 @@ function RhythmGuitar() {
     }
   }
 
+  const fetchGuitarTracks = async(songId) => {
+    try {
+      const data = await apiRequest(`/rhythm-guitar/${id}`, null, token, "GET")
+      setTracks(data)
+    } catch(error) {
+      alert(error.message)
+    }
+  }
+
+  const loadTrack = (trackId) => {
+    const selectedTrack = tracks.find(t => t.id === Number(trackId))
+    if (!selectedTrack) return 
+
+    setChordSlots(selectedTrack.chord_slots)
+    setStrumPattern(selectedTrack.strum_pattern)
+  }
+
+  useEffect(() => {
+    fetchGuitarTracks(id)
+    const loadBPM = async() => {
+      const bpmValue = await fetchBpm(id, token)
+      setBPM(bpmValue)
+    }
+    loadBPM()
+    }, [token, id])
+
   return (
     <div className="Rhythm-Guitar">
       <div className="rhythm-guitar-header">
         <button className="rhythm-guitar-back" onClick={() => navigate(-1)}>Back</button>
         <button className="rhythm-guitar-save" onClick = {handleSave}>Save</button>
-        <button className="rhythm-guitar-about">About</button>
+        <select 
+          className="rhythm-guitar-tracks"
+          onChange={(e) => loadTrack(e.target.value)}
+        > No Tracks
+          {tracks.map((track) => {
+                    return (
+                        <option className="track-options" key={track.id} value={track.id}>
+                            {track.name}
+                        </option>
+                    )
+          })}
+        </select>
 
       </div>
 
