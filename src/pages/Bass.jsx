@@ -30,7 +30,7 @@ function Bass() {
         }))
     }
 
-    const fetchBassTracks = async(songId) => {
+    export const fetchBassTracks = async(songId) => {
         try {
             const data = await apiRequest(`/guitar-tracks/${id}`, null, token, "GET")   
             setTracks(data)

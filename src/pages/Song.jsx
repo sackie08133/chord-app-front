@@ -59,7 +59,8 @@ function Song() {
                 >
           Edit Song
         </button>
-        <button className="song-left-container-button" id="automation">
+        <button className="song-left-container-button" id="automation"
+                onClick = {() => navigate(`/song/${id}/automation`)}>
           Automation
         </button>
         
@@ -76,7 +77,7 @@ function Song() {
             onClick={() => navigate(`/song/${id}/drum`)}
             style={{ cursor: "pointer" }}
           >
-            Drums{" "}
+             Drums{" "}
           </h2>
           {/* future buttons/faders/sliders go here, as siblings to the h2 */}
         </div>
@@ -85,7 +86,7 @@ function Song() {
             onClick={() => navigate(`/song/${id}/bass`)}
             style={{ cursor: "pointer" }}
           >
-            Bass Guitar
+             Bass Guitar
           </h2>
           {/* future buttons/faders/sliders go here, as siblings to the h2 */}
         </div>
@@ -95,7 +96,7 @@ function Song() {
             style={{ cursor: "pointer" }}
           >
             {" "}
-            Rhythm Guitar{" "}
+             Rhythm Guitar{" "}
           </h2>
           {/* future buttons/faders/sliders go here, as siblings to the h2 */}
         </div>
@@ -105,7 +106,7 @@ function Song() {
             style={{ cursor: "pointer" }}
           >
             {" "}
-            Lead Guitar{" "}
+             Lead Guitar{" "}
           </h2>
           {/* future buttons/faders/sliders go here, as siblings to the h2 */}
         </div>

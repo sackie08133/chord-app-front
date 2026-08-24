@@ -45,7 +45,7 @@ function Drum() {
         }
     }
 
-    const fetchDrumTracks = async(songId) => {
+    export const fetchDrumTracks = async(songId) => {
         try {
             const data = await apiRequest(`/drum-tracks/${id}`, null, token, "GET")   
             setTracks(data)
