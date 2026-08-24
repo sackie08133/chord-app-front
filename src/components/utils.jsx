@@ -45,7 +45,7 @@ export function getNoteName(chromaticNum, key, sharpOrFlat) {
   return Notes[actualIndex][sharpOrFlat]
 }
 
-let isRedirecting = false
+
 export async function apiRequest(path, body, token, method = "POST") {
   const headers = { "Content-Type": "application/json" }
 
@@ -65,12 +65,8 @@ export async function apiRequest(path, body, token, method = "POST") {
 
   const response = await fetch(`${API_URL}${path}`, options);
 
-  if ((response.status === 401 || response.status === 403) && token) {
-    if (!isRedirecting) {
-      isRedirecting = true
-      window.location.href = "/"
-    }
-    return
+  if (response.status === 401 || response.status === 403) {
+    throw new Error("Authentication required")
   }
 
   const data = await response.json()
@@ -80,4 +76,27 @@ export async function apiRequest(path, body, token, method = "POST") {
   }
 
   return data;
+}
+
+
+
+export async function fetchDrumTracksFor(songId, token) {
+    return await apiRequest(`/drum-tracks/${songId}`, null, token, "GET")
+}
+
+export async function fetchGuitarTracksFor(songId, token) {
+    // returns ALL guitar-family tracks (bass + lead + rhythm), unfiltered
+    return await apiRequest(`/guitar-tracks/${songId}`, null, token, "GET")
+}
+
+export async function fetchRhythmTracksFor(songId, token) {
+    return await apiRequest(`/rhythm-guitar/${songId}`, null, token, "GET")
+}
+
+export async function fetchDrumHitsFor(trackId, token) {
+    return await apiRequest(`/drum-tracks/${trackId}/hits`, null, token, "GET")
+}
+
+export async function fetchGuitarNotesFor(trackId, token) {
+    return await apiRequest(`/guitar-tracks/${trackId}/notes`, null, token, "GET")
 }
