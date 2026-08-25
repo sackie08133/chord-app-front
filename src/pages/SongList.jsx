@@ -19,25 +19,25 @@ function SongList() {
 
   const fetchSongs = async () => {
     try {
-      const data = await apiRequest("/songs", null, token, "GET");
-      setSongs(data);
+      const data = await apiRequest("/songs", null, token, "GET")
+      setSongs(data)
     } catch (error) {
-      console.error(error.message);
+      console.error(error.message)
     }
   }
   
   const handleDeleteSong = async (songId) => {
     try {
       await apiRequest("/delete", { id: songId }, token);
-      fetchSongs();
+      fetchSongs()
     } catch (error) {
-      alert(error.message);
+      alert(error.message)
     }
   };
 
   useEffect(() => {
-    fetchSongs();
-  }, [token]);
+    fetchSongs()
+  }, [token])
 
   return (
     <div className="song-list">

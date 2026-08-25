@@ -645,3 +645,33 @@ button {
 .automation-hud::-webkit-scrollbar-thumb:hover {
   background: var(--automation-blue-dark);
 }
+
+.automation-track-card {
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.automation-track-card-selected {
+  background: #cceef9;
+  border-color: var(--automation-blue-dark);
+}
+
+.automation-track-card-selected:hover {
+  background: #c5eaf7;
+}
+
+.automation-channel-row {
+  cursor: pointer;
+}
+
+.automation-channel-row-selected {
+  background: #f4fbfe;
+}
+
+.automation-empty-tracks {
+  padding: 24px 10px;
+  text-align: center;
+  color: var(--automation-text-light);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}

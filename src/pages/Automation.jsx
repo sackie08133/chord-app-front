@@ -1,15 +1,31 @@
-import React, { useRef, useState, useEffect } from "react"
-import { useNavigate, useParams } from "react-router-dom";
+import React, { useRef, useState } from "react"
+
+import {
+  fetchDrumTracksFor,
+  fetchGuitarTracksFor,
+  fetchRhythmTracksFor,
+} from "../components/Utils"
+
+import { useAuth } from "../components/Context"
+import { useNavigate, useParams } from "react-router-dom"
+
 import "./Automation.css"
 
 export default function Automation() {
   const [sidebarWidth, setSidebarWidth] = useState(280)
   const resizing = useRef(false)
-  const {id} = useParams()
+
+  const [tracks, setTracks] = useState([])
+  const [selectedInstrument, setSelectedInstrument] = useState(null)
+  const [selectedTrack, setSelectedTrack] = useState(null)
+
+  const { token } = useAuth()
+  const { id } = useParams()
   const navigate = useNavigate()
 
   const startResize = (e) => {
     e.preventDefault()
+
     resizing.current = true
 
     const handleMouseMove = (event) => {
@@ -34,9 +50,40 @@ export default function Automation() {
     window.addEventListener("mouseup", stopResize)
   }
 
-  const handleDragStart = (e) => {
-    e.dataTransfer.setData("track", "example-track")
+  const handleDragStart = (e, track) => {
+    e.dataTransfer.setData("track", JSON.stringify(track))
     e.dataTransfer.effectAllowed = "move"
+  }
+
+  const handleInstrumentClick = async (instrument) => {
+    setSelectedInstrument(instrument)
+    // Clear the previously selected track
+    setSelectedTrack(null)
+
+    try {
+      let data = []
+      if (instrument === "drum") {
+        data = await fetchDrumTracksFor(id, token)
+      }
+      if (instrument === "rhythm") {
+        data = await fetchRhythmTracksFor(id, token)
+      }
+
+      if (instrument === "bass" || instrument === "guitar" || instrument === "lead") {
+        const guitarTracks = await fetchGuitarTracksFor(id, token)
+        data = guitarTracks.filter(
+            (track) => track.instrument === (instrument === "lead" ? "guitar" : instrument)
+        )
+      }
+      setTracks(data || [])
+    } catch (error) {
+      console.error(`Failed to load ${instrument} tracks:`, error)
+      setTracks([])
+    }
+  }
+
+  const handleTrackClick = (track) => {
+    setSelectedTrack(track.id)
   }
 
   return (
@@ -58,7 +105,7 @@ export default function Automation() {
               className="automation-button"
               id="automation-back-button"
               type="button"
-              onClick={()=> navigate(-1)}
+              onClick={() => navigate(-1)}
             >
               BACK
             </button>
@@ -76,6 +123,8 @@ export default function Automation() {
 
         <main className="automation-workspace">
 
+          {/* SIDEBAR */}
+
           <aside
             className="automation-track-sidebar"
             style={{ width: `${sidebarWidth}px` }}
@@ -88,7 +137,7 @@ export default function Automation() {
                 </span>
 
                 <span className="automation-section-count">
-                  01
+                  {String(tracks.length).padStart(2, "0")}
                 </span>
               </div>
 
@@ -102,45 +151,73 @@ export default function Automation() {
             </div>
 
             <div className="automation-sidebar-content">
-              <div
-                className="automation-track-card"
-                id="automation-track-example"
-                draggable
-                onDragStart={handleDragStart}
-              >
-                <div className="automation-track-card-grip">
-                  <span />
-                  <span />
-                  <span />
+
+              {tracks.length === 0 && (
+                <div className="automation-empty-tracks">
+                  SELECT AN INSTRUMENT
                 </div>
+              )}
 
-                <div className="automation-track-color" />
+              {tracks.map((track) => {
+                const isSelected = selectedTrack === track.id
 
-                <div className="automation-track-info">
-                  <span className="automation-track-name">
-                    Example Track
-                  </span>
+                return (
+                  <div
+                    key={track.id}
+                    className={`automation-track-card ${
+                      isSelected
+                        ? "automation-track-card-selected"
+                        : ""
+                    }`}
+                    draggable
+                    onClick={() => handleTrackClick(track)}
+                    onDragStart={(e) => handleDragStart(e, track)}
+                  >
 
-                  <span className="automation-track-meta">
-                    AUDIO · 01
-                  </span>
-                </div>
+                    <div className="automation-track-card-grip">
+                      <span />
+                      <span />
+                      <span />
+                    </div>
 
-                <div className="automation-track-waveform">
-                  <span />
-                  <span />
-                  <span />
-                  <span />
-                  <span />
-                  <span />
-                  <span />
-                  <span />
-                  <span />
-                  <span />
-                  <span />
-                  <span />
-                </div>
-              </div>
+                    <div className="automation-track-color" />
+
+                    <div className="automation-track-info">
+
+                      <span className="automation-track-name">
+                        {track.name || track.title || `Track ${track.id}`}
+                      </span>
+
+                      <span className="automation-track-meta">
+                        {selectedInstrument
+                          ? selectedInstrument.toUpperCase()
+                          : "TRACK"}
+                        {" · "}
+                        {String(track.id).padStart(2, "0")}
+                      </span>
+
+                    </div>
+
+                    <div className="automation-track-waveform">
+                      <span />
+                      <span />
+                      <span />
+                      <span />
+                      <span />
+                      <span />
+                      <span />
+                      <span />
+                      <span />
+                      <span />
+                      <span />
+                      <span />
+                      <span />
+                    </div>
+
+                  </div>
+                )
+              })}
+
             </div>
 
             <div className="automation-sidebar-footer">
@@ -165,6 +242,8 @@ export default function Automation() {
             </div>
 
           </aside>
+
+          {/* SEQUENCER */}
 
           <section className="automation-sequencer">
 
@@ -196,10 +275,18 @@ export default function Automation() {
             </div>
 
             <div className="automation-channels">
+
+              {/* DRUM */}
+
               <div
-                className="automation-channel-row"
+                className={`automation-channel-row ${
+                  selectedInstrument === "drum"
+                    ? "automation-channel-row-selected"
+                    : ""
+                }`}
                 id="automation-channel-drum"
                 data-channel="drum"
+                onClick={() => handleInstrumentClick("drum")}
               >
                 <div className="automation-channel-label">
                   <span className="automation-channel-number">
@@ -222,10 +309,17 @@ export default function Automation() {
                 </div>
               </div>
 
+              {/* BASS */}
+
               <div
-                className="automation-channel-row"
+                className={`automation-channel-row ${
+                  selectedInstrument === "bass"
+                    ? "automation-channel-row-selected"
+                    : ""
+                }`}
                 id="automation-channel-bass"
                 data-channel="bass"
+                onClick={() => handleInstrumentClick("bass")}
               >
                 <div className="automation-channel-label">
                   <span className="automation-channel-number">
@@ -248,10 +342,17 @@ export default function Automation() {
                 </div>
               </div>
 
+              {/* RHYTHM */}
+
               <div
-                className="automation-channel-row"
+                className={`automation-channel-row ${
+                  selectedInstrument === "rhythm"
+                    ? "automation-channel-row-selected"
+                    : ""
+                }`}
                 id="automation-channel-rhythm"
                 data-channel="rhythm"
+                onClick={() => handleInstrumentClick("rhythm")}
               >
                 <div className="automation-channel-label">
                   <span className="automation-channel-number">
@@ -274,10 +375,17 @@ export default function Automation() {
                 </div>
               </div>
 
+              {/* LEAD */}
+
               <div
-                className="automation-channel-row"
+                className={`automation-channel-row ${
+                  selectedInstrument === "lead"
+                    ? "automation-channel-row-selected"
+                    : ""
+                }`}
                 id="automation-channel-lead"
                 data-channel="lead"
+                onClick={() => handleInstrumentClick("lead")}
               >
                 <div className="automation-channel-label">
                   <span className="automation-channel-number">
@@ -303,6 +411,7 @@ export default function Automation() {
             </div>
 
           </section>
+
         </main>
 
       </div>

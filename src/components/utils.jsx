@@ -85,7 +85,6 @@ export async function fetchDrumTracksFor(songId, token) {
 }
 
 export async function fetchGuitarTracksFor(songId, token) {
-    // returns ALL guitar-family tracks (bass + lead + rhythm), unfiltered
     return await apiRequest(`/guitar-tracks/${songId}`, null, token, "GET")
 }
 
