@@ -89,7 +89,7 @@ export function buildBeats (chordSlots, strumPattern) {
       const voicing = shiftVoicing(shape.voicing, rootFret)
       
       for (let step = 0; step < strummingSteps; step++) {
-        const strumType = strumPattern[step] || "rest"   // ← bug here
+        const strumType = strumPattern[step] || "rest"   
         beats.push({voicing, strumType})
       }
     }
@@ -112,14 +112,11 @@ function RhythmGuitar() {
     createSlot(allShapeOptions, { chordType: "m7" }),
     createSlot(allShapeOptions, { chordType: "sus4" }),
   ])
-
   const [activeSlotId, setActiveSlotId] = useState(() => chordSlots[0]?.id ?? null)
-
   const activeSlot = useMemo(
     () => chordSlots.find((slot) => slot.id === activeSlotId) || null,
     [chordSlots, activeSlotId]
   )
-
   const activeShape = useMemo(() => {
     if (!activeSlot) return null;
     return findShape(activeSlot.chordType, activeSlot.shapeId)
@@ -233,16 +230,16 @@ function RhythmGuitar() {
     }, [token, id])
 
   useEffect(() => {
-          return () => {
-          if (seqRef.current) {
-              seqRef.current.stop()
-              seqRef.current.dispose()
-              seqRef.current = null
-          }
-          Tone.Transport.stop()
-          Tone.Transport.cancel()
-          }
-      }, [])
+    return () => {
+      if (seqRef.current) {
+        seqRef.current.stop()
+        seqRef.current.dispose()
+        seqRef.current = null
+        }
+      Tone.Transport.stop()
+      Tone.Transport.cancel()
+      }
+    }, [])
 
   return (
     <div className="Rhythm-Guitar">

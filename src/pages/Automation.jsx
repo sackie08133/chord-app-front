@@ -1,15 +1,21 @@
 import React, { useEffect, useRef, useState } from "react";
-
 import {
   fetchDrumTracksFor,
   fetchGuitarTracksFor,
   fetchRhythmTracksFor,
+  fetchBpm,
+  fetchDrumHitsFor,
+  fetchGuitarNotesFor,
+  apiRequest,
 } from "../components/Utils";
-
+import {
+  playDrumTrack,
+  playGuitarTrack,
+  playRhythmTrack,
+} from "../components/Playback";
 import { useAuth } from "../components/Context";
-import { apiRequest } from "../components/Utils";
 import { useNavigate, useParams } from "react-router-dom";
-
+import * as Tone from "tone";
 import "./Automation.css";
 
 export default function Automation() {
@@ -21,6 +27,8 @@ export default function Automation() {
   const [tracks, setTracks] = useState([]);
   const [selectedInstrument, setSelectedInstrument] = useState(null);
   const [selectedTrack, setSelectedTrack] = useState(null);
+  const [bpm, setBPM] = useState(null);
+  const seqsRef = useRef([]);
 
   const { token } = useAuth();
   const { id } = useParams();
@@ -30,18 +38,14 @@ export default function Automation() {
     e.preventDefault();
 
     resizing.current = true;
-
     const handleMouseMove = (event) => {
       if (!resizing.current) return;
-
       const newWidth = Math.min(Math.max(event.clientX, 200), 500);
-
       setSidebarWidth(newWidth);
     };
 
     const stopResize = () => {
       resizing.current = false;
-
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", stopResize);
     };
@@ -133,9 +137,117 @@ export default function Automation() {
     }
   };
 
+  const stopAllSequences = () => {
+    seqsRef.current.forEach((seq) => {
+      if (!seq) return;
+      try {
+        seq.stop();
+        seq.dispose();
+      } catch (error) {
+        console.warn("Failed to clean up sequence:", error);
+      }
+    });
+
+    seqsRef.current = [];
+    Tone.Transport.stop();
+    Tone.Transport.cancel();
+  };
+
+  async function fetchTrackData(channel, track) {
+    if (channel === "drum") return await fetchDrumHitsFor(track.id, token);
+    if (channel === "bass" || channel === "lead")
+      return await fetchGuitarNotesFor(track.id, token);
+    if (channel === "rhythm") return track; // rhythm tracks are already fully-loaded from the sidebar fetch
+    return null;
+  }
+
+  const handlePlayAll = async () => {
+    if (!bpm) {
+      console.error("BPM has not loaded yet.");
+      return;
+    }
+
+    if (Object.keys(placements).length === 0) {
+      console.warn("There are no tracks in the arrangement.");
+      return;
+    }
+    await Tone.start();
+
+    // Stop previous arrangement
+    stopAllSequences();
+    Tone.Transport.bpm.value = bpm;
+    const newSeqs = [];
+
+    // Loop through EVERY block in the arrangement
+    for (const [key, track] of Object.entries(placements)) {
+      if (!track) continue;
+
+      const [channel, col] = key.split("-");
+      const blockIndex = Number(col);
+
+      try {
+        const data = await fetchTrackData(channel, track);
+
+        if (!data) continue;
+
+        let seq = null;
+        const startTime = `${blockIndex}:0:0`;
+
+        if (channel === "drum") {
+          seq = playDrumTrack(data, bpm, startTime, false);
+        }
+        if (channel === "bass") {
+          seq = playGuitarTrack(data, bpm, startTime, false, "bass");
+        }
+        if (channel === "lead") {
+          seq = playGuitarTrack(data, bpm, startTime, false, "guitar");
+        }
+        if (channel === "rhythm") {
+          seq = playRhythmTrack(
+            data.chord_slots,
+            data.strum_pattern,
+            bpm,
+            startTime,
+            false,
+          );
+        }
+
+        if (seq) {
+          newSeqs.push(seq);
+        }
+      } catch (error) {
+        console.error(
+          `Failed to create ${channel} sequence at block ${blockIndex}:`,
+          error,
+        );
+      }
+    }
+    seqsRef.current = newSeqs;
+    Tone.Transport.start();
+  };
+
   useEffect(() => {
-    loadAutomation();
-  }, [token, id]);
+    return () => {
+      stopAllSequences();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!id || !token) return;
+
+    const loadData = async () => {
+      try {
+        await loadAutomation();
+
+        const bpmValue = await fetchBpm(id, token);
+        setBPM(bpmValue);
+      } catch (error) {
+        console.error("Failed to load automation data:", error);
+      }
+    };
+
+    loadData();
+  }, [id, token]);
 
   return (
     <div className="automation-hud">
@@ -146,10 +258,7 @@ export default function Automation() {
               className="automation-button"
               id="automation-save-button"
               type="button"
-              onClick={() => {
-                handleSave();
-                console.log("saved");
-              }}
+              onClick={handleSave}
             >
               SAVE
             </button>
@@ -167,6 +276,7 @@ export default function Automation() {
               className="automation-button automation-button-primary"
               id="automation-play-button"
               type="button"
+              onClick={handlePlayAll}
             >
               PLAY
             </button>
@@ -175,7 +285,6 @@ export default function Automation() {
 
         <main className="automation-workspace">
           {/* SIDEBAR */}
-
           <aside
             className="automation-track-sidebar"
             style={{ width: `${sidebarWidth}px` }}
@@ -281,7 +390,6 @@ export default function Automation() {
               </div>
             </div>
           </aside>
-
           {/* SEQUENCER */}
 
           <section className="automation-sequencer">
@@ -305,7 +413,6 @@ export default function Automation() {
 
             <div className="automation-channels">
               {/* DRUM */}
-
               <div
                 className={`automation-channel-row ${
                   selectedInstrument === "drum"
@@ -349,7 +456,6 @@ export default function Automation() {
               </div>
 
               {/* BASS */}
-
               <div
                 className={`automation-channel-row ${
                   selectedInstrument === "bass"
@@ -392,7 +498,6 @@ export default function Automation() {
               </div>
 
               {/* RHYTHM */}
-
               <div
                 className={`automation-channel-row ${
                   selectedInstrument === "rhythm"

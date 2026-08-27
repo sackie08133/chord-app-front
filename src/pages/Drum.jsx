@@ -14,7 +14,7 @@ function Drum() {
     const [tracks, setTracks] = useState([])
     const [bpm, setBPM] = useState(null)
     const {id} = useParams()
-    const steps = 16
+    const steps = 32
     const {token, setToken} = useAuth()
     const seqRef = useRef(null)
     
