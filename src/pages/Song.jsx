@@ -50,7 +50,6 @@ function Song() {
         >
           Back
         </button>
-        <button className="song-left-container-button save">Save</button>
         <button className="song-left-container-button" 
                 id="edit-song"
                 onClick={() => {

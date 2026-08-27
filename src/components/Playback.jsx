@@ -55,7 +55,7 @@ export function playGuitarTrack(notes, bpm, offset = 0, loop = false, instrument
             for (let oct = min; oct <= max; oct++) {
                 const key = `${row}-${col}-${oct}`
                 if (notesSequence[key]) {
-                    console.log('triggering', noteNamesSharps[row], oct, 'at time', time)
+                    
                     playNoteAtTime(noteNamesSharps[row], oct, undefined, time)
                 }
             }

@@ -1,3 +1,5 @@
+@import "variables.css";
+
 * {
   margin: 0;
   padding: 0;
@@ -13,49 +15,63 @@ html, body {
   height: 100vh;
   overflow-y: auto;
   overflow-x: hidden;
+  background: var(--app-bg);
 }
 
 .song-list-header {
   display: flex;
   align-items: center;
   justify-content: left;
-  padding: 0 0 0 3%;
+  padding: 0 3%;
   width: 100%;
-  height:20%;
-  background-color: blue;
-  opacity: 30%;
-  height: 3%;
+  height: 62px;
+  background-color: var(--app-bg);
+  border-bottom: 1px solid var(--app-border);
 }
 
 .song-list-login-signup {
-  display:flex;
+  display: flex;
   justify-items: center;
-  color: black;
-  opacity:100%;
-  height:80%;
+  align-items: center;
+  color: var(--app-text);
+  height: 36px;
+  padding: 0 18px;
+  border: 1px solid var(--app-blue);
+  border-radius: 3px;
+  background: var(--app-blue-light);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  cursor: pointer;
+}
+
+.song-list-login-signup:hover {
+  background: var(--app-blue);
 }
 
 .song-list-delete-song-button {
-	background-color:#7892c2;
-	border-radius:10%;
-	border:1px solid #4e6096;
-	display:inline-block;
-	cursor:pointer;
-	color:#ffffff;
-	text-decoration:none;
-	text-shadow:0px 1px 0px #283966;
+  background-color: var(--app-danger);
+  border-radius: 4px;
+  border: 1px solid #c15f5f;
+  display: inline-block;
+  cursor: pointer;
+  color: #ffffff;
+  padding: 6px 12px;
   margin: 0 0 1% 0;
 }
+
 .song-list-delete-song-button:hover {
-	background-color:#476e9e;
+  background-color: #c15f5f;
 }
+
 .song-list-delete-song-button:active {
-	position:relative;
-	top:1px;
+  position: relative;
+  top: 1px;
 }
 
 .song-list-song-object {
-  background-color: gray;
+  background-color: var(--app-blue-lighter);
+  border-bottom: 1px solid var(--app-border-light);
   display: flex;
   flex-direction: row;
   height: 20vh;
@@ -67,12 +83,14 @@ html, body {
 h1 {
   margin-bottom: 8px;
   line-height: 1.4;
+  color: var(--app-text);
 }
 
 h2 {
   margin-top: 0;
   line-height: 1.4;
   overflow: visible;
+  color: var(--app-text-light);
 }
 
 #song-list-song-description-left {
@@ -80,7 +98,7 @@ h2 {
   flex-direction: column;
   align-self: flex-start;
   max-width: 100%;
-  max-height:100%
+  max-height: 100%;
 }
 
 .song-list-fab {
@@ -90,7 +108,7 @@ h2 {
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background-color: #2563eb;
+  background-color: var(--app-active);
   color: white;
   font-size: 28px;
   border: none;
@@ -98,6 +116,6 @@ h2 {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   z-index: 100;
 }

@@ -1,8 +1,11 @@
+@import "variables.css";
+
 .bass-page {
   display: flex;
   flex-direction: column;
   width: 100vw;
   height: 100vh;
+  background: var(--app-bg);
 }
 
 .bass-header {
@@ -13,6 +16,25 @@
   justify-content: space-between;
   padding: 0 2%;
   box-sizing: border-box;
+  border-bottom: 1px solid var(--app-border);
+}
+
+.bass-header button {
+  height: 36px;
+  padding: 0 18px;
+  border: 1px solid var(--app-blue);
+  border-radius: 3px;
+  background: var(--app-blue-light);
+  color: var(--app-text);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  cursor: pointer;
+}
+
+.bass-header button:hover {
+  background: var(--app-blue);
+  border-color: var(--app-blue-dark);
 }
 
 .bass-piano-roll {
@@ -27,6 +49,7 @@
   height: 100%;
   display: flex;
   flex-direction: column;
+  background: var(--app-blue-lighter);
 }
 
 .bass-note-names div {
@@ -35,6 +58,7 @@
   align-items: center;
   justify-content: center;
   font-size: 0.9rem;
+  color: var(--app-text);
 }
 
 .bass-grid-container {
@@ -46,21 +70,21 @@
 }
 
 .bass-grid-cell {
-  border: 1px solid #ddd;
+  border: 1px solid var(--app-grid);
   cursor: pointer;
   box-sizing: border-box;
-  background-color: white;
+  background-color: var(--app-bg);
   transition: background-color 0.1s ease;
 }
 
 .bass-grid-cell:hover {
-  background-color: #93c5fd;
+  background-color: var(--app-blue-light);
 }
 
 .bass-grid-cell.active {
-  background-color: #1e3a8a;
+  background-color: var(--app-active);
 }
 
 .bass-grid-cell.active:hover {
-  background-color: #1e40af;
+  background-color: var(--app-active-hover);
 }

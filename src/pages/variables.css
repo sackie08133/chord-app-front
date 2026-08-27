@@ -1,0 +1,24 @@
+:root {
+  --app-bg: #ffffff;
+
+  --app-blue: #a9ddf5;
+  --app-blue-light: #d9f3ff;
+  --app-blue-lighter: #edfaff;
+
+  --app-blue-dark: #75bddb;
+  --app-blue-darker: #4e91b1;
+
+  --app-text: #42758c;
+  --app-text-light: #79a8bb;
+
+  --app-border: #c4e8f5;
+  --app-border-light: #e2f4fa;
+
+  --app-grid: #e8f4f8;
+
+  --app-active: #4e91b1;
+  --app-active-hover: #3d7893;
+
+  --app-danger: #e07a7a;
+}
+

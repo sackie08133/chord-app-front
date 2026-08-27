@@ -1,17 +1,44 @@
+@import "variables.css";
+
+body {
+  overflow-x: hidden;
+}
+
 .Rhythm-Guitar {
   height: 100vh;
   width: 100vw;
   text-align: center;
+  background: var(--app-bg);
+  color: var(--app-text);
 }
 
 .rhythm-guitar-header {
-  height: 5vh;
+  height: 6vh;
   width: 100vw;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
   gap: 8px;
+  border-bottom: 1px solid var(--app-border);
+}
+
+.rhythm-guitar-header button {
+  height: 36px;
+  padding: 0 18px;
+  border: 1px solid var(--app-blue);
+  border-radius: 3px;
+  background: var(--app-blue-light);
+  color: var(--app-text);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  cursor: pointer;
+}
+
+.rhythm-guitar-header button:hover {
+  background: var(--app-blue);
+  border-color: var(--app-blue-dark);
 }
 
 .rhythm-guitar-fretboard {
@@ -24,7 +51,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #888;
+  color: var(--app-text-light);
 }
 
 .rhythm-guitar-chord-list {
@@ -40,7 +67,7 @@
 .rhythm-guitar-chord {
   width: 25vw;
   min-width: 220px;
-  outline: 3px solid black;
+  border: 1px solid var(--app-border);
   border-radius: 6px;
   margin: 4px;
   padding: 6px;
@@ -48,11 +75,12 @@
   flex-direction: column;
   justify-content: space-between;
   box-sizing: border-box;
+  background: var(--app-blue-lighter);
 }
 
 .rhythm-guitar-chord.active {
-  outline-color: #2d7dff;
-  background-color: rgba(45, 125, 255, 0.08);
+  border-color: var(--app-blue-dark);
+  background-color: var(--app-blue-light);
 }
 
 .rhythm-guitar-chord-header {
@@ -65,10 +93,16 @@
 .rhythm-guitar-chord-header button {
   flex: 1;
   font-size: 0.75rem;
+  border: 1px solid var(--app-blue);
+  border-radius: 3px;
+  background: var(--app-blue-light);
+  color: var(--app-text);
+  cursor: pointer;
 }
 
 .rhythm-guitar-chord-lock.locked {
-  background-color: #ffd54f;
+  background-color: var(--app-blue-dark);
+  color: white;
 }
 
 .rhythm-guitar-chord-controls {
@@ -82,6 +116,9 @@
   flex: 1;
   min-width: 0;
   font-size: 0.75rem;
+  border: 1px solid var(--app-border);
+  border-radius: 3px;
+  color: var(--app-text);
 }
 
 .rhythm-guitar-chord-controls select:disabled {
@@ -89,8 +126,9 @@
 }
 
 .rhythm-guitar-chord-name {
-  font-weight: 600;
+  font-weight: 700;
   margin-bottom: 6px;
+  color: var(--app-text);
 }
 
 .rhythm-guitar-chord-faders {
@@ -106,6 +144,7 @@
   align-items: center;
   font-size: 0.7rem;
   flex: 1;
+  color: var(--app-text-light);
 }
 
 .rhythm-guitar-fader input[type="range"] {
@@ -117,14 +156,28 @@
   min-width: 100px;
   margin: 4px;
   align-self: center;
+  border: 1px solid var(--app-blue);
+  border-radius: 3px;
+  background: var(--app-blue-light);
+  color: var(--app-text);
+  cursor: pointer;
+  padding: 8px;
 }
 
 .rhythm-guitar-footer {
-  height: 10vh;
+  height: 12vh;
   width: 100vw;
   display: flex;
   flex-direction: column;
   align-items: center;
+  border-top: 1px solid var(--app-border);
+}
+
+.rhythm-guitar-footer h3 {
+  color: var(--app-text);
+  font-size: 12px;
+  letter-spacing: 2px;
+  margin: 10px 0;
 }
 
 .rhythm-guitar-footer > div {
@@ -151,28 +204,25 @@
   color: white;
   user-select: none;
   transition: background-color 0.1s ease, transform 0.05s ease;
+  border: 1px solid var(--app-border);
 }
 
-.strum:hover {
-  background-color: #4a4a4a;
+.strum-rest {
+  background-color: var(--app-blue-lighter);
+}
+
+.strum-down {
+  background-color: var(--app-blue-dark);
+}
+
+.strum-up {
+  background-color: var(--app-active);
+}
+
+.strum-muted {
+  background-color: var(--app-danger);
 }
 
 .strum:active {
   transform: scale(0.92);
-}
-
-.strum-rest {
-  background-color: #3a3a3a;
-}
-
-.strum-down {
-  background-color: #2563eb;
-}
-
-.strum-up {
-  background-color: #16a34a;
-}
-
-.strum-muted {
-  background-color: #dc2626;
 }

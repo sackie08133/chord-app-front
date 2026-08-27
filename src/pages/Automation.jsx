@@ -515,7 +515,7 @@ export default function Automation() {
                 </div>
 
                 <div className="automation-drop-zone-row">
-                  {Array.from({ length: 16 }).map((_, blockIndex) => {
+                  {Array.from({ length: 4 }).map((_, blockIndex) => {
                     const key = `rhythm-${blockIndex}`;
                     const placedTrack = placements[key];
                     return (

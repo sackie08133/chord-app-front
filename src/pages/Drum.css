@@ -1,18 +1,20 @@
+@import "variables.css";
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-html, body {
-  overflow-x: hidden;
+.body {
+  overflow-x: scroll;
 }
 
 .drum-page {
   width: 100vw;
   min-height: 100vh;
-  background-color: #f8f5f5;
-  color: white;
+  background-color: var(--app-bg);
+  color: var(--app-text);
   display: flex;
   flex-direction: column;
 }
@@ -20,27 +22,36 @@ html, body {
 .drum-header {
   display: flex;
   align-items: center;
+  gap: 8px;
   padding: 16px 24px;
-  background-color: #fcfafa;
+  background-color: var(--app-bg);
+  border-bottom: 1px solid var(--app-border);
 }
 
-#drum-back-button, 
+#drum-back-button,
 #drum-save-button,
-#drum-play-all-button, 
-#drum-loop-button, 
+#drum-play-all-button,
+#drum-loop-button,
 #drum-show-tracks-button,
 #drum-delete-tracks-button {
-  background-color: #2563eb;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 8px 16px;
-  font-size: 14px;
+  height: 36px;
+  padding: 0 18px;
+  border: 1px solid var(--app-blue);
+  border-radius: 3px;
+  background: var(--app-blue-light);
+  color: var(--app-text);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
   cursor: pointer;
 }
 
-.drum-back-button:hover {
-  background-color: #1d4ed8;
+#drum-back-button:hover,
+#drum-save-button:hover,
+#drum-play-all-button:hover,
+#drum-loop-button:hover {
+  background: var(--app-blue);
+  border-color: var(--app-blue-dark);
 }
 
 .drum-sequencer {
@@ -48,25 +59,28 @@ html, body {
   flex-direction: column;
   gap: 24px;
   padding: 40px 24px;
+  overflow-y: auto;
 }
 
 .drum-type {
   display: grid;
   width: 100%;
   grid-template-columns: repeat(16, 1fr);
-  gap: 3px;
-  padding: 3%;
-  background-color: #c0baba;
+  gap: 4px;
+  padding: 14px;
+  background-color: var(--app-blue-lighter);
+  border: 1px solid var(--app-border);
   border-radius: 8px;
 }
 
 .drum-type::before {
   grid-column: span 16;
-  font-size: 12px;
+  font-size: 10px;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 1px;
-  color: #888;
-  margin-bottom: 4px;
+  letter-spacing: 2px;
+  color: var(--app-text-light);
+  margin-bottom: 6px;
 }
 
 #kick::before {
@@ -83,14 +97,15 @@ html, body {
 
 .drum-shot {
   aspect-ratio: 1 / 1;
-  background-color: #3a3a3a;
-  border-radius: 2px;
+  background-color: var(--app-bg);
+  border: 1px solid var(--app-border);
+  border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.1s ease, transform 0.05s ease;
 }
 
 .drum-shot:hover {
-  background-color: #2ca7c0;
+  background-color: var(--app-blue-light);
 }
 
 .drum-shot:active {
@@ -98,14 +113,14 @@ html, body {
 }
 
 .drum-shot.active {
-  background-color: #115eda;
+  background-color: var(--app-active);
+  border-color: var(--app-active-hover);
 }
 
 .drum-shot.active:hover {
-  background-color: #173ce3;
+  background-color: var(--app-active-hover);
 }
 
-/* visually separate every 4th step, like a real sequencer grouping beats */
 .drum-shot:nth-child(4n + 1):not(:first-child) {
-  border-left: 3px solid #c0baba;
+  border-left: 3px solid var(--app-border-light);
 }
