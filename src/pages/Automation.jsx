@@ -18,38 +18,35 @@ import { useNavigate, useParams } from "react-router-dom";
 import * as Tone from "tone";
 import "./Automation.css";
 
+const BLOCK_LENGTH_BARS = 2 
+
 export default function Automation() {
   const [sidebarWidth, setSidebarWidth] = useState(280);
   const resizing = useRef(false);
   const [placements, setPlacements] = useState({});
-  // e.g. { "drum-0": {id: 5, name: "Verse Beat"}, "bass-3": {id: 12, name: "Bassline A"} }
 
   const [tracks, setTracks] = useState([]);
   const [selectedInstrument, setSelectedInstrument] = useState(null);
   const [selectedTrack, setSelectedTrack] = useState(null);
   const [bpm, setBPM] = useState(null);
-  const seqsRef = useRef([]);
-
+  const seqsRef = useRef([]); 
   const { token } = useAuth();
   const { id } = useParams();
   const navigate = useNavigate();
 
   const startResize = (e) => {
     e.preventDefault();
-
     resizing.current = true;
     const handleMouseMove = (event) => {
       if (!resizing.current) return;
       const newWidth = Math.min(Math.max(event.clientX, 200), 500);
       setSidebarWidth(newWidth);
     };
-
     const stopResize = () => {
       resizing.current = false;
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", stopResize);
     };
-
     window.addEventListener("mousemove", handleMouseMove);
     window.addEventListener("mouseup", stopResize);
   };
@@ -61,7 +58,6 @@ export default function Automation() {
 
   const handleInstrumentClick = async (instrument) => {
     setSelectedInstrument(instrument);
-    // Clear the previously selected track
     setSelectedTrack(null);
 
     try {
@@ -72,7 +68,6 @@ export default function Automation() {
       if (instrument === "rhythm") {
         data = await fetchRhythmTracksFor(id, token);
       }
-
       if (
         instrument === "bass" ||
         instrument === "guitar" ||
@@ -125,7 +120,6 @@ export default function Automation() {
   const loadAutomation = async () => {
     try {
       const data = await apiRequest(`/automation/${id}`, null, token, "GET");
-
       const loadedPlacements = {};
       for (const row of data) {
         const key = `${row.track_type}-${row.col}`;
@@ -138,7 +132,7 @@ export default function Automation() {
   };
 
   const stopAllSequences = () => {
-    seqsRef.current.forEach((seq) => {
+    seqsRef.current.forEach(({ seq }) => {
       if (!seq) return;
       try {
         seq.stop();
@@ -150,15 +144,77 @@ export default function Automation() {
 
     seqsRef.current = [];
     Tone.Transport.stop();
-    Tone.Transport.cancel();
+    Tone.Transport.cancel(); 
   };
 
   async function fetchTrackData(channel, track) {
     if (channel === "drum") return await fetchDrumHitsFor(track.id, token);
     if (channel === "bass" || channel === "lead")
       return await fetchGuitarNotesFor(track.id, token);
-    if (channel === "rhythm") return track; // rhythm tracks are already fully-loaded from the sidebar fetch
+    if (channel === "rhythm") return track;
     return null;
+  }
+
+  
+  function buildRuns(channel) {
+    const runs = [];
+    let currentRun = null;
+
+    for (let block = 0; block < 16; block++) {
+      const key = `${channel}-${block}`;
+      const track = placements[key] || null;
+
+      if (track && currentRun && currentRun.track.id === track.id) {
+        currentRun.endBlock = block;
+      } else {
+        if (currentRun) runs.push(currentRun);
+        currentRun = track ? { track, startBlock: block, endBlock: block } : null;
+      }
+    }
+    if (currentRun) runs.push(currentRun);
+
+    return runs;
+  }
+
+  // Fetches one run's track data, starts it looping at the run's start time, auto end when track end
+  async function playRun(channel, run) {
+    const data = await fetchTrackData(channel, run.track);
+    if (!data) return null;
+
+    const startBar = run.startBlock * BLOCK_LENGTH_BARS;
+    const numBlocks = run.endBlock - run.startBlock + 1;
+    const endBar = startBar + numBlocks * BLOCK_LENGTH_BARS;
+
+    const startTime = `${startBar}:0:0`;
+    const stopTime = `${endBar}:0:0`;
+
+    let seq = null;
+    if (channel === "drum") seq = playDrumTrack(data, bpm, startTime, true);
+    if (channel === "bass")
+      seq = playGuitarTrack(data, bpm, startTime, true, "bass");
+    if (channel === "lead")
+      seq = playGuitarTrack(data, bpm, startTime, true, "guitar");
+    if (channel === "rhythm")
+      seq = playRhythmTrack(
+        data.chord_slots,
+        data.strum_pattern,
+        bpm,
+        startTime,
+        true,
+      );
+
+    if (!seq) return null;
+
+    const eventId = Tone.Transport.scheduleOnce(() => {
+      try {
+        seq.stop();
+        seq.dispose();
+      } catch (error) {
+        console.warn("Failed to auto-stop run:", error);
+      }
+    }, stopTime);
+
+    return { seq, eventId };
   }
 
   const handlePlayAll = async () => {
@@ -166,62 +222,31 @@ export default function Automation() {
       console.error("BPM has not loaded yet.");
       return;
     }
-
     if (Object.keys(placements).length === 0) {
       console.warn("There are no tracks in the arrangement.");
       return;
     }
-    await Tone.start();
 
-    // Stop previous arrangement
+    await Tone.start();
     stopAllSequences();
     Tone.Transport.bpm.value = bpm;
+
+    const channels = ["drum", "bass", "rhythm", "lead"];
     const newSeqs = [];
 
-    // Loop through EVERY block in the arrangement
-    for (const [key, track] of Object.entries(placements)) {
-      if (!track) continue;
+    for (const channel of channels) {
+      const runs = buildRuns(channel);
 
-      const [channel, col] = key.split("-");
-      const blockIndex = Number(col);
-
-      try {
-        const data = await fetchTrackData(channel, track);
-
-        if (!data) continue;
-
-        let seq = null;
-        const startTime = `${blockIndex}:0:0`;
-
-        if (channel === "drum") {
-          seq = playDrumTrack(data, bpm, startTime, false);
+      for (const run of runs) {
+        try {
+          const result = await playRun(channel, run);
+          if (result) newSeqs.push(result);
+        } catch (error) {
+          console.error(`Failed to schedule ${channel} run:`, error);
         }
-        if (channel === "bass") {
-          seq = playGuitarTrack(data, bpm, startTime, false, "bass");
-        }
-        if (channel === "lead") {
-          seq = playGuitarTrack(data, bpm, startTime, false, "guitar");
-        }
-        if (channel === "rhythm") {
-          seq = playRhythmTrack(
-            data.chord_slots,
-            data.strum_pattern,
-            bpm,
-            startTime,
-            false,
-          );
-        }
-
-        if (seq) {
-          newSeqs.push(seq);
-        }
-      } catch (error) {
-        console.error(
-          `Failed to create ${channel} sequence at block ${blockIndex}:`,
-          error,
-        );
       }
     }
+
     seqsRef.current = newSeqs;
     Tone.Transport.start();
   };
@@ -238,7 +263,6 @@ export default function Automation() {
     const loadData = async () => {
       try {
         await loadAutomation();
-
         const bpmValue = await fetchBpm(id, token);
         setBPM(bpmValue);
       } catch (error) {
@@ -280,11 +304,19 @@ export default function Automation() {
             >
               PLAY
             </button>
+
+            <button
+              className="automation-button"
+              id="automation-stop-button"
+              type="button"
+              onClick={stopAllSequences}
+            >
+              STOP
+            </button>
           </div>
         </header>
 
         <main className="automation-workspace">
-          {/* SIDEBAR */}
           <aside
             className="automation-track-sidebar"
             style={{ width: `${sidebarWidth}px` }}
@@ -292,7 +324,6 @@ export default function Automation() {
             <div className="automation-sidebar-header">
               <div>
                 <span className="automation-section-label">TRACKS</span>
-
                 <span className="automation-section-count">
                   {String(tracks.length).padStart(2, "0")}
                 </span>
@@ -316,7 +347,6 @@ export default function Automation() {
 
               {tracks.map((track) => {
                 const isSelected = selectedTrack === track.id;
-
                 return (
                   <div
                     key={track.id}
@@ -339,7 +369,6 @@ export default function Automation() {
                       <span className="automation-track-name">
                         {track.name || track.title || `Track ${track.id}`}
                       </span>
-
                       <span className="automation-track-meta">
                         {selectedInstrument
                           ? selectedInstrument.toUpperCase()
@@ -350,19 +379,9 @@ export default function Automation() {
                     </div>
 
                     <div className="automation-track-waveform">
-                      <span />
-                      <span />
-                      <span />
-                      <span />
-                      <span />
-                      <span />
-                      <span />
-                      <span />
-                      <span />
-                      <span />
-                      <span />
-                      <span />
-                      <span />
+                      <span /><span /><span /><span /><span />
+                      <span /><span /><span /><span /><span />
+                      <span /><span /><span />
                     </div>
                   </div>
                 );
@@ -382,7 +401,6 @@ export default function Automation() {
               aria-label="Resize track sidebar"
             >
               <div className="automation-resize-line" />
-
               <div className="automation-resize-grip">
                 <span />
                 <span />
@@ -390,12 +408,10 @@ export default function Automation() {
               </div>
             </div>
           </aside>
-          {/* SEQUENCER */}
 
           <section className="automation-sequencer">
             <div className="automation-sequencer-header">
               <span className="automation-section-label">ARRANGEMENT</span>
-
               <span className="automation-sequencer-subtitle">
                 DROP TRACKS INTO CHANNELS
               </span>
@@ -403,7 +419,6 @@ export default function Automation() {
 
             <div className="automation-timeline">
               <div className="automation-timeline-label">TIME</div>
-
               {Array.from({ length: 16 }).map((_, index) => (
                 <div className="automation-timeline-marker" key={index}>
                   {String(index + 1).padStart(2, "0")}
@@ -412,177 +427,54 @@ export default function Automation() {
             </div>
 
             <div className="automation-channels">
-              {/* DRUM */}
-              <div
-                className={`automation-channel-row ${
-                  selectedInstrument === "drum"
-                    ? "automation-channel-row-selected"
-                    : ""
-                }`}
-                id="automation-channel-drum"
-                data-channel="drum"
-                onClick={() => handleInstrumentClick("drum")}
-              >
-                <div className="automation-channel-label">
-                  <span className="automation-channel-number">01</span>
+              {["drum", "bass", "rhythm", "lead"].map((channel, i) => (
+                <div
+                  key={channel}
+                  className={`automation-channel-row ${
+                    selectedInstrument === channel
+                      ? "automation-channel-row-selected"
+                      : ""
+                  }`}
+                  id={`automation-channel-${channel}`}
+                  data-channel={channel}
+                  onClick={() => handleInstrumentClick(channel)}
+                >
+                  <div className="automation-channel-label">
+                    <span className="automation-channel-number">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <span className="automation-channel-name">
+                      {channel.toUpperCase()}
+                    </span>
+                  </div>
 
-                  <span className="automation-channel-name">DRUM</span>
+                  <div className="automation-drop-zone-row">
+                    {Array.from({ length: channel === "rhythm" ? 4 : 16 }).map(
+                      (_, blockIndex) => {
+                        const key = `${channel}-${blockIndex}`;
+                        const placedTrack = placements[key];
+                        return (
+                          <div
+                            key={blockIndex}
+                            className={`automation-block ${placedTrack ? "filled" : ""}`}
+                            onDragOver={(e) => e.preventDefault()}
+                            onDrop={(e) => {
+                              const trackString = e.dataTransfer.getData("track");
+                              const parsedTrack = JSON.parse(trackString);
+                              setPlacements((prev) => ({
+                                ...prev,
+                                [key]: parsedTrack,
+                              }));
+                            }}
+                          >
+                            {placedTrack?.name}
+                          </div>
+                        );
+                      },
+                    )}
+                  </div>
                 </div>
-
-                <div className="automation-drop-zone-row">
-                  {Array.from({ length: 16 }).map((_, blockIndex) => {
-                    const key = `drum-${blockIndex}`;
-                    const placedTrack = placements[key];
-                    return (
-                      <div
-                        key={blockIndex}
-                        className={`automation-block ${placedTrack ? "filled" : ""}`}
-                        onDragOver={(e) => e.preventDefault()}
-                        onDrop={(e) => {
-                          const trackName = e.dataTransfer.getData("track");
-                          const parsedTrack = JSON.parse(trackName);
-                          const key = `drum-${blockIndex}`;
-                          setPlacements((prev) => ({
-                            ...prev,
-                            [key]: parsedTrack,
-                          }));
-                        }}
-                      >
-                        {placedTrack?.name}
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* BASS */}
-              <div
-                className={`automation-channel-row ${
-                  selectedInstrument === "bass"
-                    ? "automation-channel-row-selected"
-                    : ""
-                }`}
-                id="automation-channel-bass"
-                data-channel="bass"
-                onClick={() => handleInstrumentClick("bass")}
-              >
-                <div className="automation-channel-label">
-                  <span className="automation-channel-number">02</span>
-
-                  <span className="automation-channel-name">BASS</span>
-                </div>
-                <div className="automation-drop-zone-row">
-                  {Array.from({ length: 16 }).map((_, blockIndex) => {
-                    const key = `bass-${blockIndex}`;
-                    const placedTrack = placements[key];
-                    return (
-                      <div
-                        key={blockIndex}
-                        className={`automation-block ${placedTrack ? "filled" : ""}`}
-                        onDragOver={(e) => e.preventDefault()}
-                        onDrop={(e) => {
-                          const trackName = e.dataTransfer.getData("track");
-                          const parsedTrack = JSON.parse(trackName);
-                          const key = `bass-${blockIndex}`;
-                          setPlacements((prev) => ({
-                            ...prev,
-                            [key]: parsedTrack,
-                          }));
-                        }}
-                      >
-                        {placedTrack?.name}
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* RHYTHM */}
-              <div
-                className={`automation-channel-row ${
-                  selectedInstrument === "rhythm"
-                    ? "automation-channel-row-selected"
-                    : ""
-                }`}
-                id="automation-channel-rhythm"
-                data-channel="rhythm"
-                onClick={() => handleInstrumentClick("rhythm")}
-              >
-                <div className="automation-channel-label">
-                  <span className="automation-channel-number">03</span>
-
-                  <span className="automation-channel-name">RHYTHM</span>
-                </div>
-
-                <div className="automation-drop-zone-row">
-                  {Array.from({ length: 4 }).map((_, blockIndex) => {
-                    const key = `rhythm-${blockIndex}`;
-                    const placedTrack = placements[key];
-                    return (
-                      <div
-                        key={blockIndex}
-                        className={`automation-block ${placedTrack ? "filled" : ""}`}
-                        onDragOver={(e) => e.preventDefault()}
-                        onDrop={(e) => {
-                          const trackName = e.dataTransfer.getData("track");
-                          const parsedTrack = JSON.parse(trackName);
-                          const key = `rhythm-${blockIndex}`;
-                          setPlacements((prev) => ({
-                            ...prev,
-                            [key]: parsedTrack,
-                          }));
-                        }}
-                      >
-                        {placedTrack?.name}
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* LEAD */}
-
-              <div
-                className={`automation-channel-row ${
-                  selectedInstrument === "lead"
-                    ? "automation-channel-row-selected"
-                    : ""
-                }`}
-                id="automation-channel-lead"
-                data-channel="lead"
-                onClick={() => handleInstrumentClick("lead")}
-              >
-                <div className="automation-channel-label">
-                  <span className="automation-channel-number">04</span>
-
-                  <span className="automation-channel-name">LEAD</span>
-                </div>
-
-                <div className="automation-drop-zone-row">
-                  {Array.from({ length: 16 }).map((_, blockIndex) => {
-                    const key = `lead-${blockIndex}`;
-                    const placedTrack = placements[key];
-                    return (
-                      <div
-                        key={blockIndex}
-                        className={`automation-block ${placedTrack ? "filled" : ""}`}
-                        onDragOver={(e) => e.preventDefault()}
-                        onDrop={(e) => {
-                          const trackName = e.dataTransfer.getData("track");
-                          const parsedTrack = JSON.parse(trackName);
-                          const key = `lead-${blockIndex}`;
-                          setPlacements((prev) => ({
-                            ...prev,
-                            [key]: parsedTrack,
-                          }));
-                        }}
-                      >
-                        {placedTrack?.name}
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
+              ))}
             </div>
           </section>
         </main>
