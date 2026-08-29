@@ -10,6 +10,7 @@ import "./RhythmGuitar.css";
 import * as Tone from "tone";
 import { playRhythmTrack } from "../components/Playback";
 
+const MAX_CHORD_SLOTS = 2;
 const rootFretMap = {
   C: 8,
   "C#/Db": 9,
@@ -29,6 +30,7 @@ const strummingSteps = 8;
 
 const chordTypeToFamily = {
   maj: "major",
+  min: "minor",
   maj7: "seventh",
   7: "seventh",
   m7: "seventh",
@@ -119,6 +121,7 @@ function RhythmGuitar() {
   const { token } = useAuth();
   const [strumPattern, setStrumPattern] = useState({});
   const allShapeOptions = useMemo(() => getAllShapeOptions(), []);
+  const [selectedTrackId, setSelectedTrackId] = useState(null);
   const { id } = useParams();
   const [bpm, setBPM] = useState(null);
   const [tracks, setTracks] = useState([]);
@@ -127,8 +130,6 @@ function RhythmGuitar() {
   const [chordSlots, setChordSlots] = useState(() => [
     createSlot(allShapeOptions, { chordType: "maj7" }),
     createSlot(allShapeOptions, { chordType: "7" }),
-    createSlot(allShapeOptions, { chordType: "m7" }),
-    createSlot(allShapeOptions, { chordType: "sus4" }),
   ]);
   const [activeSlotId, setActiveSlotId] = useState(
     () => chordSlots[0]?.id ?? null,
@@ -196,7 +197,10 @@ function RhythmGuitar() {
   }
 
   function addChordSlot() {
-    setChordSlots((prev) => [...prev, createSlot(allShapeOptions)]);
+    setChordSlots((prev) => {
+      if (prev.length >= MAX_CHORD_SLOTS) return prev;
+      return [...prev, createSlot(allShapeOptions)];
+    });
   }
 
   function removeChordSlot(slotId) {
@@ -206,6 +210,15 @@ function RhythmGuitar() {
       return next;
     });
   }
+
+  const fetchGuitarTracks = async (songId) => {
+    try {
+      const data = await apiRequest(`/rhythm-guitar/${id}`, null, token, "GET");
+      setTracks(data);
+    } catch (error) {
+      alert(error.message);
+    }
+  };
 
   const handleSave = async () => {
     const trackTitle = prompt("Drum Track Title?", "Track");
@@ -224,33 +237,26 @@ function RhythmGuitar() {
         },
         token,
       );
+      await fetchGuitarTracks(id);
     } catch (error) {
       alert(error.message);
     }
   };
 
   const handleDelete = async () => {
-    if (!id) {
-      return alert("Drum Track Id not found");
+    if (!selectedTrackId) {
+      return alert("No track selected to delete");
     }
 
     try {
-      const statement = await apiRequest(
+      await apiRequest(
         `/delete/rhythm-guitar`,
-        {
-          trackId: id,
-        },
+        { trackId: selectedTrackId },
         token,
       );
-    } catch (error) {
-      alert(error.message);
-    }
-  };
-
-  const fetchGuitarTracks = async (songId) => {
-    try {
-      const data = await apiRequest(`/rhythm-guitar/${id}`, null, token, "GET");
-      setTracks(data);
+      alert("Track deleted");
+      setSelectedTrackId(null);
+      fetchGuitarTracks(id); // refresh the dropdown so the deleted track disappears
     } catch (error) {
       alert(error.message);
     }
@@ -262,6 +268,7 @@ function RhythmGuitar() {
 
     setChordSlots(selectedTrack.chord_slots);
     setStrumPattern(selectedTrack.strum_pattern);
+    setSelectedTrackId(selectedTrack.id);
   };
 
   useEffect(() => {
@@ -354,6 +361,9 @@ function RhythmGuitar() {
             );
           })}
         </select>
+        <button className="rhythm-guitar-delete" onClick={handleDelete}>
+          Delete Currently Selected Track
+        </button>
       </div>
 
       <div className="rhythm-guitar-fretboard">
@@ -502,8 +512,14 @@ function RhythmGuitar() {
           );
         })}
 
-        <button className="rhythm-guitar-chord-add" onClick={addChordSlot}>
-          + Add chord
+        <button
+          className="rhythm-guitar-chord-add"
+          onClick={addChordSlot}
+          disabled={chordSlots.length >= MAX_CHORD_SLOTS}
+        >
+          {chordSlots.length >= MAX_CHORD_SLOTS
+            ? "Max Chords Reached"
+            : "+ Add chord"}
         </button>
       </div>
 

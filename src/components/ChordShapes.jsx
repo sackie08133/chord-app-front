@@ -11,6 +11,7 @@ export const chordShapes = {
           voicing: [0, 2, 2, 1, 0, 0],
           movable: true,
           barre: true,
+          open: true,
           recommendedMuteOpenShapeEquivalent: true
         },
         {
@@ -18,6 +19,80 @@ export const chordShapes = {
           rootString: 5,
           notes: [0, 4, 7],
           voicing: [null, 0, 2, 2, 2, 0],
+          movable: true,
+          barre: true,
+          open: true
+        },
+        {
+          id: "maj-5-root-c-open",
+          rootString: 5,
+          notes: [0, 4, 7],
+          voicing: [null, 3, 2, 0, 1, 0],
+          movable: false,
+          open: true
+        },
+        {
+          id: "maj-4-root-d-open",
+          rootString: 4,
+          notes: [0, 4, 7],
+          voicing: [null, null, 0, 2, 3, 2],
+          movable: false,
+          open: true
+        },
+        {
+          id: "maj-6-root-g-open",
+          rootString: 6,
+          notes: [0, 4, 7],
+          voicing: [3, 2, 0, 0, 0, 3],
+          movable: false,
+          open: true
+        }
+      ]
+    }
+  ],
+
+  minor: [
+    {
+      name: "min",
+      formula: [0, 3, 7],
+      shapes: [
+        {
+          id: "min-6-root-e-open",
+          rootString: 6,
+          notes: [0, 3, 7],
+          voicing: [0, 2, 2, 0, 0, 0],
+          movable: false,
+          open: true
+        },
+        {
+          id: "min-5-root-a-open",
+          rootString: 5,
+          notes: [0, 3, 7],
+          voicing: [null, 0, 2, 2, 1, 0],
+          movable: false,
+          open: true
+        },
+        {
+          id: "min-4-root-d-open",
+          rootString: 4,
+          notes: [0, 3, 7],
+          voicing: [null, null, 0, 2, 3, 1],
+          movable: false,
+          open: true
+        },
+        {
+          id: "min-6-root-barre",
+          rootString: 6,
+          notes: [0, 3, 7],
+          voicing: [0, 2, 2, 0, 0, 0],
+          movable: true,
+          barre: true
+        },
+        {
+          id: "min-5-root-barre",
+          rootString: 5,
+          notes: [0, 3, 7],
+          voicing: [null, 0, 2, 2, 1, 0],
           movable: true,
           barre: true
         }
@@ -257,7 +332,7 @@ export const chordShapes = {
       ]
     }
   ]
-}
+};
 
 
 export const chordProgressions = {

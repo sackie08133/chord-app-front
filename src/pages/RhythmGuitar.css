@@ -41,6 +41,35 @@ body {
   border-color: var(--app-blue-dark);
 }
 
+.rhythm-guitar-delete {
+  border-color: var(--app-danger) !important;
+  background: #fdeaea !important;
+  color: #b04545 !important;
+}
+
+.rhythm-guitar-delete:hover {
+  background: var(--app-danger) !important;
+  color: white !important;
+}
+
+.rhythm-guitar-tracks {
+  height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--app-blue);
+  border-radius: 3px;
+  background: var(--app-blue-light);
+  color: var(--app-text);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  cursor: pointer;
+}
+
+.rhythm-guitar-tracks:hover {
+  background: var(--app-blue);
+  border-color: var(--app-blue-dark);
+}
+
 .rhythm-guitar-fretboard {
   height: 50vh;
   width: 100vw;
@@ -59,7 +88,7 @@ body {
   width: 100vw;
   display: flex;
   flex-direction: row;
-  justify-items: center;
+  justify-content: center;
   align-items: stretch;
   overflow-x: auto;
 }
@@ -162,6 +191,11 @@ body {
   color: var(--app-text);
   cursor: pointer;
   padding: 8px;
+}
+
+.rhythm-guitar-chord-add:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 .rhythm-guitar-footer {

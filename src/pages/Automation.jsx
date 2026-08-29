@@ -18,7 +18,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import * as Tone from "tone";
 import "./Automation.css";
 
-const BLOCK_LENGTH_BARS = 2 
+const BLOCK_LENGTH_BARS = 2
 
 export default function Automation() {
   const [sidebarWidth, setSidebarWidth] = useState(280);
@@ -449,7 +449,7 @@ export default function Automation() {
                   </div>
 
                   <div className="automation-drop-zone-row">
-                    {Array.from({ length: channel === "rhythm" ? 4 : 16 }).map(
+                    {Array.from({ length: channel === "rhythm" ? 16 : 16 }).map(
                       (_, blockIndex) => {
                         const key = `${channel}-${blockIndex}`;
                         const placedTrack = placements[key];
