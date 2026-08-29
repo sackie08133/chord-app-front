@@ -12,6 +12,7 @@ function Drum() {
     const navigate = useNavigate()
     const [activeCells, setActiveCells] = useState({})
     const [tracks, setTracks] = useState([])
+    const [trackId, setTrackId] = useState(null)
     const [bpm, setBPM] = useState(null)
     const {id} = useParams()
     const steps = 32
@@ -44,6 +45,8 @@ function Drum() {
             alert(error.message)
         }
     }
+
+   
 
     const fetchDrumTracks = async(songId) => {
         try {

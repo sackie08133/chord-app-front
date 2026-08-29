@@ -1,36 +1,54 @@
-import React, { useMemo, useState, useEffect, useRef} from "react"
-import Fretboard from "../components/Fretboard"
-import { chordShapes, chordProgressions } from "../components/ChordShapes"
-import { shiftVoicing } from "../components/Utils"
-import { useNavigate, useParams } from "react-router-dom"
-import { apiRequest, fetchBpm } from "../components/Utils"
-import { useAuth } from "../components/Context"
-import playChord, { playChordAtTime } from "../components/ChordPlayer"
-import "./RhythmGuitar.css"
-import * as Tone from "tone"
-import { playRhythmTrack } from "../components/Playback"
+import React, { useMemo, useState, useEffect, useRef } from "react";
+import Fretboard from "../components/Fretboard";
+import { chordShapes, chordProgressions } from "../components/ChordShapes";
+import { shiftVoicing } from "../components/Utils";
+import { useNavigate, useParams } from "react-router-dom";
+import { apiRequest, fetchBpm } from "../components/Utils";
+import { useAuth } from "../components/Context";
+import playChord, { playChordAtTime } from "../components/ChordPlayer";
+import "./RhythmGuitar.css";
+import * as Tone from "tone";
+import { playRhythmTrack } from "../components/Playback";
 
 const rootFretMap = {
-  C: 8, "C#/Db": 9, D: 10, "D#/Eb": 11, E: 0, F: 1,
-  "F#/Gb": 2, G: 3, "G#/Ab": 4, A: 5, "A#/Bb": 6, B: 7,
-}
-const ROOT_OPTIONS = Object.keys(rootFretMap)
-const strummingSteps = 8
+  C: 8,
+  "C#/Db": 9,
+  D: 10,
+  "D#/Eb": 11,
+  E: 0,
+  F: 1,
+  "F#/Gb": 2,
+  G: 3,
+  "G#/Ab": 4,
+  A: 5,
+  "A#/Bb": 6,
+  B: 7,
+};
+const ROOT_OPTIONS = Object.keys(rootFretMap);
+const strummingSteps = 8;
 
 const chordTypeToFamily = {
-  maj: "major", maj7: "seventh", "7": "seventh", m7: "seventh",
-  mMaj7: "seventh", "6": "sixth", m6: "sixth", sus2: "suspended",
-  sus4: "suspended", "11": "extended", m11: "extended",
-}
+  maj: "major",
+  maj7: "seventh",
+  7: "seventh",
+  m7: "seventh",
+  mMaj7: "seventh",
+  6: "sixth",
+  m6: "sixth",
+  sus2: "suspended",
+  sus4: "suspended",
+  11: "extended",
+  m11: "extended",
+};
 const CHORD_TYPE_OPTIONS = Object.keys(chordTypeToFamily);
 
-const strumTypes =['rest', 'down', 'up', 'muted']
+const strumTypes = ["rest", "down", "up", "muted"];
 const strumSymbols = {
-    down: '↓',
-    up: '↑',
-    muted: '✕',
-    rest: ''
-}
+  down: "↓",
+  up: "↑",
+  muted: "✕",
+  rest: "",
+};
 
 function getAllShapeOptions() {
   const out = [];
@@ -42,30 +60,30 @@ function getAllShapeOptions() {
           chordType: chord.name,
           shapeId: shape.id,
           familyName: chordTypeToFamily[chord.name] || "",
-        })
+        });
       }
     }
   }
-  return out
+  return out;
 }
 
 function findShape(chordType, shapeId) {
-  const familyName = chordTypeToFamily[chordType]
-  if (!familyName || !chordShapes[familyName]) return null
-  const chord = chordShapes[familyName].find((item) => item.name === chordType)
-  if (!chord) return null
-  return chord.shapes.find((shape) => shape.id === shapeId) || null
+  const familyName = chordTypeToFamily[chordType];
+  if (!familyName || !chordShapes[familyName]) return null;
+  const chord = chordShapes[familyName].find((item) => item.name === chordType);
+  if (!chord) return null;
+  return chord.shapes.find((shape) => shape.id === shapeId) || null;
 }
 
 function firstShapeIdForType(allShapeOptions, chordType) {
-  const match = allShapeOptions.find((shape) => shape.chordType === chordType)
-  return match ? match.shapeId : null
+  const match = allShapeOptions.find((shape) => shape.chordType === chordType);
+  return match ? match.shapeId : null;
 }
 
-let slotIdCounter = 0
+let slotIdCounter = 0;
 function nextSlotId() {
-  slotIdCounter += 1
-  return `chord-slot-${slotIdCounter}`
+  slotIdCounter += 1;
+  return `chord-slot-${slotIdCounter}`;
 }
 
 function createSlot(allShapeOptions, { root = "C", chordType = "maj7" } = {}) {
@@ -74,226 +92,268 @@ function createSlot(allShapeOptions, { root = "C", chordType = "maj7" } = {}) {
     root,
     chordType,
     shapeId: firstShapeIdForType(allShapeOptions, chordType),
-    volume: 80,   // 0–100, map to dB/gain wherever this feeds Tone.js
-    panning: 0,   // -100 (full L) to 100 (full R)
+    volume: 80, // 0–100, map to dB/gain wherever this feeds Tone.js
+    panning: 0, // -100 (full L) to 100 (full R)
     locked: false,
   };
 }
 
-export function buildBeats (chordSlots, strumPattern) {
-    const beats = []
-    
-    for (const slot of chordSlots) {
-      const shape = findShape(slot.chordType, slot.shapeId)
-      const rootFret = rootFretMap[slot.root] ?? 0
-      const voicing = shiftVoicing(shape.voicing, rootFret)
-      
-      for (let step = 0; step < strummingSteps; step++) {
-        const strumType = strumPattern[step] || "rest"   
-        beats.push({voicing, strumType})
-      }
+export function buildBeats(chordSlots, strumPattern) {
+  const beats = [];
+
+  for (const slot of chordSlots) {
+    const shape = findShape(slot.chordType, slot.shapeId);
+    const rootFret = rootFretMap[slot.root] ?? 0;
+    const voicing = shiftVoicing(shape.voicing, rootFret);
+
+    for (let step = 0; step < strummingSteps; step++) {
+      const strumType = strumPattern[step] || "rest";
+      beats.push({ voicing, strumType });
     }
-    return beats
+  }
+  return beats;
 }
 
 function RhythmGuitar() {
-  const navigate = useNavigate()
-  const { token } = useAuth()
-  const [strumPattern, setStrumPattern] = useState({})
-  const allShapeOptions = useMemo(() => getAllShapeOptions(), [])
-  const {id} = useParams()
-  const [bpm, setBPM] = useState(null)
-  const [tracks, setTracks] = useState([])
-  const seqRef = useRef(null)
+  const navigate = useNavigate();
+  const { token } = useAuth();
+  const [strumPattern, setStrumPattern] = useState({});
+  const allShapeOptions = useMemo(() => getAllShapeOptions(), []);
+  const { id } = useParams();
+  const [bpm, setBPM] = useState(null);
+  const [tracks, setTracks] = useState([]);
+  const seqRef = useRef(null);
 
   const [chordSlots, setChordSlots] = useState(() => [
     createSlot(allShapeOptions, { chordType: "maj7" }),
     createSlot(allShapeOptions, { chordType: "7" }),
     createSlot(allShapeOptions, { chordType: "m7" }),
     createSlot(allShapeOptions, { chordType: "sus4" }),
-  ])
-  const [activeSlotId, setActiveSlotId] = useState(() => chordSlots[0]?.id ?? null)
+  ]);
+  const [activeSlotId, setActiveSlotId] = useState(
+    () => chordSlots[0]?.id ?? null,
+  );
   const activeSlot = useMemo(
     () => chordSlots.find((slot) => slot.id === activeSlotId) || null,
-    [chordSlots, activeSlotId]
-  )
+    [chordSlots, activeSlotId],
+  );
   const activeShape = useMemo(() => {
     if (!activeSlot) return null;
-    return findShape(activeSlot.chordType, activeSlot.shapeId)
-  }, [activeSlot])
+    return findShape(activeSlot.chordType, activeSlot.shapeId);
+  }, [activeSlot]);
 
   const shiftedVoicing = useMemo(() => {
     if (!activeShape || !activeSlot) return [];
-    const rootFret = rootFretMap[activeSlot.root] ?? 0
-    return shiftVoicing(activeShape.voicing, rootFret)
-  }, [activeShape, activeSlot])
+    const rootFret = rootFretMap[activeSlot.root] ?? 0;
+    return shiftVoicing(activeShape.voicing, rootFret);
+  }, [activeShape, activeSlot]);
 
   const cycleStrum = (colIndex) => {
-    const current = strumPattern[colIndex] || 'rest' // default to rest
-    const currentIndex = strumTypes.indexOf(current)
-    const nextIndex = (currentIndex + 1) % strumTypes.length
-    const next = strumTypes[nextIndex]
+    const current = strumPattern[colIndex] || "rest"; // default to rest
+    const currentIndex = strumTypes.indexOf(current);
+    const nextIndex = (currentIndex + 1) % strumTypes.length;
+    const next = strumTypes[nextIndex];
 
-    setStrumPattern(prev => ( {
+    setStrumPattern((prev) => ({
       ...prev,
-      [colIndex]: next
-    }))
-  }
+      [colIndex]: next,
+    }));
+  };
 
   function makeDivArray() {
     return Array.from({ length: strummingSteps }).map((_, colIndex) => {
-        const key = `${colIndex}`
-        const current = strumPattern[key] || 'rest'
-        return (
-            <div
-                className={`strum strum-${current}`}
-                key={key}
-                onClick={() => cycleStrum(key)}
-            >
-                {strumSymbols[current]}
-            </div>
-        )
-    })
+      const key = `${colIndex}`;
+      const current = strumPattern[key] || "rest";
+      return (
+        <div
+          className={`strum strum-${current}`}
+          key={key}
+          onClick={() => cycleStrum(key)}
+        >
+          {strumSymbols[current]}
+        </div>
+      );
+    });
   }
 
   function updateSlot(slotId, updates) {
     setChordSlots((prev) =>
-      prev.map((slot) => (slot.id === slotId ? { ...slot, ...updates } : slot))
-    )
+      prev.map((slot) => (slot.id === slotId ? { ...slot, ...updates } : slot)),
+    );
   }
 
   function handleSlotChordTypeChange(slotId, nextType) {
-    const nextShapeId = firstShapeIdForType(allShapeOptions, nextType)
-    updateSlot(slotId, { chordType: nextType, shapeId: nextShapeId })
+    const nextShapeId = firstShapeIdForType(allShapeOptions, nextType);
+    updateSlot(slotId, { chordType: nextType, shapeId: nextShapeId });
   }
 
   function toggleSlotLock(slotId) {
     setChordSlots((prev) =>
-      prev.map((slot) => (slot.id === slotId ? { ...slot, locked: !slot.locked } : slot))
-    )
+      prev.map((slot) =>
+        slot.id === slotId ? { ...slot, locked: !slot.locked } : slot,
+      ),
+    );
   }
 
   function addChordSlot() {
-    setChordSlots((prev) => [...prev, createSlot(allShapeOptions)])
+    setChordSlots((prev) => [...prev, createSlot(allShapeOptions)]);
   }
 
   function removeChordSlot(slotId) {
     setChordSlots((prev) => {
-      const next = prev.filter((slot) => slot.id !== slotId)
-      if (activeSlotId === slotId) setActiveSlotId(next[0]?.id ?? null)
+      const next = prev.filter((slot) => slot.id !== slotId);
+      if (activeSlotId === slotId) setActiveSlotId(next[0]?.id ?? null);
       return next;
-    })
+    });
   }
 
-  const handleSave = async() => {
-    const trackTitle = prompt("Drum Track Title?", "Track")
+  const handleSave = async () => {
+    const trackTitle = prompt("Drum Track Title?", "Track");
 
     if (!trackTitle || !id) {
-      return alert("Drum track title or track id was not found")
+      return alert("Drum track title or track id was not found");
     }
 
     try {
-      const data = await apiRequest(`/rhythm-guitar/${id}`, {
-          trackName: trackTitle, 
+      const data = await apiRequest(
+        `/rhythm-guitar/${id}`,
+        {
+          trackName: trackTitle,
           chordSlots: chordSlots,
-          strumPattern: strumPattern
-      }, token)
+          strumPattern: strumPattern,
+        },
+        token,
+      );
     } catch (error) {
-      alert(error.message)
+      alert(error.message);
     }
-  }
+  };
 
-  const fetchGuitarTracks = async(songId) => {
-    try {
-      const data = await apiRequest(`/rhythm-guitar/${id}`, null, token, "GET")
-      setTracks(data)
-    } catch(error) {
-      alert(error.message)
+  const handleDelete = async () => {
+    if (!id) {
+      return alert("Drum Track Id not found");
     }
-  }
+
+    try {
+      const statement = await apiRequest(
+        `/delete/rhythm-guitar`,
+        {
+          trackId: id,
+        },
+        token,
+      );
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
+  const fetchGuitarTracks = async (songId) => {
+    try {
+      const data = await apiRequest(`/rhythm-guitar/${id}`, null, token, "GET");
+      setTracks(data);
+    } catch (error) {
+      alert(error.message);
+    }
+  };
 
   const loadTrack = (trackId) => {
-    const selectedTrack = tracks.find(t => t.id === Number(trackId))
-    if (!selectedTrack) return 
+    const selectedTrack = tracks.find((t) => t.id === Number(trackId));
+    if (!selectedTrack) return;
 
-    setChordSlots(selectedTrack.chord_slots)
-    setStrumPattern(selectedTrack.strum_pattern)
-  }
+    setChordSlots(selectedTrack.chord_slots);
+    setStrumPattern(selectedTrack.strum_pattern);
+  };
 
   useEffect(() => {
-    fetchGuitarTracks(id)
-    const loadBPM = async() => {
-      const bpmValue = await fetchBpm(id, token)
-      setBPM(bpmValue)
-    }
-    loadBPM()
-    }, [token, id])
+    fetchGuitarTracks(id);
+    const loadBPM = async () => {
+      const bpmValue = await fetchBpm(id, token);
+      setBPM(bpmValue);
+    };
+    loadBPM();
+  }, [token, id]);
 
   useEffect(() => {
     return () => {
       if (seqRef.current) {
-        seqRef.current.stop()
-        seqRef.current.dispose()
-        seqRef.current = null
-        }
-      Tone.Transport.stop()
-      Tone.Transport.cancel()
+        seqRef.current.stop();
+        seqRef.current.dispose();
+        seqRef.current = null;
       }
-    }, [])
+      Tone.Transport.stop();
+      Tone.Transport.cancel();
+    };
+  }, []);
 
   return (
     <div className="Rhythm-Guitar">
       <div className="rhythm-guitar-header">
-        <button className="rhythm-guitar-back" onClick={() => navigate(-1)}>Back</button>
-        <button className="rhythm-guitar-save" onClick = {handleSave}>Save</button>
+        <button className="rhythm-guitar-back" onClick={() => navigate(-1)}>
+          Back
+        </button>
+        <button className="rhythm-guitar-save" onClick={handleSave}>
+          Save
+        </button>
         <button
           id="rhythm-play-all-button"
           disabled={!bpm}
           onClick={async () => {
             if (seqRef.current) {
-              seqRef.current.stop()
-              seqRef.current.dispose()
-              seqRef.current = null
-              Tone.Transport.stop()
+              seqRef.current.stop();
+              seqRef.current.dispose();
+              seqRef.current = null;
+              Tone.Transport.stop();
             }
-            
-           await Tone.start()
-           
-           const seq = playRhythmTrack(chordSlots, strumPattern, bpm, 0, false)
-           seqRef.current = seq
+
+            await Tone.start();
+
+            const seq = playRhythmTrack(
+              chordSlots,
+              strumPattern,
+              bpm,
+              0,
+              false,
+            );
+            seqRef.current = seq;
           }}
-        >Play All</button>
+        >
+          Play All
+        </button>
 
-      <button
-        id="rhythm-loop-button"
-        disabled={!bpm}
-        onClick={async () => {
+        <button
+          id="rhythm-loop-button"
+          disabled={!bpm}
+          onClick={async () => {
             if (seqRef.current) {
-              seqRef.current.stop()
-              seqRef.current.dispose()
-              seqRef.current = null
-              Tone.Transport.stop()
+              seqRef.current.stop();
+              seqRef.current.dispose();
+              seqRef.current = null;
+              Tone.Transport.stop();
             }
-            
-            await Tone.start()
-           
-            const seq = playRhythmTrack(chordSlots, strumPattern, bpm, 0, true)
-            seqRef.current = seq
-            }}
-      >{seqRef.current ? "Stop" : "Loop"}</button>
 
-      <select 
-        className="rhythm-guitar-tracks"
-        onChange={(e) => loadTrack(e.target.value)}
-      > No Tracks
-        {tracks.map((track) => {
-          return (
-            <option className="track-options" key={track.id} value={track.id}>
-              {track.name}
-            </option>
-          )
-        })}
-      </select>
+            await Tone.start();
+
+            const seq = playRhythmTrack(chordSlots, strumPattern, bpm, 0, true);
+            seqRef.current = seq;
+          }}
+        >
+          {seqRef.current ? "Stop" : "Loop"}
+        </button>
+
+        <select
+          className="rhythm-guitar-tracks"
+          onChange={(e) => loadTrack(e.target.value)}
+        >
+          {" "}
+          No Tracks
+          {tracks.map((track) => {
+            return (
+              <option className="track-options" key={track.id} value={track.id}>
+                {track.name}
+              </option>
+            );
+          })}
+        </select>
       </div>
 
       <div className="rhythm-guitar-fretboard">
@@ -312,7 +372,9 @@ function RhythmGuitar() {
 
       <div className="rhythm-guitar-chord-list">
         {chordSlots.map((slot) => {
-          const shapesForType = allShapeOptions.filter((s) => s.chordType === slot.chordType);
+          const shapesForType = allShapeOptions.filter(
+            (s) => s.chordType === slot.chordType,
+          );
 
           return (
             <div
@@ -320,23 +382,28 @@ function RhythmGuitar() {
               className={`rhythm-guitar-chord ${activeSlotId === slot.id ? "active" : ""}`}
             >
               <div className="rhythm-guitar-chord-header">
-                <button 
+                <button
                   className="rhythm-guitar-chord-about"
                   onClick={() => {
-                    const shape = findShape(slot.chordType, slot.shapeId)
-                    if (!shape) return
-                    const rootFret = rootFretMap[slot.root] ?? 0
-                    const voicing = shiftVoicing(shape.voicing, rootFret)
-                    playChord(voicing)
+                    const shape = findShape(slot.chordType, slot.shapeId);
+                    if (!shape) return;
+                    const rootFret = rootFretMap[slot.root] ?? 0;
+                    const voicing = shiftVoicing(shape.voicing, rootFret);
+                    playChord(voicing);
                   }}
-                >▶</button>
+                >
+                  ▶
+                </button>
                 <button
                   className={`rhythm-guitar-chord-lock ${slot.locked ? "locked" : ""}`}
                   onClick={() => toggleSlotLock(slot.id)}
                 >
                   {slot.locked ? "Locked" : "Lock"}
                 </button>
-                <button className="rhythm-guitar-chord-select" onClick={() => setActiveSlotId(slot.id)}>
+                <button
+                  className="rhythm-guitar-chord-select"
+                  onClick={() => setActiveSlotId(slot.id)}
+                >
                   Select
                 </button>
                 <button
@@ -352,31 +419,49 @@ function RhythmGuitar() {
                 <select
                   value={slot.root}
                   disabled={slot.locked}
-                  onChange={(e) => updateSlot(slot.id, { root: e.target.value })}
+                  onChange={(e) =>
+                    updateSlot(slot.id, { root: e.target.value })
+                  }
                 >
-                  {ROOT_OPTIONS.map((root) => <option key={root} value={root}>{root}</option>)}
+                  {ROOT_OPTIONS.map((root) => (
+                    <option key={root} value={root}>
+                      {root}
+                    </option>
+                  ))}
                 </select>
 
                 <select
                   value={slot.chordType}
                   disabled={slot.locked}
-                  onChange={(e) => handleSlotChordTypeChange(slot.id, e.target.value)}
+                  onChange={(e) =>
+                    handleSlotChordTypeChange(slot.id, e.target.value)
+                  }
                 >
-                  {CHORD_TYPE_OPTIONS.map((type) => <option key={type} value={type}>{type}</option>)}
+                  {CHORD_TYPE_OPTIONS.map((type) => (
+                    <option key={type} value={type}>
+                      {type}
+                    </option>
+                  ))}
                 </select>
 
                 <select
                   value={slot.shapeId ?? ""}
                   disabled={slot.locked}
-                  onChange={(e) => updateSlot(slot.id, { shapeId: e.target.value })}
+                  onChange={(e) =>
+                    updateSlot(slot.id, { shapeId: e.target.value })
+                  }
                 >
                   {shapesForType.map((shape) => (
-                    <option key={shape.shapeId} value={shape.shapeId}>{shape.shapeId}</option>
+                    <option key={shape.shapeId} value={shape.shapeId}>
+                      {shape.shapeId}
+                    </option>
                   ))}
                 </select>
               </div>
 
-              <div className="rhythm-guitar-chord-name">{slot.root} {slot.chordType}</div>
+              <div className="rhythm-guitar-chord-name">
+                {slot.root} {slot.chordType}
+              </div>
 
               <div className="rhythm-guitar-chord-faders">
                 <label className="rhythm-guitar-fader">
@@ -386,7 +471,9 @@ function RhythmGuitar() {
                     min={0}
                     max={100}
                     value={slot.volume}
-                    onChange={(e) => updateSlot(slot.id, { volume: Number(e.target.value) })}
+                    onChange={(e) =>
+                      updateSlot(slot.id, { volume: Number(e.target.value) })
+                    }
                   />
                   <span>{slot.volume}</span>
                 </label>
@@ -398,28 +485,34 @@ function RhythmGuitar() {
                     min={-100}
                     max={100}
                     value={slot.panning}
-                    onChange={(e) => updateSlot(slot.id, { panning: Number(e.target.value) })}
+                    onChange={(e) =>
+                      updateSlot(slot.id, { panning: Number(e.target.value) })
+                    }
                   />
                   <span>
-                    {slot.panning === 0 ? "C" : slot.panning < 0 ? `L${Math.abs(slot.panning)}` : `R${slot.panning}`}
+                    {slot.panning === 0
+                      ? "C"
+                      : slot.panning < 0
+                        ? `L${Math.abs(slot.panning)}`
+                        : `R${slot.panning}`}
                   </span>
                 </label>
               </div>
             </div>
-          )
+          );
         })}
 
-        <button className="rhythm-guitar-chord-add" onClick={addChordSlot}>+ Add chord</button>
+        <button className="rhythm-guitar-chord-add" onClick={addChordSlot}>
+          + Add chord
+        </button>
       </div>
 
       <div className="rhythm-guitar-footer">
         <h3>Strumming Pattern</h3>
-        <div className="rhythm-guitar-strum-row">
-          {makeDivArray()}
-        </div>
+        <div className="rhythm-guitar-strum-row">{makeDivArray()}</div>
       </div>
     </div>
-  )
+  );
 }
 
-export default RhythmGuitar
+export default RhythmGuitar;

@@ -37,7 +37,7 @@ function SongList() {
 
   useEffect(() => {
     fetchSongs()
-  }, [token])
+  }, [token, songs])
 
   return (
     <div className="song-list">

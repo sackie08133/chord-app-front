@@ -13,35 +13,35 @@ import "./Song.css";
 import EditSong from "../components/EditSong";
 
 function Song() {
-  const navigate = useNavigate()
-  const { id } = useParams()
-  const [song, setSong] = useState(null)
-  const { token } = useAuth()
-  const [showEdit, setShowEdit] = useState(false)
+  const navigate = useNavigate();
+  const { id } = useParams();
+  const [song, setSong] = useState(null);
+  const { token } = useAuth();
+  const [showEdit, setShowEdit] = useState(false);
 
   const fetchSong = async () => {
     try {
-      const data = await apiRequest(`/songs/${id}`, null, token, "GET")
-      setSong(data)
+      const data = await apiRequest(`/songs/${id}`, null, token, "GET");
+      setSong(data);
     } catch (error) {
-      alert(error.message)
+      alert(error.message);
     }
   };
 
   useEffect(() => {
-    fetchSong()
-  }, [token, id])
+    fetchSong();
+  }, [token, id]);
 
   return (
     <div className="song">
       {showEdit && (
         <EditSong
           onClose={() => setShowEdit(false)}
-          songId = {id}
+          songId={id}
           onSongEdited={fetchSong()}
         />
       )}
-      
+
       <div className="song-left-container">
         <h1> {song?.title} </h1>
         <button
@@ -50,19 +50,23 @@ function Song() {
         >
           Back
         </button>
-        <button className="song-left-container-button" 
-                id="edit-song"
-                onClick={() => {
-                      setShowEdit(true)
-                  }}
-                >
+        <button
+          className="song-left-container-button"
+          id="edit-song"
+          onClick={() => {
+            setShowEdit(true);
+          }}
+        >
           Edit Song
         </button>
-        <button className="song-left-container-button" id="automation"
-                onClick = {() => navigate(`/song/${id}/automation`)}>
+        <button
+          className="song-left-container-button"
+          id="automation"
+          onClick={() => navigate(`/song/${id}/automation`)}
+        >
           Automation
         </button>
-        
+
         <button className="song-left-container-button play">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
             <path d="M8 5v14l11-7z" />
@@ -76,18 +80,16 @@ function Song() {
             onClick={() => navigate(`/song/${id}/drum`)}
             style={{ cursor: "pointer" }}
           >
-             Drums{" "}
+            Drums{" "}
           </h2>
-          {/* future buttons/faders/sliders go here, as siblings to the h2 */}
         </div>
         <div id="song-bass-container">
           <h2
             onClick={() => navigate(`/song/${id}/bass`)}
             style={{ cursor: "pointer" }}
           >
-             Bass Guitar
+            Bass Guitar
           </h2>
-          {/* future buttons/faders/sliders go here, as siblings to the h2 */}
         </div>
         <div id="song-rhythm-guitar-container">
           <h2
@@ -95,9 +97,8 @@ function Song() {
             style={{ cursor: "pointer" }}
           >
             {" "}
-             Rhythm Guitar{" "}
+            Rhythm Guitar{" "}
           </h2>
-          {/* future buttons/faders/sliders go here, as siblings to the h2 */}
         </div>
         <div id="song-lead-guitar-container">
           <h2
@@ -105,9 +106,8 @@ function Song() {
             style={{ cursor: "pointer" }}
           >
             {" "}
-             Lead Guitar{" "}
+            Lead Guitar{" "}
           </h2>
-          {/* future buttons/faders/sliders go here, as siblings to the h2 */}
         </div>
       </div>
     </div>
