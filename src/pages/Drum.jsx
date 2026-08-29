@@ -27,6 +27,15 @@ function Drum() {
         }))
     }
 
+    const fetchDrumTracks = async(songId) => {
+        try {
+            const data = await apiRequest(`/drum-tracks/${id}`, null, token, "GET")   
+            setTracks(data)
+        } catch (error) {
+            alert(error.message)
+        }
+    }
+
     const handleSave = async() => {
         const trackTitle = prompt("Drum Track Title?", "Track")
         const drumHitArray = makeDrumHitArray()
@@ -41,21 +50,13 @@ function Drum() {
                 track_name: trackTitle,
                 drum_hits: drumHitArray
             }, token)
+
+            await fetchDrumTracks(id);
         } catch (error) {
             alert(error.message)
         }
     }
 
-   
-
-    const fetchDrumTracks = async(songId) => {
-        try {
-            const data = await apiRequest(`/drum-tracks/${id}`, null, token, "GET")   
-            setTracks(data)
-        } catch (error) {
-            alert(error.message)
-        }
-    }
 
     const fetchDrumHits = async (trackId) => {
         try {
@@ -200,18 +201,6 @@ function Drum() {
                             {track.name}
                         </option>
                     )
-                    })}
-                </select>
-
-                <select
-                    id="drum-delete-tracks-button"
-                >
-                    {tracks.map((track) => {
-                    return (
-                        <option className="track-options" key={track.id} value={track.id}>
-                            {track.name}
-                        </option>
-                    );
                     })}
                 </select>
             </div>

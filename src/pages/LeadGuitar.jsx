@@ -79,6 +79,8 @@ function LeadGuitar() {
         },
         token,
       );
+      await fetchLeadTracks(id);
+      
     } catch (error) {
       alert(error.message);
     }

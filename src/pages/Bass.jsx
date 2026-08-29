@@ -80,6 +80,8 @@ function Bass() {
         },
         token,
       );
+
+      await fetchBassTracks(id);
     } catch (error) {
       alert(error.message);
     }
