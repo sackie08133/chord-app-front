@@ -3,7 +3,7 @@ import { playNoteAtTime, playChordAtTime } from "./ChordPlayer";
 import { drumTypeNames, drumSynthTypes, noteNamesSharps, instrumentRanges } from "./Constants";
 import { buildBeats } from "../pages/RhythmGuitar";
 
-const stepsDrums = 16
+const stepsDrums = 32
 const stepsGuitar = 32
 
 export function playDrumTrack(hits, bpm, offset = 0, loop = false) {

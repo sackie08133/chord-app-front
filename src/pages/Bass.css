@@ -88,3 +88,11 @@
 .bass-grid-cell.active:hover {
   background-color: var(--app-active-hover);
 }
+
+.bass-grid-cell:nth-child(4n + 1) {
+  background-color: var(--app-grid-fourth);
+}
+
+.bass-grid-cell.active:nth-child(4n + 1) {
+  background-color: var(--app-active);
+}

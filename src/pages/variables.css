@@ -15,9 +15,11 @@
   --app-border-light: #e2f4fa;
 
   --app-grid: #e8f4f8;
+  --app-grid-fourth: #d4eaf3;
 
   --app-active: #4e91b1;
   --app-active-hover: #3d7893;
+  
 
   --app-danger: #e07a7a;
 }

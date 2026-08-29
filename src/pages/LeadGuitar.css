@@ -88,3 +88,12 @@
 .lead-grid-cell.active:hover {
   background-color: var(--app-active-hover);
 }
+
+.lead-grid-cell:nth-child(4n + 1) {
+  background-color: var(--app-grid-fourth);
+}
+
+.lead-grid-cell.active:nth-child(4n + 1) {
+  background-color: var(--app-active);
+}
+
