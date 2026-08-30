@@ -66,12 +66,6 @@ function Song() {
         >
           Automation
         </button>
-
-        <button className="song-left-container-button play">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
-            <path d="M8 5v14l11-7z" />
-          </svg>
-        </button>
       </div>
 
       <div className="song-right-container">

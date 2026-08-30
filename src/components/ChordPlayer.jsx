@@ -4,7 +4,7 @@ import { getOctave, shiftVoicing } from "./Utils";
 import * as Tone from "tone";
 import { getNoteName } from "./Utils";
 
-export const polysynth = new Tone.PolySynth(Tone.Synth, { maxPolyphony: 64 }).toDestination()
+export const polysynth = new Tone.PolySynth(Tone.Synth, { maxPolyphony: 256 }).toDestination()
 export const membraneSynth = new Tone.MembraneSynth({
   envelope: { attack: 0.01, decay: 0.01, sustain: 0, release: 0.1 }
 }).toDestination()

@@ -1,47 +1,23 @@
 import React, { useMemo, useState, useEffect, useRef } from "react";
 import Fretboard from "../components/Fretboard";
-import { chordShapes, chordProgressions } from "../components/ChordShapes";
+import { chordShapes } from "../components/ChordShapes";
 import { shiftVoicing } from "../components/Utils";
 import { useNavigate, useParams } from "react-router-dom";
 import { apiRequest, fetchBpm } from "../components/Utils";
 import { useAuth } from "../components/Context";
-import playChord, { playChordAtTime } from "../components/ChordPlayer";
+import playChord from "../components/ChordPlayer";
 import "./RhythmGuitar.css";
 import * as Tone from "tone";
-import { playRhythmTrack } from "../components/Playback";
+import {
+  playRhythmTrack,
+  findShape,
+  rootFretMap,
+  chordTypeToFamily,
+  strummingSteps,
+} from "../components/Playback";
 
 const MAX_CHORD_SLOTS = 2;
-const rootFretMap = {
-  C: 8,
-  "C#/Db": 9,
-  D: 10,
-  "D#/Eb": 11,
-  E: 0,
-  F: 1,
-  "F#/Gb": 2,
-  G: 3,
-  "G#/Ab": 4,
-  A: 5,
-  "A#/Bb": 6,
-  B: 7,
-};
 const ROOT_OPTIONS = Object.keys(rootFretMap);
-const strummingSteps = 8;
-
-const chordTypeToFamily = {
-  maj: "major",
-  min: "minor",
-  maj7: "seventh",
-  7: "seventh",
-  m7: "seventh",
-  mMaj7: "seventh",
-  6: "sixth",
-  m6: "sixth",
-  sus2: "suspended",
-  sus4: "suspended",
-  11: "extended",
-  m11: "extended",
-};
 const CHORD_TYPE_OPTIONS = Object.keys(chordTypeToFamily);
 
 const strumTypes = ["rest", "down", "up", "muted"];
@@ -69,14 +45,6 @@ function getAllShapeOptions() {
   return out;
 }
 
-function findShape(chordType, shapeId) {
-  const familyName = chordTypeToFamily[chordType];
-  if (!familyName || !chordShapes[familyName]) return null;
-  const chord = chordShapes[familyName].find((item) => item.name === chordType);
-  if (!chord) return null;
-  return chord.shapes.find((shape) => shape.id === shapeId) || null;
-}
-
 function firstShapeIdForType(allShapeOptions, chordType) {
   const match = allShapeOptions.find((shape) => shape.chordType === chordType);
   return match ? match.shapeId : null;
@@ -94,26 +62,10 @@ function createSlot(allShapeOptions, { root = "C", chordType = "maj7" } = {}) {
     root,
     chordType,
     shapeId: firstShapeIdForType(allShapeOptions, chordType),
-    volume: 80, // 0–100, map to dB/gain wherever this feeds Tone.js
-    panning: 0, // -100 (full L) to 100 (full R)
+    volume: 80,
+    panning: 0,
     locked: false,
   };
-}
-
-export function buildBeats(chordSlots, strumPattern) {
-  const beats = [];
-
-  for (const slot of chordSlots) {
-    const shape = findShape(slot.chordType, slot.shapeId);
-    const rootFret = rootFretMap[slot.root] ?? 0;
-    const voicing = shiftVoicing(shape.voicing, rootFret);
-
-    for (let step = 0; step < strummingSteps; step++) {
-      const strumType = strumPattern[step] || "rest";
-      beats.push({ voicing, strumType });
-    }
-  }
-  return beats;
 }
 
 function RhythmGuitar() {
@@ -150,7 +102,7 @@ function RhythmGuitar() {
   }, [activeShape, activeSlot]);
 
   const cycleStrum = (colIndex) => {
-    const current = strumPattern[colIndex] || "rest"; // default to rest
+    const current = strumPattern[colIndex] || "rest";
     const currentIndex = strumTypes.indexOf(current);
     const nextIndex = (currentIndex + 1) % strumTypes.length;
     const next = strumTypes[nextIndex];
@@ -221,10 +173,10 @@ function RhythmGuitar() {
   };
 
   const handleSave = async () => {
-    const trackTitle = prompt("Drum Track Title?", "Track");
+    const trackTitle = prompt("Rhythm Guitar Track Title?", "Track");
 
     if (!trackTitle || !id) {
-      return alert("Drum track title or track id was not found");
+      return alert("Rhythm guitar track title or track id was not found");
     }
 
     try {
@@ -256,7 +208,7 @@ function RhythmGuitar() {
       );
       alert("Track deleted");
       setSelectedTrackId(null);
-      fetchGuitarTracks(id); // refresh the dropdown so the deleted track disappears
+      fetchGuitarTracks(id);
     } catch (error) {
       alert(error.message);
     }
@@ -351,8 +303,7 @@ function RhythmGuitar() {
           className="rhythm-guitar-tracks"
           onChange={(e) => loadTrack(e.target.value)}
         >
-          {" "}
-          No Tracks
+          <option value="">No Tracks</option>
           {tracks.map((track) => {
             return (
               <option className="track-options" key={track.id} value={track.id}>

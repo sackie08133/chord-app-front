@@ -2,22 +2,35 @@ import { useState, useEffect, useRef } from "react";
 import { useAuth } from "../components/Context";
 import { useNavigate, useParams } from "react-router-dom";
 import "./LeadGuitar.css";
-import { noteNamesSharps, noteNamesFlats } from "../components/Constants";
 import { playNoteAtTime } from "../components/ChordPlayer";
 import { apiRequest, fetchBpm } from "../components/Utils";
 import { playGuitarTrack } from "../components/Playback";
 import * as Tone from "tone";
 
 const steps = 32;
+const MIN_OCTAVE = 2;
+const MAX_OCTAVE = 6;
+
+const chromaticFromC = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+
+function buildRowList() {
+  const rows = [];
+  for (let oct = MIN_OCTAVE; oct <= MAX_OCTAVE; oct++) {
+    chromaticFromC.forEach((note, rowIndex) => {
+      rows.push({ note, octave: oct, rowIndex });
+    });
+  }
+  return rows.reverse();
+}
+
+const rowList = buildRowList();
 
 function LeadGuitar() {
-  const [octave, setOctave] = useState(1);
   const navigate = useNavigate();
   const [bpm, setBPM] = useState(null);
   const [tracks, setTracks] = useState([]);
   const [trackId, setTrackId] = useState(null);
   const [activeCells, setActiveCells] = useState({});
-  const bIndex = noteNamesSharps.indexOf("B");
   const { id } = useParams();
   const { token, setToken } = useAuth();
   const seqRef = useRef(null);
@@ -50,7 +63,7 @@ function LeadGuitar() {
 
       const loadedCells = {};
       for (const note of data) {
-        const row = noteNamesSharps.indexOf(note.row);
+        const row = chromaticFromC.indexOf(note.row);
         const key = `${row}-${note.col}-${note.octave}`;
         loadedCells[key] = true;
       }
@@ -80,7 +93,6 @@ function LeadGuitar() {
         token,
       );
       await fetchLeadTracks(id);
-      
     } catch (error) {
       alert(error.message);
     }
@@ -107,7 +119,7 @@ function LeadGuitar() {
       .map((key) => {
         const [row, col, oct] = key.split("-");
         return {
-          row: noteNamesSharps[row],
+          row: chromaticFromC[row],
           col: Number(col),
           octave: Number(oct),
         };
@@ -193,32 +205,18 @@ function LeadGuitar() {
           {seqRef.current ? "Stop" : "Loop"}
         </button>
 
-        <div className="lead-fader-group">
-          <label>Volume</label>
-          <input type="range" min="0" max="100" />
-          <label>Pan</label>
-          <input type="range" min="-100" max="100" />
-        </div>
-        <button
-          className="lead-octave-button"
-          onClick={() => setOctave(octave - 1)}
-        >
-          Octave -
-        </button>
-        <button
-          className="lead-octave-button"
-          onClick={() => setOctave(octave + 1)}
-        >
-          Octave +
-        </button>
         <button className="lead-save-button" onClick={handleSave}>
           Save
         </button>
 
         <select
           id="lead-show-tracks-button"
-          onChange={(e) => fetchLeadNotes(e.target.value)}
+          onChange={(e) => {
+            fetchLeadNotes(e.target.value);
+            setTrackId(e.target.value);
+          }}
         >
+          <option value="">Select Track</option>
           {tracks.map((track) => {
             return (
               <option className="track-options" key={track.id} value={track.id}>
@@ -227,32 +225,35 @@ function LeadGuitar() {
             );
           })}
         </select>
+
+        <button className="rhythm-guitar-delete" onClick={handleDelete}>
+          Delete Currently Selected Track
+        </button>
       </div>
 
       <div className="lead-piano-roll">
         <div className="lead-note-names">
-          {noteNamesSharps.map((note, rowIndex) => (
-            <div key={note}>
+          {rowList.map(({ note, octave }, i) => (
+            <div key={i}>
               {note}
-              {rowIndex < bIndex ? octave + 1 : octave}
+              {octave}
             </div>
           ))}
         </div>
 
         <div className="lead-grid-container">
-          {noteNamesSharps.map((note, rowIndex) => {
-            const rowOctave = rowIndex < bIndex ? octave + 1 : octave;
-            return Array.from({ length: steps }).map((_, colIndex) => (
+          {rowList.map(({ note, octave, rowIndex }) =>
+            Array.from({ length: steps }).map((_, colIndex) => (
               <div
-                key={`${rowIndex}-${colIndex}-${rowOctave}`}
-                className={`lead-grid-cell ${activeCells[`${rowIndex}-${colIndex}-${rowOctave}`] ? "active" : ""}`}
+                key={`${rowIndex}-${colIndex}-${octave}`}
+                className={`lead-grid-cell ${activeCells[`${rowIndex}-${colIndex}-${octave}`] ? "active" : ""}`}
                 onClick={() => {
-                  toggleCell(rowIndex, colIndex, rowOctave);
-                  playNoteAtTime(note, rowOctave, "poly");
+                  toggleCell(rowIndex, colIndex, octave);
+                  playNoteAtTime(note, octave, "poly");
                 }}
               />
-            ));
-          })}
+            )),
+          )}
         </div>
       </div>
     </div>

@@ -18,7 +18,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import * as Tone from "tone";
 import "./Automation.css";
 
-const BLOCK_LENGTH_BARS = 2
+const BLOCK_LENGTH_BARS = 2;
 
 export default function Automation() {
   const [sidebarWidth, setSidebarWidth] = useState(280);
@@ -29,7 +29,7 @@ export default function Automation() {
   const [selectedInstrument, setSelectedInstrument] = useState(null);
   const [selectedTrack, setSelectedTrack] = useState(null);
   const [bpm, setBPM] = useState(null);
-  const seqsRef = useRef([]); 
+  const seqsRef = useRef([]);
   const { token } = useAuth();
   const { id } = useParams();
   const navigate = useNavigate();
@@ -144,18 +144,20 @@ export default function Automation() {
 
     seqsRef.current = [];
     Tone.Transport.stop();
-    Tone.Transport.cancel(); 
+    Tone.Transport.cancel();
   };
 
   async function fetchTrackData(channel, track) {
     if (channel === "drum") return await fetchDrumHitsFor(track.id, token);
     if (channel === "bass" || channel === "lead")
       return await fetchGuitarNotesFor(track.id, token);
-    if (channel === "rhythm") return track;
+    if (channel === "rhythm") {
+      const allRhythmTracks = await fetchRhythmTracksFor(id, token);
+      return allRhythmTracks.find((t) => t.id === track.id) || null;
+    }
     return null;
   }
 
-  
   function buildRuns(channel) {
     const runs = [];
     let currentRun = null;
@@ -168,7 +170,9 @@ export default function Automation() {
         currentRun.endBlock = block;
       } else {
         if (currentRun) runs.push(currentRun);
-        currentRun = track ? { track, startBlock: block, endBlock: block } : null;
+        currentRun = track
+          ? { track, startBlock: block, endBlock: block }
+          : null;
       }
     }
     if (currentRun) runs.push(currentRun);
@@ -379,9 +383,19 @@ export default function Automation() {
                     </div>
 
                     <div className="automation-track-waveform">
-                      <span /><span /><span /><span /><span />
-                      <span /><span /><span /><span /><span />
-                      <span /><span /><span />
+                      <span />
+                      <span />
+                      <span />
+                      <span />
+                      <span />
+                      <span />
+                      <span />
+                      <span />
+                      <span />
+                      <span />
+                      <span />
+                      <span />
+                      <span />
                     </div>
                   </div>
                 );
@@ -459,7 +473,8 @@ export default function Automation() {
                             className={`automation-block ${placedTrack ? "filled" : ""}`}
                             onDragOver={(e) => e.preventDefault()}
                             onDrop={(e) => {
-                              const trackString = e.dataTransfer.getData("track");
+                              const trackString =
+                                e.dataTransfer.getData("track");
                               const parsedTrack = JSON.parse(trackString);
                               setPlacements((prev) => ({
                                 ...prev,
