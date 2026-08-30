@@ -52,6 +52,7 @@ html, body {
 .song-list-delete-song-button {
   background-color: var(--app-danger);
   border-radius: 4px;
+  height: 20%;
   border: 1px solid #c15f5f;
   display: inline-block;
   cursor: pointer;
@@ -74,7 +75,7 @@ html, body {
   border-bottom: 1px solid var(--app-border-light);
   display: flex;
   flex-direction: row;
-  height: 20vh;
+  height: 25%;
   width: 100%;
   padding: 2% 3%;
   overflow: visible;

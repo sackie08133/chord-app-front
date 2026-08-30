@@ -234,7 +234,8 @@ function LeadGuitar() {
       <div className="lead-piano-roll">
         <div className="lead-note-names">
           {rowList.map(({ note, octave }, i) => (
-            <div key={i}>
+            <div 
+              key={i}>
               {note}
               {octave}
             </div>
