@@ -16,9 +16,18 @@ import {
 import { useAuth } from "../components/Context";
 import { useNavigate, useParams } from "react-router-dom";
 import * as Tone from "tone";
+import {
+  demoDrumTracks,
+  demoGuitarTracks,
+  demoRhythmTracks,
+  demoAutomation,
+  demoSongInfo,
+} from "../components/demoData";
 import "./Automation.css";
 
 const BLOCK_LENGTH_BARS = 2;
+const NUM_OF_ROWS = 4;
+const NUM_OF_BARS = 16;
 
 export default function Automation() {
   const [sidebarWidth, setSidebarWidth] = useState(280);
@@ -30,8 +39,10 @@ export default function Automation() {
   const [selectedTrack, setSelectedTrack] = useState(null);
   const [bpm, setBPM] = useState(null);
   const seqsRef = useRef([]);
+
   const { token } = useAuth();
   const { id } = useParams();
+  const isDemo = id === "demo";
   const navigate = useNavigate();
 
   const startResize = (e) => {
@@ -60,6 +71,28 @@ export default function Automation() {
     setSelectedInstrument(instrument);
     setSelectedTrack(null);
 
+    if (isDemo) {
+      let data = [];
+      if (instrument === "drum") {
+        data = demoDrumTracks.map((t) => ({ id: t.id, name: t.name }));
+      }
+      if (instrument === "rhythm") {
+        data = demoRhythmTracks.map((t) => ({ id: t.id, name: t.name }));
+      }
+      if (
+        instrument === "bass" ||
+        instrument === "guitar" ||
+        instrument === "lead"
+      ) {
+        const wanted = instrument === "lead" ? "guitar" : instrument;
+        data = demoGuitarTracks
+          .filter((t) => t.instrument === wanted)
+          .map((t) => ({ id: t.id, name: t.name }));
+      }
+      setTracks(data);
+      return;
+    }
+
     try {
       let data = [];
       if (instrument === "drum") {
@@ -68,6 +101,7 @@ export default function Automation() {
       if (instrument === "rhythm") {
         data = await fetchRhythmTracksFor(id, token);
       }
+
       if (
         instrument === "bass" ||
         instrument === "guitar" ||
@@ -92,6 +126,9 @@ export default function Automation() {
   };
 
   const handleSave = async () => {
+    if (isDemo) {
+      return alert("Demo songs can't be saved.");
+    }
     if (!id) {
       alert("Song not found");
       return;
@@ -118,6 +155,15 @@ export default function Automation() {
   };
 
   const loadAutomation = async () => {
+    if (isDemo) {
+      const loadedPlacements = {};
+      for (const row of demoAutomation) {
+        const key = `${row.track_type}-${row.col}`;
+        loadedPlacements[key] = { id: row.track_id, name: row.name };
+      }
+      setPlacements(loadedPlacements);
+      return;
+    }
     try {
       const data = await apiRequest(`/automation/${id}`, null, token, "GET");
       const loadedPlacements = {};
@@ -148,6 +194,20 @@ export default function Automation() {
   };
 
   async function fetchTrackData(channel, track) {
+    if (isDemo) {
+      if (channel === "drum") {
+        const t = demoDrumTracks.find((dt) => dt.id === track.id);
+        return t ? t.hits : null;
+      }
+      if (channel === "bass" || channel === "lead") {
+        const t = demoGuitarTracks.find((gt) => gt.id === track.id);
+        return t ? t.notes : null;
+      }
+      if (channel === "rhythm") {
+        return demoRhythmTracks.find((rt) => rt.id === track.id) || null;
+      }
+      return null;
+    }
     if (channel === "drum") return await fetchDrumHitsFor(track.id, token);
     if (channel === "bass" || channel === "lead")
       return await fetchGuitarNotesFor(track.id, token);
@@ -162,7 +222,7 @@ export default function Automation() {
     const runs = [];
     let currentRun = null;
 
-    for (let block = 0; block < 16; block++) {
+    for (let block = 0; block < NUM_OF_ROWS; block++) {
       const key = `${channel}-${block}`;
       const track = placements[key] || null;
 
@@ -180,7 +240,6 @@ export default function Automation() {
     return runs;
   }
 
-  // Fetches one run's track data, starts it looping at the run's start time, auto end when track end
   async function playRun(channel, run) {
     const data = await fetchTrackData(channel, run.track);
     if (!data) return null;
@@ -262,13 +321,18 @@ export default function Automation() {
   }, []);
 
   useEffect(() => {
-    if (!id || !token) return;
+    if (!id) return;
+    if (!isDemo && !token) return;
 
     const loadData = async () => {
       try {
         await loadAutomation();
-        const bpmValue = await fetchBpm(id, token);
-        setBPM(bpmValue);
+        if (isDemo) {
+          setBPM(demoSongInfo.bpm);
+        } else {
+          const bpmValue = await fetchBpm(id, token);
+          setBPM(bpmValue);
+        }
       } catch (error) {
         console.error("Failed to load automation data:", error);
       }
@@ -287,6 +351,7 @@ export default function Automation() {
               id="automation-save-button"
               type="button"
               onClick={handleSave}
+              disabled={isDemo}
             >
               SAVE
             </button>
@@ -328,6 +393,7 @@ export default function Automation() {
             <div className="automation-sidebar-header">
               <div>
                 <span className="automation-section-label">TRACKS</span>
+
                 <span className="automation-section-count">
                   {String(tracks.length).padStart(2, "0")}
                 </span>
@@ -351,6 +417,7 @@ export default function Automation() {
 
               {tracks.map((track) => {
                 const isSelected = selectedTrack === track.id;
+
                 return (
                   <div
                     key={track.id}
@@ -373,12 +440,13 @@ export default function Automation() {
                       <span className="automation-track-name">
                         {track.name || track.title || `Track ${track.id}`}
                       </span>
+
                       <span className="automation-track-meta">
                         {selectedInstrument
                           ? selectedInstrument.toUpperCase()
                           : "TRACK"}
                         {" · "}
-                        {String(track.id).padStart(2, "0")}
+                        {track.id}
                       </span>
                     </div>
 
@@ -415,6 +483,7 @@ export default function Automation() {
               aria-label="Resize track sidebar"
             >
               <div className="automation-resize-line" />
+
               <div className="automation-resize-grip">
                 <span />
                 <span />
@@ -426,6 +495,7 @@ export default function Automation() {
           <section className="automation-sequencer">
             <div className="automation-sequencer-header">
               <span className="automation-section-label">ARRANGEMENT</span>
+
               <span className="automation-sequencer-subtitle">
                 DROP TRACKS INTO CHANNELS
               </span>
@@ -433,7 +503,8 @@ export default function Automation() {
 
             <div className="automation-timeline">
               <div className="automation-timeline-label">TIME</div>
-              {Array.from({ length: 16 }).map((_, index) => (
+
+              {Array.from({ length: NUM_OF_BARS }).map((_, index) => (
                 <div className="automation-timeline-marker" key={index}>
                   {String(index + 1).padStart(2, "0")}
                 </div>
@@ -463,30 +534,27 @@ export default function Automation() {
                   </div>
 
                   <div className="automation-drop-zone-row">
-                    {Array.from({ length: channel === "rhythm" ? 16 : 16 }).map(
-                      (_, blockIndex) => {
-                        const key = `${channel}-${blockIndex}`;
-                        const placedTrack = placements[key];
-                        return (
-                          <div
-                            key={blockIndex}
-                            className={`automation-block ${placedTrack ? "filled" : ""}`}
-                            onDragOver={(e) => e.preventDefault()}
-                            onDrop={(e) => {
-                              const trackString =
-                                e.dataTransfer.getData("track");
-                              const parsedTrack = JSON.parse(trackString);
-                              setPlacements((prev) => ({
-                                ...prev,
-                                [key]: parsedTrack,
-                              }));
-                            }}
-                          >
-                            {placedTrack?.name}
-                          </div>
-                        );
-                      },
-                    )}
+                    {Array.from({ length: NUM_OF_BARS }).map((_, blockIndex) => {
+                      const key = `${channel}-${blockIndex}`;
+                      const placedTrack = placements[key];
+                      return (
+                        <div
+                          key={blockIndex}
+                          className={`automation-block ${placedTrack ? "filled" : ""}`}
+                          onDragOver={(e) => e.preventDefault()}
+                          onDrop={(e) => {
+                            const trackString = e.dataTransfer.getData("track");
+                            const parsedTrack = JSON.parse(trackString);
+                            setPlacements((prev) => ({
+                              ...prev,
+                              [key]: parsedTrack,
+                            }));
+                          }}
+                        >
+                          {placedTrack?.name}
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               ))}

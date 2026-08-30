@@ -1,16 +1,10 @@
-import {
-  BrowserRouter,
-  Routes,
-  Route,
-  Link,
-  useParams,
-  useNavigate,
-} from "react-router-dom";
-import { useState, useContext, createContext, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { apiRequest } from "../components/Utils";
 import { useAuth } from "../components/Context";
 import "./Song.css";
 import EditSong from "../components/EditSong";
+import { demoSongInfo } from "../components/demoData";
 
 function Song() {
   const navigate = useNavigate();
@@ -18,8 +12,13 @@ function Song() {
   const [song, setSong] = useState(null);
   const { token } = useAuth();
   const [showEdit, setShowEdit] = useState(false);
+  const isDemo = id === "demo";
 
   const fetchSong = async () => {
+    if (isDemo) {
+      setSong(demoSongInfo);
+      return;
+    }
     try {
       const data = await apiRequest(`/songs/${id}`, null, token, "GET");
       setSong(data);
@@ -34,11 +33,11 @@ function Song() {
 
   return (
     <div className="song">
-      {showEdit && (
+      {showEdit && !isDemo && (
         <EditSong
           onClose={() => setShowEdit(false)}
           songId={id}
-          onSongEdited={fetchSong()}
+          onSongEdited={fetchSong}
         />
       )}
 
@@ -50,15 +49,17 @@ function Song() {
         >
           Back
         </button>
-        <button
-          className="song-left-container-button"
-          id="edit-song"
-          onClick={() => {
-            setShowEdit(true);
-          }}
-        >
-          Edit Song
-        </button>
+        {!isDemo && (
+          <button
+            className="song-left-container-button"
+            id="edit-song"
+            onClick={() => {
+              setShowEdit(true);
+            }}
+          >
+            Edit Song
+          </button>
+        )}
         <button
           className="song-left-container-button"
           id="automation"

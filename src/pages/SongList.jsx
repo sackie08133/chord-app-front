@@ -1,43 +1,47 @@
-import "./SongList.css"
-import { Link } from "react-router-dom"
-import { useNavigate } from "react-router-dom"
-import { useState, useEffect } from "react"
-import LoginSignup from "../components/LoginSignup"
-import NewSong from "../components/NewSong"
-import { useAuth } from "../components/Context"
-import { apiRequest } from "../components/Utils"
+import "./SongList.css";
+import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import LoginSignup from "../components/LoginSignup";
+import NewSong from "../components/NewSong";
+import { useAuth } from "../components/Context";
+import { apiRequest } from "../components/Utils";
+import { demoSongInfo } from "../components/demoData";
 
 function SongList() {
-  const [showLogin, setShowLogin] = useState(false)
-  const [showCreate, setShowCreate] = useState(false)
-  const { token, setToken } = useAuth()
-  const [songs, setSongs] = useState([])
+  const [showLogin, setShowLogin] = useState(false);
+  const [showCreate, setShowCreate] = useState(false);
+  const { token, setToken } = useAuth();
+  const [songs, setSongs] = useState([]);
 
   const handleLogout = () => {
-    setToken(null)
-  }
+    setToken(null);
+  };
 
   const fetchSongs = async () => {
     try {
-      const data = await apiRequest("/songs", null, token, "GET")
-      setSongs(data)
+      const data = await apiRequest("/songs", null, token, "GET");
+      setSongs(data);
     } catch (error) {
-      console.error(error.message)
+      console.error(error.message);
     }
-  }
-  
+  };
+
   const handleDeleteSong = async (songId) => {
     try {
       await apiRequest("/delete", { id: songId }, token);
-      fetchSongs()
+      fetchSongs();
     } catch (error) {
-      alert(error.message)
+      alert(error.message);
     }
   };
 
   useEffect(() => {
-    fetchSongs()
-  }, [token, songs])
+    fetchSongs();
+  }, [token]);
+
+  // Demo song always shows first, regardless of login state
+  const allSongs = [demoSongInfo, ...songs];
 
   return (
     <div className="song-list">
@@ -48,10 +52,7 @@ function SongList() {
         />
       )}
       {showCreate && (
-        <NewSong
-          onClose={() => setShowCreate(false)}
-          token={token}
-        />
+        <NewSong onClose={() => setShowCreate(false)} token={token} />
       )}
 
       <div className="song-list-header">
@@ -68,7 +69,7 @@ function SongList() {
         +
       </button>
 
-      {songs.map((song) => (
+      {allSongs.map((song) => (
         <div className="song-list-song-object" key={song.id}>
           <div id="song-list-song-description-left">
             <h1>
@@ -77,14 +78,17 @@ function SongList() {
             </h1>
             <h2>
               {" "}
-              {song.bpm} BPM, {song.last_edited.split("T")[0]}
+              {song.bpm} BPM
+              {song.last_edited ? `, ${song.last_edited.split("T")[0]}` : ""}
             </h2>
-            <button
-              onClick={() => handleDeleteSong(song.id)}
-              className="song-list-delete-song-button"
-            >
-              Delete Song
-            </button>
+            {song.id !== "demo" && (
+              <button
+                onClick={() => handleDeleteSong(song.id)}
+                className="song-list-delete-song-button"
+              >
+                Delete Song
+              </button>
+            )}
           </div>
         </div>
       ))}

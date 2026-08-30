@@ -3,9 +3,9 @@ import { useAuth } from "../components/Context";
 import { useNavigate, useParams } from "react-router-dom";
 import "./Bass.css";
 import { playNoteAtTime } from "../components/ChordPlayer";
-import { apiRequest } from "../components/Utils";
-import { fetchBpm } from "../components/Utils";
+import { apiRequest, fetchBpm } from "../components/Utils";
 import { playGuitarTrack } from "../components/Playback";
+import { demoGuitarTracks, demoSongInfo } from "../components/demoData";
 import * as Tone from "tone";
 
 const steps = 32;
@@ -45,6 +45,7 @@ function Bass() {
   const [trackId, setTrackId] = useState(null);
   const [activeCells, setActiveCells] = useState({});
   const { id } = useParams();
+  const isDemo = id === "demo";
   const { token, setToken } = useAuth();
   const seqRef = useRef(null);
 
@@ -57,6 +58,13 @@ function Bass() {
   };
 
   const fetchBassTracks = async (songId) => {
+    if (isDemo) {
+      const bassTracks = demoGuitarTracks.filter(
+        (t) => t.instrument === "bass",
+      );
+      setTracks(bassTracks.map((t) => ({ id: t.id, name: t.name })));
+      return;
+    }
     try {
       const data = await apiRequest(`/guitar-tracks/${id}`, null, token, "GET");
       setTracks(data);
@@ -66,6 +74,18 @@ function Bass() {
   };
 
   const fetchBassNotes = async (trackId) => {
+    if (isDemo) {
+      const track = demoGuitarTracks.find((t) => t.id === trackId);
+      if (!track) return;
+      const loadedCells = {};
+      for (const note of track.notes) {
+        const row = chromaticFromC.indexOf(note.row);
+        const key = `${row}-${note.col}-${note.octave}`;
+        loadedCells[key] = true;
+      }
+      setActiveCells(loadedCells);
+      return;
+    }
     try {
       const data = await apiRequest(
         `/guitar-tracks/${trackId}/notes`,
@@ -87,6 +107,9 @@ function Bass() {
   };
 
   const handleSave = async () => {
+    if (isDemo) {
+      return alert("Demo songs can't be saved.");
+    }
     const trackTitle = prompt("Guitar Track Title?", "Track");
     const guitarNotesArray = makeGuitarNotesArray();
 
@@ -113,15 +136,17 @@ function Bass() {
   };
 
   const handleDelete = async () => {
+    if (isDemo) {
+      return alert("Demo tracks can't be deleted.");
+    }
     if (!trackId) {
       return alert("No track selected");
     }
     try {
-      const statement = await apiRequest(
-        `/delete/guitar-tracks`,
-        { trackId },
-        token,
-      );
+      await apiRequest(`/delete/guitar-tracks`, { trackId }, token);
+      alert("Track deleted");
+      setTrackId(null);
+      fetchBassTracks(id);
     } catch (error) {
       alert(error.message);
     }
@@ -143,6 +168,10 @@ function Bass() {
   useEffect(() => {
     fetchBassTracks(id);
     const loadBPM = async () => {
+      if (isDemo) {
+        setBPM(demoSongInfo.bpm);
+        return;
+      }
       const bpmValue = await fetchBpm(id, token);
       setBPM(bpmValue);
     };
@@ -218,7 +247,11 @@ function Bass() {
           {seqRef.current ? "Stop" : "Loop"}
         </button>
 
-        <button className="bass-save-button" onClick={handleSave}>
+        <button
+          className="bass-save-button"
+          onClick={handleSave}
+          disabled={isDemo}
+        >
           Save
         </button>
 
@@ -239,9 +272,11 @@ function Bass() {
           })}
         </select>
 
-        <button className="rhythm-guitar-delete" onClick={handleDelete}>
-          Delete Currently Selected Track
-        </button>
+        {!isDemo && (
+          <button className="rhythm-guitar-delete" onClick={handleDelete}>
+            Delete Currently Selected Track
+          </button>
+        )}
       </div>
 
       <div className="bass-piano-roll">

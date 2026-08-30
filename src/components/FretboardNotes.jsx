@@ -3,6 +3,7 @@ import { useState } from "react";
 import { getOctave } from "./Utils.jsx";
 import { polysynth } from "./ChordPlayer.jsx";
 
+// shows circles as note names on fretboard
 const FretboardNotes = ({ stringIndex, fretNumber, expectedFret, mode = "highlight" }) => {
   const [isHovered, setIsHovered] = useState(false);
 

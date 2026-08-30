@@ -15,6 +15,7 @@ import {
   markerY,
 } from "./Constants.jsx";
 
+// fretboard component for  rhythm guitar page
 function Fretboard({ voicing = [], rootNote, chordType, shapeId, selectedShape }) {
   return (
     <svg
@@ -24,7 +25,8 @@ function Fretboard({ voicing = [], rootNote, chordType, shapeId, selectedShape }
       aria-label={`Fretboard for ${rootNote} ${chordType}`}
       role="img"
     >
-      <line
+      {/* top line*/}
+      <line 
         x1={0}
         x2={endX}
         y1={fretboardTopY}
@@ -33,6 +35,7 @@ function Fretboard({ voicing = [], rootNote, chordType, shapeId, selectedShape }
         strokeWidth="2"
       />
 
+     {/* string lines*/}
       {StringsStandard.map((string, i) => (
         <line
           key={`string-${i}`}
@@ -45,6 +48,7 @@ function Fretboard({ voicing = [], rootNote, chordType, shapeId, selectedShape }
         />
       ))}
 
+      {/* vertical fretlines on strings */}
       {fretPos.map((x, i) => (
         <line
           key={`fret-${i}`}
@@ -58,6 +62,7 @@ function Fretboard({ voicing = [], rootNote, chordType, shapeId, selectedShape }
         />
       ))}
 
+      {/* bottom line line*/}
       <line
         x1={0}
         x2={endX}
@@ -67,6 +72,7 @@ function Fretboard({ voicing = [], rootNote, chordType, shapeId, selectedShape }
         strokeWidth="2"
       />
 
+      {/* z = -1, fretboard markers line*/}
       {fretboardMarkerPos.map((x, i) => (
         <g key={`marker-${i}`} opacity={0.7}>
           <g transform={`translate(${x}, ${markerY})`}>

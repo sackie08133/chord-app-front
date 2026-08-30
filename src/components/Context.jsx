@@ -2,6 +2,8 @@ import { createContext, useState, useContext } from 'react'
 
 const AuthContext = createContext()
 
+// provides authenticaion using use context
+// removes need for providing authentication, passes token to child
 export function AuthProvider({ children }) {
   const [token, setTokenState] = useState(() => localStorage.getItem('token'))
 

@@ -46,6 +46,7 @@ export function playChord(chordVoicing) {
   })
 }
 
+// play note using tone.js in a certain time
 export function playNoteAtTime(noteName, octave, synthType = "poly", time = undefined) {
   const synth = synths[synthType];
 
@@ -62,6 +63,7 @@ export function playNoteAtTime(noteName, octave, synthType = "poly", time = unde
   }
 }
 
+// play a chord using tone.js polysynth in a certain time
 export function playChordAtTime(chordVoicing, strumType, time) {
   if (strumType === "rest") return
 

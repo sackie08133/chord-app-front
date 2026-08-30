@@ -15,6 +15,7 @@ import {
   chordTypeToFamily,
   strummingSteps,
 } from "../components/Playback";
+import { demoRhythmTracks, demoSongInfo } from "../components/demoData";
 
 const MAX_CHORD_SLOTS = 2;
 const ROOT_OPTIONS = Object.keys(rootFretMap);
@@ -75,6 +76,7 @@ function RhythmGuitar() {
   const allShapeOptions = useMemo(() => getAllShapeOptions(), []);
   const [selectedTrackId, setSelectedTrackId] = useState(null);
   const { id } = useParams();
+  const isDemo = id === "demo";
   const [bpm, setBPM] = useState(null);
   const [tracks, setTracks] = useState([]);
   const seqRef = useRef(null);
@@ -164,6 +166,10 @@ function RhythmGuitar() {
   }
 
   const fetchGuitarTracks = async (songId) => {
+    if (isDemo) {
+      setTracks(demoRhythmTracks.map((t) => ({ id: t.id, name: t.name })));
+      return;
+    }
     try {
       const data = await apiRequest(`/rhythm-guitar/${id}`, null, token, "GET");
       setTracks(data);
@@ -173,6 +179,9 @@ function RhythmGuitar() {
   };
 
   const handleSave = async () => {
+    if (isDemo) {
+      return alert("Demo songs can't be saved.");
+    }
     const trackTitle = prompt("Rhythm Guitar Track Title?", "Track");
 
     if (!trackTitle || !id) {
@@ -196,6 +205,9 @@ function RhythmGuitar() {
   };
 
   const handleDelete = async () => {
+    if (isDemo) {
+      return alert("Demo tracks can't be deleted.");
+    }
     if (!selectedTrackId) {
       return alert("No track selected to delete");
     }
@@ -215,6 +227,14 @@ function RhythmGuitar() {
   };
 
   const loadTrack = (trackId) => {
+    if (isDemo) {
+      const selectedTrack = demoRhythmTracks.find((t) => t.id === trackId);
+      if (!selectedTrack) return;
+      setChordSlots(selectedTrack.chord_slots);
+      setStrumPattern(selectedTrack.strum_pattern);
+      setSelectedTrackId(selectedTrack.id);
+      return;
+    }
     const selectedTrack = tracks.find((t) => t.id === Number(trackId));
     if (!selectedTrack) return;
 
@@ -226,6 +246,10 @@ function RhythmGuitar() {
   useEffect(() => {
     fetchGuitarTracks(id);
     const loadBPM = async () => {
+      if (isDemo) {
+        setBPM(demoSongInfo.bpm);
+        return;
+      }
       const bpmValue = await fetchBpm(id, token);
       setBPM(bpmValue);
     };
@@ -250,7 +274,11 @@ function RhythmGuitar() {
         <button className="rhythm-guitar-back" onClick={() => navigate(-1)}>
           Back
         </button>
-        <button className="rhythm-guitar-save" onClick={handleSave}>
+        <button
+          className="rhythm-guitar-save"
+          onClick={handleSave}
+          disabled={isDemo}
+        >
           Save
         </button>
         <button
@@ -301,7 +329,7 @@ function RhythmGuitar() {
 
         <select
           className="rhythm-guitar-tracks"
-          onChange={(e) => loadTrack(e.target.value)}
+          onChange={(e) => loadTrack(isDemo ? e.target.value : e.target.value)}
         >
           <option value="">No Tracks</option>
           {tracks.map((track) => {
@@ -312,9 +340,11 @@ function RhythmGuitar() {
             );
           })}
         </select>
-        <button className="rhythm-guitar-delete" onClick={handleDelete}>
-          Delete Currently Selected Track
-        </button>
+        {!isDemo && (
+          <button className="rhythm-guitar-delete" onClick={handleDelete}>
+            Delete Currently Selected Track
+          </button>
+        )}
       </div>
 
       <div className="rhythm-guitar-fretboard">

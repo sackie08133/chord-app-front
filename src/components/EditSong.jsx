@@ -5,6 +5,7 @@ import { useAuth } from "./Context.jsx";
 import "./Modal.css";
 import "./EditSong.css";
 
+// edit song title and bpm on a modal
 function EditSong({onClose, songId, onSongEdited }) {
   const [title, setTitle] = useState("");
   const [bpm, setBPM] = useState("");
