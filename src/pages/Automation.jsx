@@ -22,13 +22,12 @@ import {
   demoRhythmTracks,
   demoAutomation,
   demoSongInfo,
-} from "../components/demoData";
+} from "../components/DemoData";
 import "./Automation.css";
 
 const BLOCK_LENGTH_BARS = 2;
 const NUM_OF_ROWS = 4;
 const NUM_OF_BARS = 4;
-
 
 export default function Automation() {
   const [sidebarWidth, setSidebarWidth] = useState(280);
@@ -535,27 +534,30 @@ export default function Automation() {
                   </div>
 
                   <div className="automation-drop-zone-row">
-                    {Array.from({ length: NUM_OF_BARS }).map((_, blockIndex) => {
-                      const key = `${channel}-${blockIndex}`;
-                      const placedTrack = placements[key];
-                      return (
-                        <div
-                          key={blockIndex}
-                          className={`automation-block ${placedTrack ? "filled" : ""}`}
-                          onDragOver={(e) => e.preventDefault()}
-                          onDrop={(e) => {
-                            const trackString = e.dataTransfer.getData("track");
-                            const parsedTrack = JSON.parse(trackString);
-                            setPlacements((prev) => ({
-                              ...prev,
-                              [key]: parsedTrack,
-                            }));
-                          }}
-                        >
-                          {placedTrack?.name}
-                        </div>
-                      );
-                    })}
+                    {Array.from({ length: NUM_OF_BARS }).map(
+                      (_, blockIndex) => {
+                        const key = `${channel}-${blockIndex}`;
+                        const placedTrack = placements[key];
+                        return (
+                          <div
+                            key={blockIndex}
+                            className={`automation-block ${placedTrack ? "filled" : ""}`}
+                            onDragOver={(e) => e.preventDefault()}
+                            onDrop={(e) => {
+                              const trackString =
+                                e.dataTransfer.getData("track");
+                              const parsedTrack = JSON.parse(trackString);
+                              setPlacements((prev) => ({
+                                ...prev,
+                                [key]: parsedTrack,
+                              }));
+                            }}
+                          >
+                            {placedTrack?.name}
+                          </div>
+                        );
+                      },
+                    )}
                   </div>
                 </div>
               ))}

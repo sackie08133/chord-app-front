@@ -15,7 +15,7 @@ import {
   chordTypeToFamily,
   strummingSteps,
 } from "../components/Playback";
-import { demoRhythmTracks, demoSongInfo } from "../components/demoData";
+import { demoRhythmTracks, demoSongInfo } from "../components/DemoData";
 
 const MAX_CHORD_SLOTS = 2;
 const ROOT_OPTIONS = Object.keys(rootFretMap);
