@@ -5,7 +5,7 @@ import "./LeadGuitar.css";
 import { playNoteAtTime } from "../components/ChordPlayer";
 import { apiRequest, fetchBpm } from "../components/Utils";
 import { playGuitarTrack } from "../components/Playback";
-import { demoGuitarTracks, demoSongInfo } from "../components/demoData";
+import { demoGuitarTracks, demoSongInfo } from "../components/DemoData";
 import * as Tone from "tone";
 
 const steps = 32;

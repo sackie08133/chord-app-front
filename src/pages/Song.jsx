@@ -4,7 +4,7 @@ import { apiRequest } from "../components/Utils";
 import { useAuth } from "../components/Context";
 import "./Song.css";
 import EditSong from "../components/EditSong";
-import { demoSongInfo } from "../components/demoData";
+import { demoSongInfo } from "../components/DemoData";
 
 function Song() {
   const navigate = useNavigate();

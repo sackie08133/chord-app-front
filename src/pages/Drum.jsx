@@ -6,7 +6,7 @@ import { playNoteAtTime } from "../components/ChordPlayer";
 import { apiRequest, fetchBpm } from "../components/Utils";
 import { drumTypeNames, drumSynthTypes } from "../components/Constants";
 import { playDrumTrack } from "../components/Playback";
-import { demoDrumTracks, demoSongInfo } from "../components/demoData";
+import { demoDrumTracks, demoSongInfo } from "../components/DemoData";
 import * as Tone from "tone";
 
 function Drum() {
