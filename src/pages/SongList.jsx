@@ -14,10 +14,6 @@ function SongList() {
   const { token, setToken } = useAuth();
   const [songs, setSongs] = useState([]);
 
-  const handleLogout = () => {
-    setToken(null);
-  };
-
   const fetchSongs = async () => {
     try {
       const data = await apiRequest("/songs", null, token, "GET");
@@ -25,6 +21,11 @@ function SongList() {
     } catch (error) {
       console.error(error.message);
     }
+  };
+
+  const handleLogout = () => {
+    setToken(null);
+    fetchSongs()
   };
 
   const handleDeleteSong = async (songId) => {
@@ -38,7 +39,7 @@ function SongList() {
 
   useEffect(() => {
     fetchSongs();
-  }, [token]);
+  }, [token,songs]);
 
   // Demo song always shows first, regardless of login state
   const allSongs = [demoSongInfo, ...songs];

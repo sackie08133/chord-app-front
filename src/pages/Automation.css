@@ -450,7 +450,7 @@ header {
 
   grid-template-columns:
     150px
-    repeat(16, minmax(70px, 1fr));
+    repeat(4, minmax(70px, 1fr));
 
   height: var(--automation-timeline-height);
 
@@ -474,7 +474,7 @@ header {
 .automation-timeline-marker {
   display: flex;
   align-items: center;
-
+  width:100%;
   padding-left: 8px;
 
   border-left: 1px solid var(--automation-grid);

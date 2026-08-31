@@ -27,7 +27,8 @@ import "./Automation.css";
 
 const BLOCK_LENGTH_BARS = 2;
 const NUM_OF_ROWS = 4;
-const NUM_OF_BARS = 16;
+const NUM_OF_BARS = 4;
+
 
 export default function Automation() {
   const [sidebarWidth, setSidebarWidth] = useState(280);
