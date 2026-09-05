@@ -42,7 +42,7 @@ Within a song, you'll find several clickable instruments on the right side of th
 | Instrument | How It Works |
 |---|---|
 | **Drums** | Made up of kick, snare, and hi-hat. Click to toggle timings on/off. |
-| **Bass / Lead** | Same UI as drums, but with octave ranges (for now). Click divs to toggle timings on/off. |
+| **Bass / Lead** | Same UI as with each other, but with octave ranges (for now). Click divs to toggle timings on/off. However, they functionally sound the same if the same notes are played. |
 | **Rhythm** | Choose chord(s), then click the bottom row of squares to set the strumming pattern. An empty row means no sound. |
 
 ### 5. Put It All Together
