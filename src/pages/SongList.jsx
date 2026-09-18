@@ -46,6 +46,7 @@ function SongList() {
 
   return (
     <div className="song-list">
+      <span className="song-list-ai-disclosure">AI used for styling page and learning</span>
       {showLogin && (
         <LoginSignup
           onClose={() => setShowLogin(false)}
