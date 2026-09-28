@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect, useRef } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import Fretboard from "../components/Fretboard";
 import { chordShapes } from "../components/ChordShapes";
 import { shiftVoicing } from "../components/Utils";
@@ -79,6 +79,7 @@ function RhythmGuitar() {
   const isDemo = id === "demo";
   const [bpm, setBPM] = useState(null);
   const [tracks, setTracks] = useState([]);
+  const [isLooping, setIsLooping] = useState(false);
   const seqRef = useRef(null);
 
   const [chordSlots, setChordSlots] = useState(() => [
@@ -165,7 +166,7 @@ function RhythmGuitar() {
     });
   }
 
-  const fetchGuitarTracks = async (songId) => {
+  const fetchGuitarTracks = async () => {
     if (isDemo) {
       setTracks(demoRhythmTracks.map((t) => ({ id: t.id, name: t.name })));
       return;
@@ -189,7 +190,7 @@ function RhythmGuitar() {
     }
 
     try {
-      const data = await apiRequest(
+      await apiRequest(
         `/rhythm-guitar/${id}`,
         {
           trackName: trackTitle,
@@ -244,6 +245,7 @@ function RhythmGuitar() {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchGuitarTracks(id);
     const loadBPM = async () => {
       if (isDemo) {
@@ -291,6 +293,7 @@ function RhythmGuitar() {
               seqRef.current = null;
               Tone.Transport.stop();
             }
+            setIsLooping(false);
 
             await Tone.start();
 
@@ -316,15 +319,18 @@ function RhythmGuitar() {
               seqRef.current.dispose();
               seqRef.current = null;
               Tone.Transport.stop();
+              setIsLooping(false);
+              return;
             }
 
             await Tone.start();
 
             const seq = playRhythmTrack(chordSlots, strumPattern, bpm, 0, true);
             seqRef.current = seq;
+            setIsLooping(true);
           }}
         >
-          {seqRef.current ? "Stop" : "Loop"}
+          {isLooping ? "Stop" : "Loop"}
         </button>
 
         <select

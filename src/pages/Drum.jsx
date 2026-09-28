@@ -15,10 +15,11 @@ function Drum() {
   const [tracks, setTracks] = useState([]);
   const [trackId, setTrackId] = useState(null);
   const [bpm, setBPM] = useState(null);
+  const [isLooping, setIsLooping] = useState(false);
   const { id } = useParams();
   const isDemo = id === "demo";
   const steps = 32;
-  const { token, setToken } = useAuth();
+  const { token } = useAuth();
   const seqRef = useRef(null);
 
   const toggleCell = (row, col) => {
@@ -29,7 +30,7 @@ function Drum() {
     }));
   };
 
-  const fetchDrumTracks = async (songId) => {
+  const fetchDrumTracks = async () => {
     if (isDemo) {
       setTracks(demoDrumTracks.map((t) => ({ id: t.id, name: t.name })));
       return;
@@ -54,7 +55,7 @@ function Drum() {
     }
 
     try {
-      const data = await apiRequest(
+      await apiRequest(
         "/drum-tracks",
         {
           song_id: id,
@@ -160,6 +161,7 @@ function Drum() {
   }
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchDrumTracks(id);
     const loadBPM = async () => {
       if (isDemo) {
@@ -207,6 +209,7 @@ function Drum() {
               seqRef.current = null;
               Tone.Transport.stop();
             }
+            setIsLooping(false);
 
             await Tone.start();
             const seq = playDrumTrack(makeDrumHitArray(), bpm, 0, false);
@@ -225,15 +228,17 @@ function Drum() {
               seqRef.current.dispose();
               seqRef.current = null;
               Tone.Transport.stop();
+              setIsLooping(false);
               return;
             }
 
             await Tone.start();
             const seq = playDrumTrack(makeDrumHitArray(), bpm, 0, true);
             seqRef.current = seq;
+            setIsLooping(true);
           }}
         >
-          {seqRef.current ? "Stop" : "Loop"}
+          {isLooping ? "Stop" : "Loop"}
         </button>
 
         <button id="drum-save-button" onClick={handleSave} disabled={isDemo}>

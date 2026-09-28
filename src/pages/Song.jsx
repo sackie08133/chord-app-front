@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { apiRequest } from "../components/Utils";
 import { useAuth } from "../components/Context";
 import "./Song.css";
@@ -14,7 +14,7 @@ function Song() {
   const [showEdit, setShowEdit] = useState(false);
   const isDemo = id === "demo";
 
-  const fetchSong = async () => {
+  const fetchSong = useCallback(async () => {
     if (isDemo) {
       setSong(demoSongInfo);
       return;
@@ -25,11 +25,12 @@ function Song() {
     } catch (error) {
       alert(error.message);
     }
-  };
+  }, [id, isDemo, token]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchSong();
-  }, [token, id]);
+  }, [fetchSong]);
 
   return (
     <div className="song">

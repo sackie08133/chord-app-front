@@ -1,7 +1,7 @@
 import { StringsStandard, Notes, fretPos, startX } from "./Constants.jsx";
 import { useState } from "react";
 import { getOctave } from "./Utils.jsx";
-import { polysynth } from "./ChordPlayer.jsx";
+import { playNoteAtTime } from "./ChordPlayer.jsx";
 
 // shows circles as note names on fretboard
 const FretboardNotes = ({ stringIndex, fretNumber, expectedFret, mode = "highlight" }) => {
@@ -30,7 +30,7 @@ const FretboardNotes = ({ stringIndex, fretNumber, expectedFret, mode = "highlig
   return (
     <g
       onClick={() => {
-        polysynth.triggerAttackRelease(noteName + noteOctave, "8n");
+        playNoteAtTime(noteName, noteOctave, "guitar");
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}

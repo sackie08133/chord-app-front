@@ -1,5 +1,3 @@
-import React from 'react';
-
 const TriangleMarker = ({ w = '20', h = '500', direction = 'right', color = 'gray' }) => {
   const points = {
     top: [`${w / 2},0`, `0,${h}`, `${w},${h}`],

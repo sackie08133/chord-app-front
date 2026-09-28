@@ -1,4 +1,3 @@
-import React from "react";
 import TriangleMarker from "./FretboardMarkers.jsx";
 import FretboardNotes from "./FretboardNotes.jsx";
 import {

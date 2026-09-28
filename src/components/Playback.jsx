@@ -53,7 +53,7 @@ export function buildBeats(chordSlots, strumPattern) {
   for (const slot of chordSlots) {
     const shape = findShape(slot.chordType, slot.shapeId);
     const rootFret = rootFretMap[slot.root] ?? 0;
-    const voicing = shiftVoicing(shape.voicing, rootFret);
+    const voicing = shape ? shiftVoicing(shape.voicing, rootFret) : [];
 
     for (let step = 0; step < strummingSteps; step++) {
       const strumType = strumPattern[step] || "rest";
@@ -112,7 +112,7 @@ export function playGuitarTrack(notes, bpm, offset = 0, loop = false, instrument
       for (let oct = min; oct <= max; oct++) {
         const key = `${row}-${col}-${oct}`;
         if (notesSequence[key]) {
-          playNoteAtTime(noteNamesSharps[row], oct, undefined, time);
+          playNoteAtTime(noteNamesSharps[row], oct, instrument, time);
         }
       }
     }

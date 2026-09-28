@@ -23,7 +23,7 @@ export const Notes = [
 ]
 
 export const drumTypeNames = ['kick', 'snare', 'hihat']
-export const drumSynthTypes = ['membrane', 'snare', 'hihat'] // membrane === kick
+export const drumSynthTypes = ['kick', 'snare', 'hihat']
 
 export const instrumentRanges = {
   bass: { min: 1, max: 4 },

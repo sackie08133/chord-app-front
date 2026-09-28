@@ -1,7 +1,6 @@
 import "./SongList.css";
 import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import LoginSignup from "../components/LoginSignup";
 import NewSong from "../components/NewSong";
 import { useAuth } from "../components/Context";
@@ -14,18 +13,17 @@ function SongList() {
   const { token, setToken } = useAuth();
   const [songs, setSongs] = useState([]);
 
-  const fetchSongs = async () => {
+  const fetchSongs = useCallback(async () => {
     try {
       const data = await apiRequest("/songs", null, token, "GET");
       setSongs(data);
     } catch (error) {
       console.error(error.message);
     }
-  };
+  }, [token]);
 
   const handleLogout = () => {
     setToken(null);
-    fetchSongs();
   };
 
   const handleDeleteSong = async (songId) => {
@@ -38,8 +36,9 @@ function SongList() {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchSongs();
-  }, [token, songs]);
+  }, [fetchSongs]);
 
   // Demo song always shows first, regardless of login state
   const allSongs = [demoSongInfo, ...songs];
@@ -54,7 +53,11 @@ function SongList() {
         />
       )}
       {showCreate && (
-        <NewSong onClose={() => setShowCreate(false)} token={token} />
+        <NewSong
+          onClose={() => setShowCreate(false)}
+          token={token}
+          onSongCreated={fetchSongs}
+        />
       )}
 
       <div className="song-list-header">

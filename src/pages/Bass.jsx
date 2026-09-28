@@ -44,9 +44,10 @@ function Bass() {
   const [tracks, setTracks] = useState([]);
   const [trackId, setTrackId] = useState(null);
   const [activeCells, setActiveCells] = useState({});
+  const [isLooping, setIsLooping] = useState(false);
   const { id } = useParams();
   const isDemo = id === "demo";
-  const { token, setToken } = useAuth();
+  const { token } = useAuth();
   const seqRef = useRef(null);
 
   const toggleCell = (row, col, oct) => {
@@ -57,7 +58,7 @@ function Bass() {
     }));
   };
 
-  const fetchBassTracks = async (songId) => {
+  const fetchBassTracks = async () => {
     if (isDemo) {
       const bassTracks = demoGuitarTracks.filter(
         (t) => t.instrument === "bass",
@@ -118,7 +119,7 @@ function Bass() {
     }
 
     try {
-      const data = await apiRequest(
+      await apiRequest(
         "/guitar-tracks",
         {
           song_id: id,
@@ -166,6 +167,7 @@ function Bass() {
   }
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchBassTracks(id);
     const loadBPM = async () => {
       if (isDemo) {
@@ -206,6 +208,7 @@ function Bass() {
               seqRef.current = null;
               Tone.Transport.stop();
             }
+            setIsLooping(false);
 
             await Tone.start();
             const seq = playGuitarTrack(
@@ -230,6 +233,7 @@ function Bass() {
               seqRef.current.dispose();
               seqRef.current = null;
               Tone.Transport.stop();
+              setIsLooping(false);
               return;
             }
 
@@ -242,9 +246,10 @@ function Bass() {
               "bass",
             );
             seqRef.current = seq;
+            setIsLooping(true);
           }}
         >
-          {seqRef.current ? "Stop" : "Loop"}
+          {isLooping ? "Stop" : "Loop"}
         </button>
 
         <button
@@ -297,7 +302,7 @@ function Bass() {
                 className={`bass-grid-cell ${activeCells[`${rowIndex}-${colIndex}-${octave}`] ? "active" : ""}`}
                 onClick={() => {
                   toggleCell(rowIndex, colIndex, octave);
-                  playNoteAtTime(note, octave, "poly");
+                  playNoteAtTime(note, octave, "bass");
                 }}
               />
             )),

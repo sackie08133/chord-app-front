@@ -1,5 +1,5 @@
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { apiRequest } from "./Utils.jsx";
 import { useAuth } from "./Context.jsx";
 import "./Modal.css";
@@ -9,7 +9,7 @@ import "./EditSong.css";
 function EditSong({onClose, songId, onSongEdited }) {
   const [title, setTitle] = useState("");
   const [bpm, setBPM] = useState("");
-  const {token,setToken} = useAuth()
+  const { token } = useAuth()
 
   const handleEditSong = async () => {
       try {
@@ -18,9 +18,8 @@ function EditSong({onClose, songId, onSongEdited }) {
               title: title,
               bpm: bpm,
           }, token, "PUT")
-        onClose(),
-        songId,
-        onSongEdited
+        await onSongEdited?.()
+        onClose()
       } catch(error) {
           alert(error.message)
       }
