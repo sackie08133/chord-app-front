@@ -3,7 +3,7 @@
 A web-based songwriting host, inspired by a Chrome Music Lab assignment I had back in elementary school. (Thank you, Mr. Savoy!)
 
 **No installation needed** — just visit the live app:
- **[rockwriter-bwm3r5cq3-sackie08133.vercel.app](https://rockwriter-bwm3r5cq3-sackie08133.vercel.app/)**
+ **[rockwriter.vercel.app](https://rockwriter.vercel.app/)**
 
 ## 🛠️ Tech Stack
 
@@ -55,5 +55,5 @@ Once you've made your tracks, go to your song page and click **Automation**. Dra
 
 ##  Planned Features
 
-- Use actual instrument samples instead of Tone.js's native PolySynth.
+- Add more sample articulations and velocity layers for expressive playback.
 - Add a default "empty" track, or allow deletion/drag-out of existing tracks.

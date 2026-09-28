@@ -2,107 +2,115 @@ import * as Tone from "tone";
 import { StringsStandard } from "./Constants";
 import { getNoteName, getOctave } from "./Utils";
 
-// Tone's monophonic instrument classes sound more convincing than a generic
-// oscillator, but one instance cannot play a chord. A small round-robin pool
-// preserves polyphony without falling back to Tone.PolySynth.
-function createVoicePool(size, createVoice) {
-  const voices = Array.from({ length: size }, createVoice);
-  let nextVoice = 0;
+const sampleRoot = `${import.meta.env.BASE_URL}samples/`;
 
-  return {
-    triggerAttackRelease(note, duration, time, velocity) {
-      const voice = voices[nextVoice];
-      nextVoice = (nextVoice + 1) % voices.length;
-      voice.triggerAttackRelease(note, duration, time, velocity);
-    },
-  };
-}
+const leadGuitarBus = new Tone.Compressor({
+  threshold: -20,
+  ratio: 3,
+  attack: 0.003,
+  release: 0.15,
+}).toDestination();
 
-const guitarBus = new Tone.Filter({ frequency: 6200, type: "lowpass", rolloff: -12 });
-const guitarCompressor = new Tone.Compressor({ threshold: -18, ratio: 3, attack: 0.005, release: 0.15 });
-guitarBus.connect(guitarCompressor);
-guitarCompressor.toDestination();
+export const guitarSampler = new Tone.Sampler({
+  urls: {
+    E2: "E2.mp3",
+    A2: "A2.mp3",
+    C3: "C3.mp3",
+    "F#3": "Fs3.mp3",
+    C4: "C4.mp3",
+    "F#4": "Fs4.mp3",
+    C5: "C5.mp3",
+    "F#5": "Fs5.mp3",
+    A5: "A5.mp3",
+    C6: "C6.mp3",
+  },
+  baseUrl: `${sampleRoot}guitar-electric/`,
+  attack: 0,
+  release: 0.35,
+  volume: -5,
+}).connect(leadGuitarBus);
 
-export const guitarSynth = createVoicePool(24, () =>
-  new Tone.PluckSynth({
-    attackNoise: 1.2,
-    dampening: 3800,
-    resonance: 0.94,
-    release: 1.2,
-    volume: -7,
-  }).connect(guitarBus),
-);
+const rhythmGuitarBus = new Tone.Compressor({
+  threshold: -18,
+  ratio: 2.5,
+  attack: 0.005,
+  release: 0.2,
+}).toDestination();
 
-const bassCompressor = new Tone.Compressor({ threshold: -16, ratio: 4, attack: 0.01, release: 0.2 }).toDestination();
+const rhythmGuitarSampler = new Tone.Sampler({
+  urls: {
+    A2: "A2.mp3",
+    D3: "D3.mp3",
+    G3: "G3.mp3",
+    C4: "C4.mp3",
+    F4: "F4.mp3",
+    C5: "C5.mp3",
+    D5: "D5.mp3",
+  },
+  baseUrl: `${sampleRoot}guitar-acoustic/`,
+  attack: 0,
+  release: 0.3,
+  volume: -7,
+}).connect(rhythmGuitarBus);
 
-export const bassSynth = createVoicePool(8, () =>
-  new Tone.MonoSynth({
-    oscillator: { type: "fatsawtooth", count: 2, spread: 8 },
-    filter: { type: "lowpass", frequency: 700, rolloff: -24, Q: 1.2 },
-    envelope: { attack: 0.008, decay: 0.18, sustain: 0.35, release: 0.28 },
-    filterEnvelope: {
-      attack: 0.004,
-      decay: 0.22,
-      sustain: 0.15,
-      release: 0.25,
-      baseFrequency: 90,
-      octaves: 3.2,
-    },
-    volume: -8,
-  }).connect(bassCompressor),
-);
+const bassBus = new Tone.Compressor({
+  threshold: -18,
+  ratio: 4,
+  attack: 0.005,
+  release: 0.18,
+}).toDestination();
 
-const kickSynth = new Tone.MembraneSynth({
-  pitchDecay: 0.045,
-  octaves: 7,
-  oscillator: { type: "sine" },
-  envelope: { attack: 0.001, decay: 0.3, sustain: 0, release: 0.08 },
+export const bassSampler = new Tone.Sampler({
+  urls: {
+    E1: "E1.mp3",
+    "A#1": "As1.mp3",
+    E2: "E2.mp3",
+    "A#2": "As2.mp3",
+    E3: "E3.mp3",
+    "A#3": "As3.mp3",
+    E4: "E4.mp3",
+    "A#4": "As4.mp3",
+  },
+  baseUrl: `${sampleRoot}bass-electric/`,
+  attack: 0,
+  release: 0.25,
+  volume: -6,
+}).connect(bassBus);
+
+const drumSampler = new Tone.Sampler({
+  urls: {
+    C1: "kick.wav",
+    D1: "snare.wav",
+    E1: "hihat.wav",
+  },
+  baseUrl: `${sampleRoot}drums/`,
+  attack: 0,
+  release: 0.08,
   volume: -2,
 }).toDestination();
 
-const snareFilter = new Tone.Filter({ frequency: 1500, type: "highpass" }).toDestination();
-const snareNoise = new Tone.NoiseSynth({
-  noise: { type: "white" },
-  envelope: { attack: 0.001, decay: 0.16, sustain: 0, release: 0.03 },
-  volume: -7,
-}).connect(snareFilter);
-const snareBody = new Tone.MembraneSynth({
-  pitchDecay: 0.015,
-  octaves: 2,
-  envelope: { attack: 0.001, decay: 0.08, sustain: 0, release: 0.02 },
-  volume: -10,
-}).toDestination();
-
-const hihatSynth = new Tone.MetalSynth({
-  frequency: 240,
-  harmonicity: 5.1,
-  modulationIndex: 32,
-  resonance: 5200,
-  octaves: 1.5,
-  envelope: { attack: 0.001, decay: 0.055, release: 0.015 },
-  volume: -13,
-}).toDestination();
-
 const instruments = {
-  guitar: guitarSynth,
-  bass: bassSynth,
+  guitar: guitarSampler,
+  bass: bassSampler,
+};
+
+const drumNotes = {
+  kick: { note: "C1", duration: 0.5, velocity: 0.95 },
+  snare: { note: "D1", duration: 0.25, velocity: 0.85 },
+  hihat: { note: "E1", duration: 0.1, velocity: 0.65 },
 };
 
 function triggerDrum(type, time) {
-  if (type === "kick") {
-    kickSynth.triggerAttackRelease("C1", "8n", time, 0.95);
-    return true;
-  }
-  if (type === "snare") {
-    snareNoise.triggerAttackRelease("16n", time, 0.8);
-    snareBody.triggerAttackRelease("D2", "32n", time, 0.45);
-    return true;
-  }
-  if (type === "hihat") {
-    hihatSynth.triggerAttackRelease("32n", time, 0.45);
-    return true;
-  }
-  return false;
+  const drum = drumNotes[type];
+  if (!drum) return false;
+
+  drumSampler.triggerAttackRelease(
+    drum.note,
+    drum.duration,
+    time,
+    drum.velocity,
+  );
+  return true;
 }
 
 function guitarNoteForString(fret, string) {
@@ -113,7 +121,12 @@ export function playChord(chordVoicing) {
   const now = Tone.now();
   chordVoicing.forEach((fret, string) => {
     if (fret !== null) {
-      guitarSynth.triggerAttackRelease(guitarNoteForString(fret, string), "8n", now + string * 0.012, 0.72);
+      rhythmGuitarSampler.triggerAttackRelease(
+        guitarNoteForString(fret, string),
+        "8n",
+        now + string * 0.018,
+        0.8,
+      );
     }
   });
 }
@@ -121,8 +134,8 @@ export function playChord(chordVoicing) {
 export function playNoteAtTime(noteName, octave, instrument = "guitar", time) {
   if (triggerDrum(instrument, time)) return;
 
-  const synth = instruments[instrument];
-  if (!synth) {
+  const sampler = instruments[instrument];
+  if (!sampler) {
     console.error(`Unknown instrument: ${instrument}`);
     return;
   }
@@ -132,8 +145,12 @@ export function playNoteAtTime(noteName, octave, instrument = "guitar", time) {
   }
 
   const duration = instrument === "bass" ? "8n" : "16n";
-  const velocity = instrument === "bass" ? 0.8 : 0.65;
-  synth.triggerAttackRelease(`${noteName}${octave}`, duration, time, velocity);
+  sampler.triggerAttackRelease(
+    `${noteName}${octave}`,
+    duration,
+    time,
+    instrument === "bass" ? 0.9 : 0.78,
+  );
 }
 
 export function playChordAtTime(chordVoicing, strumType, time) {
@@ -143,15 +160,15 @@ export function playChordAtTime(chordVoicing, strumType, time) {
     ? [...chordVoicing.entries()].reverse()
     : [...chordVoicing.entries()];
   const duration = strumType === "muted" ? "32n" : "8n";
-  const stagger = strumType === "muted" ? 0.001 : 0.012;
+  const stagger = strumType === "muted" ? 0.003 : 0.018;
 
   stringOrder.forEach(([string, fret], orderIndex) => {
     if (fret !== null) {
-      guitarSynth.triggerAttackRelease(
+      rhythmGuitarSampler.triggerAttackRelease(
         guitarNoteForString(fret, string),
         duration,
         time + orderIndex * stagger,
-        strumType === "muted" ? 0.5 : 0.72,
+        strumType === "muted" ? 0.55 : 0.8,
       );
     }
   });

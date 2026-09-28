@@ -211,6 +211,7 @@ function LeadGuitar() {
             setIsLooping(false);
 
             await Tone.start();
+            await Tone.loaded();
             const seq = playGuitarTrack(
               makeGuitarNotesArray(),
               bpm,
@@ -238,6 +239,7 @@ function LeadGuitar() {
             }
 
             await Tone.start();
+            await Tone.loaded();
             const seq = playGuitarTrack(
               makeGuitarNotesArray(),
               bpm,

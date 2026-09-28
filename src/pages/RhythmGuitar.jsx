@@ -296,6 +296,7 @@ function RhythmGuitar() {
             setIsLooping(false);
 
             await Tone.start();
+            await Tone.loaded();
 
             const seq = playRhythmTrack(
               chordSlots,
@@ -324,6 +325,7 @@ function RhythmGuitar() {
             }
 
             await Tone.start();
+            await Tone.loaded();
 
             const seq = playRhythmTrack(chordSlots, strumPattern, bpm, 0, true);
             seqRef.current = seq;

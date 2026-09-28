@@ -291,6 +291,7 @@ export default function Automation() {
     }
 
     await Tone.start();
+    await Tone.loaded();
     stopAllSequences();
     Tone.Transport.bpm.value = bpm;
 

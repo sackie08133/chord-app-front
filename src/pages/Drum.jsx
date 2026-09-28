@@ -212,6 +212,7 @@ function Drum() {
             setIsLooping(false);
 
             await Tone.start();
+            await Tone.loaded();
             const seq = playDrumTrack(makeDrumHitArray(), bpm, 0, false);
             seqRef.current = seq;
           }}
@@ -233,6 +234,7 @@ function Drum() {
             }
 
             await Tone.start();
+            await Tone.loaded();
             const seq = playDrumTrack(makeDrumHitArray(), bpm, 0, true);
             seqRef.current = seq;
             setIsLooping(true);
