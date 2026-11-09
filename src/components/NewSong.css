@@ -1,15 +1,74 @@
-.create-song-container {
-  background-color: white;
-  border-radius: 12px;
-  padding: 30px 40px;
-  box-shadow: 8px 8px 20px rgba(128, 128, 128, 0.5);
-  position: relative;
-  width: 400px;
+.new-song-panel {
+  width: min(440px, calc(100% - 32px));
+  max-height: calc(100dvh - 32px);
+  overflow: auto;
+  padding: clamp(20px, 5vw, 32px);
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-card-radius);
+  background: var(--app-paper);
+  color: var(--app-text);
+  box-shadow: 0 16px 48px rgb(45 57 46 / 24%);
 }
 
-.song-modal {
-  display: flex;
-  flex-direction: column;
+.new-song-title {
+  margin-bottom: 8px;
+  font: bold 2rem Georgia, serif;
+}
+
+.new-song-panel > p {
+  color: var(--app-text-light);
+}
+
+.new-song-form {
+  display: grid;
   gap: 16px;
-  margin-top: 20px;
+  margin-top: 24px;
+}
+
+.new-song-form label {
+  display: grid;
+  gap: 6px;
+  font-weight: 650;
+}
+
+.new-song-form input,
+.new-song-actions button {
+  min-height: 42px;
+  padding: 8px 12px;
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-control-radius);
+  color: var(--app-text);
+}
+
+.new-song-form input {
+  width: 100%;
+  background: var(--app-bg);
+  font-size: 1rem;
+}
+
+.new-song-error {
+  color: var(--app-danger);
+}
+
+.new-song-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.new-song-actions button {
+  background: var(--app-tint);
+  cursor: pointer;
+}
+
+.new-song-actions button[type="submit"] {
+  border-color: var(--app-active);
+  background: var(--app-active);
+  color: white;
+}
+
+.new-song-actions button:disabled {
+  opacity: 0.55;
+  cursor: default;
 }

@@ -7,55 +7,64 @@ import "./NewSong.css";
 function NewSong({ onClose, token, onSongCreated }) {
   const [title, setTitle] = useState("");
   const [bpm, setBPM] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleMakeSong = async () => {
+  const handleMakeSong = async (event) => {
+    event.preventDefault();
+    if (saving || !title.trim()) return;
+
+    setSaving(true);
+    setError("");
     try {
-      await apiRequest(
-        "/create",
-        {
-          title: title,
-          bpm: bpm,
-        },
-        token,
-      )
-      await onSongCreated?.()
-      onClose()
+      await apiRequest("/create", { title: title.trim(), bpm: Number(bpm) }, token);
+      await onSongCreated?.();
+      onClose();
     } catch (error) {
-      alert(error.message);
+      setError(error.message);
+    } finally {
+      setSaving(false);
     }
   };
 
   return (
     <Dialog open={true} onClose={onClose} className="modal-backdrop">
-      <div className="modal-create-song-container">
-        <DialogPanel>
-          <DialogTitle>Create Song</DialogTitle>
-          <p>Set Title, and BPM for your song</p>
-          <button className="modal-close-button" onClick={onClose}>
-            X
-          </button>
-          <div className="song-modal">
+      <DialogPanel className="new-song-panel">
+        <DialogTitle className="new-song-title">Create a song</DialogTitle>
+        <p>Give your song a name and pick how fast it should go.</p>
+
+        <form className="new-song-form" onSubmit={handleMakeSong}>
+          <label>
+            Song name
             <input
+              data-autofocus
               type="text"
-              className="modal-element"
-              placeholder="Title?"
+              placeholder="My first beat"
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              required
+              onChange={(event) => setTitle(event.target.value)}
             />
+          </label>
+          <label>
+            Tempo (beats per minute)
             <input
               type="number"
-              pattern="[0-9]"
-              className="modal-element"
-              placeholder="BPM?"
+              min="1"
+              placeholder="120"
               value={bpm}
-              onChange={(e) => setBPM(e.target.value)}
+              required
+              onChange={(event) => setBPM(event.target.value)}
             />
-            <button className="modal-create-song-button" onClick={handleMakeSong}>
-              Create Song
+          </label>
+          {error && <p className="new-song-error" role="alert">{error}</p>}
+          <div className="new-song-actions">
+            <button type="button" onClick={onClose}>Cancel</button>
+            <button type="submit" disabled={saving || !title.trim()}>
+              {saving ? "Creating…" : "Create Song"}
             </button>
           </div>
-        </DialogPanel>
-      </div>
+        </form>
+      </DialogPanel>
     </Dialog>
   );
 }
