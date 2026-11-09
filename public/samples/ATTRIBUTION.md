@@ -15,8 +15,9 @@ recording for notes between those samples.
 
 ## Drums
 
-The kick, snare, and closed hi-hat samples are from
-[Boochi44/free-drum-samples](https://github.com/Boochi44/free-drum-samples),
-released under [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/).
-Some sounds in that collection were derived from Edward Loveall's CC0 TR-808
-recordings.
+The kick, snare, and closed hi-hat are acoustic kit recordings from
+[Virtuosity Drums](https://github.com/sgossner/Virtuosity_Drums) by Versilian
+Studios and Karoryfer Samples, released under
+[CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/).
+The selected hits came from [Keyboardia's acoustic drum set](https://github.com/adewale/keyboardia/tree/main/app/public/instruments).
+They were trimmed, level-adjusted, and converted to mono WAV for this app.
