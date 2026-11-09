@@ -498,7 +498,7 @@ export default function Automation() {
               <span className="automation-section-label">ARRANGEMENT</span>
 
               <span className="automation-sequencer-subtitle">
-                DROP TRACKS INTO CHANNELS
+                Pick an instrument, then drag a track into a bar.
               </span>
             </div>
 

@@ -1,32 +1,7 @@
 :root {
-  --automation-bg: #ffffff;
-
-  --automation-blue: #a9ddf5;
-  --automation-blue-light: #d9f3ff;
-  --automation-blue-lighter: #edfaff;
-
-  --automation-blue-dark: #75bddb;
-  --automation-blue-darker: #4e91b1;
-
-  --automation-text: #42758c;
-  --automation-text-light: #79a8bb;
-
-  --automation-border: #c4e8f5;
-  --automation-border-light: #e2f4fa;
-
-  --automation-grid: #e8f4f8;
-
-  --automation-track-bg: #e5f7fd;
-  --automation-track-border: #a8dcef;
-
-  --automation-drop-bg: #fbfeff;
-  --automation-drop-hover: #edfaff;
-
-  --automation-channel-bg: #ffffff;
-  --automation-sidebar-bg: #f8fcfe;
-
+  --automation-label-width: 100px;
   --automation-header-height: 64px;
-  --automation-channel-height: 125px;
+  --automation-channel-height: clamp(62px, 15vh, 112px);
   --automation-timeline-height: 38px;
   --automation-footer-height: 60px;
 }
@@ -45,8 +20,8 @@ body,
 
 body {
   margin: 0;
-  background: var(--automation-bg);
-  color: var(--automation-text);
+  background: var(--app-bg);
+  color: var(--app-text);
   overflow: hidden;
 }
 
@@ -66,19 +41,19 @@ header {
   overflow-x: auto;
   overflow-y: hidden;
 
-  background: var(--automation-bg);
+  background: var(--app-bg);
 }
 
 .automation-canvas {
   position: relative;
 
-  width: 200vw;
-  min-width: 1400px;
+  width: 100%;
+  min-width: 760px;
   height: 100vh;
 
   overflow: hidden;
 
-  background: var(--automation-bg);
+  background: var(--app-bg);
 }
 
 .automation-header {
@@ -87,8 +62,8 @@ header {
   align-items: center;
   justify-content: left;
   padding: 20px 20px;
-  border-bottom: 1px solid var(--automation-border);
-  background: var(--automation-bg);
+  border-bottom: 1px solid var(--app-border);
+  background: var(--app-bg);
 }
 
 
@@ -102,13 +77,13 @@ header {
 
   padding: 0 18px;
 
-  border: 1px solid var(--automation-blue);
+  border: 1px solid var(--app-accent);
 
-  border-radius: 3px;
+  border-radius: var(--app-control-radius);
 
-  background: var(--automation-blue-light);
+  background: var(--app-tint);
 
-  color: var(--automation-text);
+  color: var(--app-text);
 
   font-size: 11px;
   font-weight: 700;
@@ -118,13 +93,13 @@ header {
 }
 
 .automation-button:hover {
-  background: var(--automation-blue);
-  border-color: var(--automation-blue-dark);
+  background: var(--app-accent);
+  border-color: var(--app-active);
 }
 
 .automation-button-primary {
-  background: var(--automation-blue);
-  border-color: var(--automation-blue-dark);
+  background: var(--app-accent);
+  border-color: var(--app-active);
 }
 
 .automation-workspace {
@@ -141,31 +116,31 @@ header {
 
   height: 100%;
 
-  border-right: 1px solid var(--automation-border);
+  border-right: 1px solid var(--app-border);
 
-  background: var(--automation-sidebar-bg);
+  background: var(--app-paper);
 }
 
 .automation-sidebar-header {
   height: 62px;
 
   display: flex;
-  align-items: left;
+  align-items: center;
   justify-content: space-between;
 
   padding: 0 18px;
 
-  border-bottom: 1px solid var(--automation-border-light);
+  border-bottom: 1px solid var(--app-border-light);
 }
 
 .automation-section-label {
   display: block;
 
-  color: var(--automation-text);
+  color: var(--app-text);
 
   font-size: 10px;
   font-weight: 700;
-  letter-spacing: 3px;
+  letter-spacing: 0.06em;
 }
 
 .automation-section-count {
@@ -173,23 +148,23 @@ header {
 
   margin-top: 4px;
 
-  color: var(--automation-text-light);
+  color: var(--app-text-light);
 
-  font-size: 8px;
-  letter-spacing: 2px;
+  font-size: 11px;
+  letter-spacing: 0.04em;
 }
 
 .automation-sidebar-add {
   width: 28px;
   height: 28px;
 
-  border: 1px solid var(--automation-blue);
+  border: 1px solid var(--app-accent);
 
-  border-radius: 3px;
+  border-radius: var(--app-control-radius);
 
-  background: var(--automation-blue-light);
+  background: var(--app-tint);
 
-  color: var(--automation-text);
+  color: var(--app-text);
 
   cursor: pointer;
 
@@ -214,18 +189,18 @@ header {
 
   padding: 13px;
 
-  border: 1px solid var(--automation-track-border);
+  border: 1px solid var(--app-border);
 
-  border-radius: 3px;
+  border-radius: var(--app-control-radius);
 
-  background: var(--automation-track-bg);
+  background: var(--app-paper);
 
   cursor: grab;
 }
 
 .automation-track-card:hover {
-  border-color: var(--automation-blue-dark);
-  background: var(--automation-blue-light);
+  border-color: var(--app-active);
+  background: var(--app-tint);
 }
 
 .automation-track-card:active {
@@ -247,7 +222,7 @@ header {
   width: 12px;
   height: 1px;
 
-  background: var(--automation-blue-dark);
+  background: var(--app-active);
 }
 
 .automation-track-color {
@@ -258,7 +233,7 @@ header {
 
   border-radius: 2px;
 
-  background: var(--automation-blue);
+  background: var(--app-accent);
 }
 
 .automation-track-info {
@@ -268,7 +243,7 @@ header {
 }
 
 .automation-track-name {
-  color: var(--automation-text);
+  color: var(--app-text);
 
   font-size: 12px;
   font-weight: 700;
@@ -276,10 +251,10 @@ header {
 }
 
 .automation-track-meta {
-  color: var(--automation-text-light);
+  color: var(--app-text-light);
 
-  font-size: 8px;
-  letter-spacing: 2px;
+  font-size: 11px;
+  letter-spacing: 0.04em;
 }
 
 .automation-track-waveform {
@@ -295,7 +270,7 @@ header {
 
   border-radius: 1px;
 
-  background: var(--automation-blue-dark);
+  background: var(--app-active);
 }
 
 .automation-track-waveform span:nth-child(1) {
@@ -356,10 +331,10 @@ header {
   display: flex;
   justify-content: space-between;
 
-  color: var(--automation-text-light);
+  color: var(--app-text-light);
 
-  font-size: 8px;
-  letter-spacing: 2px;
+  font-size: 11px;
+  letter-spacing: 0.04em;
 }
 
 .automation-sidebar-resize {
@@ -384,7 +359,7 @@ header {
   width: 1px;
   height: 100%;
 
-  background: var(--automation-border);
+  background: var(--app-border);
 }
 
 .automation-resize-grip {
@@ -396,11 +371,11 @@ header {
 
   padding: 6px 2px;
 
-  border: 1px solid var(--automation-blue);
+  border: 1px solid var(--app-accent);
 
   border-radius: 2px;
 
-  background: var(--automation-bg);
+  background: var(--app-bg);
 }
 
 .automation-resize-grip span {
@@ -409,7 +384,7 @@ header {
 
   border-radius: 50%;
 
-  background: var(--automation-blue-dark);
+  background: var(--app-active);
 }
 
 .automation-sequencer {
@@ -417,7 +392,7 @@ header {
 
   flex: 1;
 
-  min-width: 1100px;
+  min-width: 0;
 
   height: 100%;
 
@@ -433,42 +408,42 @@ header {
 
   padding: 0 26px;
 
-  border-bottom: 1px solid var(--automation-border-light);
+  border-bottom: 1px solid var(--app-border-light);
 
-  background: var(--automation-bg);
+  background: var(--app-bg);
 }
 
 .automation-sequencer-subtitle {
-  color: var(--automation-text-light);
+  color: var(--app-text-light);
 
-  font-size: 8px;
-  letter-spacing: 2px;
+  font-size: 11px;
+  letter-spacing: 0.04em;
 }
 
 .automation-timeline {
   display: grid;
 
   grid-template-columns:
-    150px
-    repeat(4, minmax(70px, 1fr));
+    var(--automation-label-width)
+    repeat(4, minmax(0, 1fr));
 
   height: var(--automation-timeline-height);
 
-  border-bottom: 1px solid var(--automation-border);
+  border-bottom: 1px solid var(--app-border);
 
-  background: var(--automation-bg);
+  background: var(--app-bg);
 }
 
 .automation-timeline-label {
   display: flex;
   align-items: center;
 
-  padding-left: 26px;
+  padding-left: 12px;
 
-  color: var(--automation-text-light);
+  color: var(--app-text-light);
 
-  font-size: 8px;
-  letter-spacing: 2px;
+  font-size: 11px;
+  letter-spacing: 0.04em;
 }
 
 .automation-timeline-marker {
@@ -477,11 +452,11 @@ header {
   width:100%;
   padding-left: 8px;
 
-  border-left: 1px solid var(--automation-grid);
+  border-left: 1px solid var(--app-grid);
 
-  color: var(--automation-text-light);
+  color: var(--app-text-light);
 
-  font-size: 8px;
+  font-size: 11px;
   letter-spacing: 1px;
 }
 
@@ -492,13 +467,13 @@ header {
 .automation-channel-row {
   display: grid;
 
-  grid-template-columns: 150px minmax(1000px, 1fr);
+  grid-template-columns: var(--automation-label-width) minmax(0, 1fr);
 
   height: var(--automation-channel-height);
 
-  border-bottom: 1px solid var(--automation-border-light);
+  border-bottom: 1px solid var(--app-border-light);
 
-  background: var(--automation-channel-bg);
+  background: var(--app-bg);
 }
 
 .automation-channel-label {
@@ -506,26 +481,26 @@ header {
   align-items: center;
   gap: 12px;
 
-  padding-left: 26px;
+  padding-left: 12px;
 
-  border-right: 1px solid var(--automation-border-light);
+  border-right: 1px solid var(--app-border-light);
 
-  background: var(--automation-sidebar-bg);
+  background: var(--app-paper);
 }
 
 .automation-channel-number {
-  color: var(--automation-text-light);
+  color: var(--app-text-light);
 
-  font-size: 8px;
+  font-size: 11px;
   letter-spacing: 1px;
 }
 
 .automation-channel-name {
-  color: var(--automation-text);
+  color: var(--app-text);
 
   font-size: 12px;
   font-weight: 700;
-  letter-spacing: 2px;
+  letter-spacing: 0.04em;
 }
 
 
@@ -545,9 +520,9 @@ header {
 
   padding: 0 26px;
 
-  border-top: 1px solid var(--automation-border);
+  border-top: 1px solid var(--app-border);
 
-  background: var(--automation-bg);
+  background: var(--app-bg);
 }
 
 .automation-footer-stat {
@@ -557,14 +532,14 @@ header {
 }
 
 .automation-footer-stat span {
-  color: var(--automation-text-light);
+  color: var(--app-text-light);
 
-  font-size: 7px;
-  letter-spacing: 2px;
+  font-size: 10px;
+  letter-spacing: 0.04em;
 }
 
 .automation-footer-stat strong {
-  color: var(--automation-text);
+  color: var(--app-text);
 
   font-size: 10px;
   letter-spacing: 1px;
@@ -579,24 +554,24 @@ header {
   align-items: center;
   gap: 9px;
 
-  color: var(--automation-text-light);
+  color: var(--app-text-light);
 
-  font-size: 7px;
+  font-size: 10px;
   letter-spacing: 1px;
 }
 
 .automation-key {
   padding: 5px 8px;
 
-  border: 1px solid var(--automation-blue);
+  border: 1px solid var(--app-accent);
 
   border-radius: 2px;
 
-  background: var(--automation-blue-light);
+  background: var(--app-tint);
 
-  color: var(--automation-text);
+  color: var(--app-text);
 
-  font-size: 7px;
+  font-size: 10px;
 }
 
 .automation-hud::-webkit-scrollbar {
@@ -604,32 +579,28 @@ header {
 }
 
 .automation-hud::-webkit-scrollbar-track {
-  background: var(--automation-bg);
+  background: var(--app-bg);
 }
 
 .automation-hud::-webkit-scrollbar-thumb {
-  background: var(--automation-blue);
+  background: var(--app-accent);
 
-  border: 1px solid var(--automation-blue-dark);
+  border: 1px solid var(--app-active);
 
-  border-radius: 4px;
+  border-radius: var(--app-control-radius);
 }
 
 .automation-hud::-webkit-scrollbar-thumb:hover {
-  background: var(--automation-blue-dark);
-}
-
-.automation-track-card {
-  transition: background-color 0.15s ease, border-color 0.15s ease;
+  background: var(--app-active);
 }
 
 .automation-track-card-selected {
-  background: #cceef9;
-  border-color: var(--automation-blue-dark);
+  background: var(--app-gold);
+  border-color: var(--app-active);
 }
 
 .automation-track-card-selected:hover {
-  background: #c5eaf7;
+  background: var(--app-gold);
 }
 
 .automation-channel-row {
@@ -637,22 +608,23 @@ header {
 }
 
 .automation-channel-row-selected {
-  background: #f4fbfe;
+  background: var(--app-tint);
 }
 
 .automation-empty-tracks {
   padding: 24px 10px;
   text-align: center;
-  color: var(--automation-text-light);
-  font-size: 8px;
+  color: var(--app-text-light);
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 2px;
+  letter-spacing: 0.04em;
 }
 
 .automation-drop-zone-row {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 8px;
+  padding: 0 4px;
   width: 100%;
 }
 
@@ -660,29 +632,28 @@ header {
   flex: 1;
   height: 75%;
   min-width: 0;
-  background-color: #949494;
-  border: 1px solid #767676;
-  border-radius: 4px;
+  background-color: var(--app-paper);
+  border: 1px dashed var(--app-accent-edge);
+  border-radius: var(--app-control-radius);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 11px;
-  color: #888;
+  color: var(--app-text-light);
   cursor: pointer;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  transition: background-color 0.1s ease, border-color 0.1s ease;
 }
 
 .automation-block:hover {
-  background-color: #333;
-  border-color: #555;
+  background-color: var(--app-gold);
+  border-color: var(--app-active);
 }
 
 .automation-block.filled {
-  background-color: #2563eb;
-  border-color: #3b82f6;
+  background-color: var(--app-active);
+  border: 1px solid var(--app-active-hover);
   color: white;
   font-weight: 600;
 }
