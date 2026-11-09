@@ -1,23 +1,9 @@
-@import url(
-"https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
-
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: "Poppins", sans-serif;
 }
-body {
-    height: 100vh;
-    width: 100vw;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    gap: 30px;
-    background-color: rgb(231, 231, 231);
-}
-header {
+.modal-form-container header {
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -26,7 +12,7 @@ header {
     gap: 8px;
 }
 .modal-heading {
-    color: green;
+    color: var(--app-active);
 }
 .modal-title {
     font-weight: 400;
@@ -35,8 +21,9 @@ header {
 .modal-form-container {
     height: 600px;
     width: 500px;
-    background-color: white;
-    box-shadow: 8px 8px 20px rgb(128, 128, 128);
+    background-color: var(--app-paper);
+    border-radius: var(--app-card-radius);
+    box-shadow: 0 14px 38px rgb(45 57 46 / 24%);
     position: relative;
     overflow: hidden;
 }
@@ -45,7 +32,7 @@ header {
     height: 60px;
     width: 300px;
     margin: 20px auto;
-    box-shadow: 10px 10px 30px rgb(175, 153, 224);
+    background: var(--app-grid);
     border-radius: 50px;
     display: flex;
     justify-content: space-around;
@@ -66,9 +53,7 @@ header {
     height: 60px;
     width: 150px;
     border-radius: 50px;
-    background-image: linear-gradient(to right,
-            rgb(76, 76, 205),
-            rgb(122, 143, 247));
+    background: var(--app-accent);
     position: absolute;
     top: 0px;
     left: 0px;
@@ -110,9 +95,7 @@ header {
     height: 60px;
     width: 150px;
     border-radius: 50px;
-    background-image: linear-gradient(to right,
-            rgb(76, 76, 205),
-            rgb(122, 143, 247));
+    background: var(--app-accent);
     font-size: 22px;
     border: none;
     cursor: pointer;
