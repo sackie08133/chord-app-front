@@ -134,19 +134,11 @@ export default function Automation() {
       return;
     }
     try {
-      for (const [key, track] of Object.entries(placements)) {
+      const slots = Object.entries(placements).map(([key, track]) => {
         const [trackType, col] = key.split("-");
-        await apiRequest(
-          `/automation/${id}`,
-          {
-            trackType,
-            trackId: track.id,
-            name: track.name,
-            col: Number(col),
-          },
-          token,
-        );
-      }
+        return { trackType, trackId: track.id, name: track.name, col: Number(col) };
+      });
+      await apiRequest(`/automation/${id}`, { slots }, token, "PUT");
       alert("Automation saved");
     } catch (error) {
       console.error(error);
@@ -554,7 +546,29 @@ export default function Automation() {
                               }));
                             }}
                           >
-                            {placedTrack?.name}
+                            {placedTrack && (
+                              <>
+                                <span className="automation-block-name" title={placedTrack.name}>
+                                  {placedTrack.name}
+                                </span>
+                                <button
+                                  className="automation-block-action"
+                                  type="button"
+                                  title="Remove from arrangement"
+                                  aria-label={`Remove ${placedTrack.name} from bar ${blockIndex + 1}`}
+                                  onClick={(event) => {
+                                    event.stopPropagation();
+                                    setPlacements((previous) => {
+                                      const remaining = { ...previous };
+                                      delete remaining[key];
+                                      return remaining;
+                                    });
+                                  }}
+                                >
+                                  ×
+                                </button>
+                              </>
+                            )}
                           </div>
                         );
                       },
