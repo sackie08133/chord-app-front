@@ -135,12 +135,12 @@ export default function Automation() {
     if (isDemo) {
       return alert("Demo songs can't be saved.");
     }
-    if (loadedSong !== id || saving) return;
     if (!id) {
       alert("Song not found");
       return;
     }
     try {
+      if (loadedSong !== id || saving) return;
       setSaving(true);
       const slots = Object.entries(placements).map(([key, track]) => {
         const [trackType, col] = key.split("-");
@@ -153,29 +153,6 @@ export default function Automation() {
       alert(error.message);
     } finally {
       setSaving(false);
-    }
-  };
-
-  const loadAutomation = async () => {
-    if (isDemo) {
-      const loadedPlacements = {};
-      for (const row of demoAutomation) {
-        const key = `${row.track_type}-${row.col}`;
-        loadedPlacements[key] = { id: row.track_id, name: row.name };
-      }
-      setPlacements(loadedPlacements);
-      return;
-    }
-    try {
-      const data = await apiRequest(`/automation/${id}`, null, token, "GET");
-      const loadedPlacements = {};
-      for (const row of data) {
-        const key = `${row.track_type}-${row.col}`;
-        loadedPlacements[key] = { id: row.track_id, name: row.name };
-      }
-      setPlacements(loadedPlacements);
-    } catch (error) {
-      throw error;
     }
   };
 
@@ -330,24 +307,31 @@ export default function Automation() {
     if (!id) return;
     if (!isDemo && !token) return;
 
+    let cancelled = false;
     const loadData = async () => {
       try {
-        await loadAutomation();
+        const rows = isDemo
+          ? demoAutomation
+          : await apiRequest(`/automation/${id}`, null, token, "GET");
+        if (cancelled) return;
+        const loadedPlacements = Object.fromEntries(rows.map((row) => [
+          `${row.track_type}-${row.col}`,
+          { id: row.track_id, name: row.name },
+        ]));
+        setPlacements(loadedPlacements);
         setLoadedSong(id);
         setSolo(null);
-        if (isDemo) {
-          setBPM(demoSongInfo.bpm);
-        } else {
-          const bpmValue = await fetchBpm(id, token);
-          setBPM(bpmValue);
-        }
+
+        const songBpm = isDemo ? demoSongInfo.bpm : await fetchBpm(id, token);
+        if (!cancelled) setBPM(songBpm);
       } catch (error) {
         console.error("Failed to load automation data:", error);
       }
     };
 
     loadData();
-  }, [id, token]);
+    return () => { cancelled = true; };
+  }, [id, isDemo, token]);
 
   return (
     <div className="automation-hud">
