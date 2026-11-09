@@ -57,7 +57,7 @@ export function buildBeats(chordSlots, strumPattern) {
 
     for (let step = 0; step < strummingSteps; step++) {
       const strumType = strumPattern[step] || "rest";
-      beats.push({ voicing, strumType });
+      beats.push({ voicing, strumType, volume: slot.volume, panning: slot.panning });
     }
   }
   return beats;
@@ -135,7 +135,7 @@ export function playRhythmTrack(chordSlots, strumPattern, bpm, offset = 0, loop 
 
   function callbackStep(time, i) {
     const beat = beats[i];
-    playChordAtTime(beat.voicing, beat.strumType, time);
+    playChordAtTime(beat.voicing, beat.strumType, time, beat);
   }
 
   Tone.Transport.bpm.value = bpm;

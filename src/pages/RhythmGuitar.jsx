@@ -388,7 +388,7 @@ function RhythmGuitar() {
                     if (!shape) return;
                     const rootFret = rootFretMap[slot.root] ?? 0;
                     const voicing = shiftVoicing(shape.voicing, rootFret);
-                    playChord(voicing);
+                    playChord(voicing, slot);
                   }}
                 >
                   ▶

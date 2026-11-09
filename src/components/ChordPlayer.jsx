@@ -9,7 +9,7 @@ function recordedNotes(midiNotes) {
 }
 
 const mixer = Object.fromEntries(["drum", "bass", "rhythm", "lead"].map((lane) => {
-  const pan = new Tone.Panner(0).toDestination();
+  const pan = new Tone.Panner({ pan: 0, channelCount: lane === "rhythm" ? 2 : 1 }).toDestination();
   const volume = new Tone.Gain(1).connect(pan);
   return [lane, { volume, pan }];
 }));
@@ -36,12 +36,13 @@ export const guitarSampler = new Tone.Sampler({
   volume: -5,
 }).connect(leadGuitarBus);
 
+const chordPan = new Tone.Panner(0).connect(mixer.rhythm.volume);
 const rhythmGuitarBus = new Tone.Compressor({
   threshold: -18,
   ratio: 2.5,
   attack: 0.005,
   release: 0.2,
-}).connect(mixer.rhythm.volume);
+}).connect(chordPan);
 
 const rhythmGuitarSampler = new Tone.Sampler({
   urls: recordedNotes([
@@ -110,15 +111,18 @@ function guitarNoteForString(fret, string) {
   return `${getNoteName(fret + StringsStandard[string].chromScaleNum, "C", 0)}${getOctave(string, fret)}`;
 }
 
-export function playChord(chordVoicing) {
+export async function playChord(chordVoicing, { volume = 100, panning = 0 } = {}) {
+  await Tone.start();
+  await Tone.loaded();
   const now = Tone.now();
+  chordPan.pan.setValueAtTime(panning / 100, now);
   chordVoicing.forEach((fret, string) => {
     if (fret !== null) {
       rhythmGuitarSampler.triggerAttackRelease(
         guitarNoteForString(fret, string),
         "8n",
         now + string * 0.018,
-        0.8,
+        0.8 * volume / 100,
       );
     }
   });
@@ -146,8 +150,9 @@ export function playNoteAtTime(noteName, octave, instrument = "guitar", time) {
   );
 }
 
-export function playChordAtTime(chordVoicing, strumType, time) {
-  if (strumType === "rest") return;
+export function playChordAtTime(chordVoicing, strumType, time, { volume = 100, panning = 0 } = {}) {
+  if (strumType === "rest" || !chordVoicing.length) return;
+  chordPan.pan.setValueAtTime(panning / 100, time);
 
   const stringOrder = strumType === "up"
     ? [...chordVoicing.entries()].reverse()
@@ -161,7 +166,7 @@ export function playChordAtTime(chordVoicing, strumType, time) {
         guitarNoteForString(fret, string),
         duration,
         time + orderIndex * stagger,
-        strumType === "muted" ? 0.55 : 0.8,
+        (strumType === "muted" ? 0.55 : 0.8) * volume / 100,
       );
     }
   });
