@@ -2,16 +2,13 @@
 
 ## Guitar and bass
 
-The electric guitar, acoustic guitar, and electric bass samples are from
-[tonejs-instruments](https://github.com/nbrosowsky/tonejs-instruments) and are
-licensed under [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/).
+- Clean electric guitar: [FreePats Electric Guitar FSBS Clean](https://github.com/freepats/electric-guitar-FSBS-clean), bridge pickup recordings.
+- Acoustic guitar: Jeff Learman's Martin HD28 steel-string recordings from the [Discord SFZ GM Bank](https://github.com/sfzinstruments/Discord-SFZ-GM-Bank), prepared for web use by [Keyboardia](https://github.com/adewale/keyboardia/tree/main/app/public/instruments/acoustic-guitar).
+- Fingerstyle electric bass: [Karoryfer Meatbass](https://github.com/sfzinstruments/karoryfer.meatbass), prepared for web use by [Keyboardia](https://github.com/adewale/keyboardia/tree/main/app/public/instruments/finger-bass).
 
-- Electric guitar and bass source recordings: Karoryfer Samples
-- Acoustic guitar source recordings: University of Iowa Electronic Music Studios
-- Sample preparation and distribution: tonejs-instruments contributors
-
-The application uses a subset of recorded notes and pitch-shifts the nearest
-recording for notes between those samples.
+These recordings are released under [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/).
+The selected notes were trimmed, level-adjusted, and converted to mono MP3.
+The sampler pitch-shifts the nearest recording for notes between recorded pitches.
 
 ## Drums
 

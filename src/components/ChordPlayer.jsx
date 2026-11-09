@@ -4,6 +4,10 @@ import { getNoteName, getOctave } from "./Utils";
 
 const sampleRoot = `${import.meta.env.BASE_URL}samples/`;
 
+function recordedNotes(midiNotes) {
+  return Object.fromEntries(midiNotes.map((note) => [note, `${note}.mp3`]));
+}
+
 const leadGuitarBus = new Tone.Compressor({
   threshold: -20,
   ratio: 3,
@@ -12,18 +16,9 @@ const leadGuitarBus = new Tone.Compressor({
 }).toDestination();
 
 export const guitarSampler = new Tone.Sampler({
-  urls: {
-    E2: "E2.mp3",
-    A2: "A2.mp3",
-    C3: "C3.mp3",
-    "F#3": "Fs3.mp3",
-    C4: "C4.mp3",
-    "F#4": "Fs4.mp3",
-    C5: "C5.mp3",
-    "F#5": "Fs5.mp3",
-    A5: "A5.mp3",
-    C6: "C6.mp3",
-  },
+  urls: recordedNotes([
+    36, 40, 41, 45, 48, 50, 52, 55, 59, 61, 64, 67, 71, 72, 74, 77, 80, 82, 85,
+  ]),
   baseUrl: `${sampleRoot}guitar-electric/`,
   attack: 0,
   release: 0.35,
@@ -38,15 +33,9 @@ const rhythmGuitarBus = new Tone.Compressor({
 }).toDestination();
 
 const rhythmGuitarSampler = new Tone.Sampler({
-  urls: {
-    A2: "A2.mp3",
-    D3: "D3.mp3",
-    G3: "G3.mp3",
-    C4: "C4.mp3",
-    F4: "F4.mp3",
-    C5: "C5.mp3",
-    D5: "D5.mp3",
-  },
+  urls: recordedNotes([
+    40, 43, 46, 49, 52, 55, 58, 61, 64, 68, 71, 74, 77, 80, 83,
+  ]),
   baseUrl: `${sampleRoot}guitar-acoustic/`,
   attack: 0,
   release: 0.3,
@@ -61,16 +50,9 @@ const bassBus = new Tone.Compressor({
 }).toDestination();
 
 export const bassSampler = new Tone.Sampler({
-  urls: {
-    E1: "E1.mp3",
-    "A#1": "As1.mp3",
-    E2: "E2.mp3",
-    "A#2": "As2.mp3",
-    E3: "E3.mp3",
-    "A#3": "As3.mp3",
-    E4: "E4.mp3",
-    "A#4": "As4.mp3",
-  },
+  urls: recordedNotes([
+    21, 24, 27, 30, 33, 36, 39, 42, 45, 48, 51, 54, 57, 60,
+  ]),
   baseUrl: `${sampleRoot}bass-electric/`,
   attack: 0,
   release: 0.25,
