@@ -16,7 +16,7 @@ recording for notes between those samples.
 ## Drums
 
 The kick, snare, and closed hi-hat are acoustic kit recordings from
-[Virtuosity Drums](https://github.com/sgossner/Virtuosity_Drums) by Versilian
+[Virtuosity Drums](https://github.com/sfzinstruments/virtuosity_drums) by Versilian
 Studios and Karoryfer Samples, released under
 [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/).
 The selected hits came from [Keyboardia's acoustic drum set](https://github.com/adewale/keyboardia/tree/main/app/public/instruments).
