@@ -1,47 +1,81 @@
-@import "variables.css";
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-html, body {
-  overflow-x: hidden;
-}
-
 .song-list {
-  width: 100vw;
-  height: 100vh;
-  overflow-y: auto;
-  overflow-x: hidden;
-  background: var(--app-bg);
+  min-height: 100vh;
 }
 
 .song-list-header {
-  display: flex;
   align-items: center;
-  justify-content: left;
-  padding: 0 3%;
-  width: 100%;
-  height: 62px;
-  background-color: var(--app-bg);
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px max(24px, calc((100% - 960px) / 2));
+  background: var(--app-paper);
   border-bottom: 1px solid var(--app-border);
 }
 
-.song-list-login-signup {
+.song-list-brand {
+  font-weight: 750;
+}
+
+.song-list-content {
+  width: min(960px, calc(100% - 40px));
+  margin: clamp(28px, 7vh, 72px) auto;
+}
+
+.song-list-intro,
+.song-list-song-object {
   display: flex;
-  justify-items: center;
   align-items: center;
-  color: var(--app-text);
-  height: 36px;
-  padding: 0 18px;
-  border: 1px solid var(--app-accent);
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.song-list-intro {
+  margin-bottom: 24px;
+}
+
+.song-list-intro h1,
+.song-list-song-object h2 {
+  margin: 0;
+}
+
+.song-list-intro h1 {
+  font: bold clamp(2.4rem, 6vw, 4rem) Georgia, serif;
+}
+
+.song-list-content p {
+  margin: 6px 0 0;
+  color: var(--app-text-light);
+}
+
+.song-list-song-object {
+  margin-bottom: 12px;
+  padding: 22px 24px;
+  background: var(--app-paper);
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-card-radius);
+}
+
+.song-list-song-object a {
+  color: var(--app-active-hover);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+  overflow-wrap: anywhere;
+}
+
+.song-list-song-object a:hover {
+  color: var(--app-active);
+}
+
+.song-list-login-signup,
+.song-list-new,
+.song-list-delete-song-button {
+  min-height: 42px;
+  padding: 8px 16px;
+  border: 1px solid var(--app-border);
   border-radius: var(--app-control-radius);
   background: var(--app-tint);
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
+  color: var(--app-text);
+  font-weight: 650;
   cursor: pointer;
 }
 
@@ -49,74 +83,21 @@ html, body {
   background: var(--app-accent);
 }
 
+.song-list-new {
+  background: var(--app-active);
+  color: white;
+  border-color: var(--app-active);
+}
+
+.song-list-new:hover {
+  background: var(--app-active-hover);
+}
+
 .song-list-delete-song-button {
-  background-color: var(--app-danger);
-  border-radius: 4px;
-  height: 20%;
-  border: 1px solid #c15f5f;
-  display: inline-block;
-  cursor: pointer;
-  color: #ffffff;
-  padding: 6px 12px;
-  margin: 0 0 1% 0;
+  background: var(--app-paper);
+  color: var(--app-danger);
 }
 
 .song-list-delete-song-button:hover {
-  background-color: #c15f5f;
-}
-
-.song-list-delete-song-button:active {
-  position: relative;
-  top: 1px;
-}
-
-.song-list-song-object {
-  background-color: var(--app-paper);
-  border-bottom: 1px solid var(--app-border-light);
-  display: flex;
-  flex-direction: row;
-  height: 25%;
-  width: 100%;
-  padding: 2% 3%;
-  overflow: visible;
-}
-
-h1 {
-  margin-bottom: 8px;
-  line-height: 1.4;
-  color: var(--app-text);
-}
-
-h2 {
-  margin-top: 0;
-  line-height: 1.4;
-  overflow: visible;
-  color: var(--app-text-light);
-}
-
-#song-list-song-description-left {
-  display: flex;
-  flex-direction: column;
-  align-self: flex-start;
-  max-width: 100%;
-  max-height: 100%;
-}
-
-.song-list-fab {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background-color: var(--app-active);
-  color: white;
-  font-size: 28px;
-  border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  z-index: 100;
+  background: var(--app-clay);
 }

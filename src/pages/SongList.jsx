@@ -45,7 +45,6 @@ function SongList() {
 
   return (
     <div className="song-list">
-      <span className="song-list-ai-disclosure">AI used for styling page and learning</span>
       {showLogin && (
         <LoginSignup
           onClose={() => setShowLogin(false)}
@@ -60,7 +59,8 @@ function SongList() {
         />
       )}
 
-      <div className="song-list-header">
+      <header className="song-list-header">
+        <span className="song-list-brand">Chord App</span>
         <button
           className="song-list-login-signup"
           id="login"
@@ -68,24 +68,28 @@ function SongList() {
         >
           {token ? "Logout" : "Login / Sign Up"}{" "}
         </button>
-      </div>
+      </header>
 
-      <button className="song-list-fab" onClick={() => setShowCreate(true)}>
-        +
-      </button>
+      <main className="song-list-content">
+        <div className="song-list-intro">
+          <div>
+            <h1>Songs</h1>
+            <p>Pick a song and try making a beat.</p>
+          </div>
+          <button className="song-list-new" onClick={() => setShowCreate(true)}>
+            + New Song
+          </button>
+        </div>
 
-      {allSongs.map((song) => (
-        <div className="song-list-song-object" key={song.id}>
-          <div id="song-list-song-description-left">
-            <h1>
-              {" "}
-              <Link to={`/song/${song.id}`}>{song.title}</Link>{" "}
-            </h1>
-            <h2>
-              {" "}
-              {song.bpm} BPM
-              {song.last_edited ? `, ${song.last_edited.split("T")[0]}` : ""}
-            </h2>
+        {allSongs.map((song) => (
+          <article className="song-list-song-object" key={song.id}>
+            <div>
+              <h2><Link to={`/song/${song.id}`}>{song.title}</Link></h2>
+              <p>
+                {song.bpm} BPM
+                {song.last_edited ? ` · ${song.last_edited.split("T")[0]}` : ""}
+              </p>
+            </div>
             {song.id !== "demo" && (
               <button
                 onClick={() => handleDeleteSong(song.id)}
@@ -94,9 +98,9 @@ function SongList() {
                 Delete Song
               </button>
             )}
-          </div>
-        </div>
-      ))}
+          </article>
+        ))}
+      </main>
     </div>
   );
 }
