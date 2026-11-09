@@ -46,7 +46,7 @@ Within a song, you'll find several clickable instruments on the right side of th
 | **Rhythm** | Choose chord(s), then click the bottom row of squares to set the strumming pattern. An empty row means no sound. |
 
 ### 5. Put It All Together
-Once you've made your tracks, go to your song page and click **Automation**. Drag your tracks into the squares, then hit **Play All** to hear your creation!
+Once you've made your tracks, go to your song page and click **Put Your Song Together**. Drag sounds into the parts of your song, then choose **Play Whole Song** to hear it.
 
 ##  Known Bugs / Issues
 

@@ -66,7 +66,7 @@ function Song() {
           id="automation"
           onClick={() => navigate(`/song/${id}/automation`)}
         >
-          Automation
+          Put Your Song Together
         </button>
       </div>
 

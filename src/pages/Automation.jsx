@@ -150,7 +150,7 @@ export default function Automation() {
         return { trackType, trackId: track.id, name: track.name, col: Number(col) };
       });
       await apiRequest(`/automation/${id}`, { slots }, token, "PUT");
-      alert("Automation saved");
+      alert("Your song is saved");
     } catch (error) {
       console.error(error);
       alert(error.message);
@@ -367,7 +367,7 @@ export default function Automation() {
               type="button"
               onClick={handlePlayAll}
             >
-              {soloLane ? "PLAY SOLO" : "PLAY"}
+              {soloLane ? `Play ${lanes[soloLane]} Only` : "Play Whole Song"}
             </button>
 
             <button
@@ -490,19 +490,19 @@ export default function Automation() {
 
           <section className="automation-sequencer">
             <div className="automation-sequencer-header">
-              <span className="automation-section-label">ARRANGEMENT</span>
+              <span className="automation-section-label">PUT YOUR SONG TOGETHER</span>
 
               <span className="automation-sequencer-subtitle">
-                {soloLane ? `Solo: ${lanes[soloLane]}` : "Pick an instrument, then drag a track into a bar."}
+                {soloLane ? `Playing only: ${lanes[soloLane]}` : "Pick an instrument, then drag one of its sounds into a part of your song."}
               </span>
             </div>
 
             <div className="automation-timeline">
-              <div className="automation-timeline-label">TIME</div>
+              <div className="automation-timeline-label">SONG ORDER</div>
 
               {Array.from({ length: NUM_OF_BARS }).map((_, index) => (
                 <div className="automation-timeline-marker" key={index}>
-                  {String(index + 1).padStart(2, "0")}
+                  Part {index + 1}
                 </div>
               ))}
             </div>
@@ -526,7 +526,7 @@ export default function Automation() {
                       <button
                         className="automation-lane-solo"
                         type="button"
-                        aria-label={`Solo ${name}`}
+                        aria-label={`Play only ${name}`}
                         aria-pressed={soloLane === channel}
                         onClick={(event) => {
                           event.stopPropagation();
@@ -534,7 +534,7 @@ export default function Automation() {
                           setSoloLane(soloLane === channel ? null : channel);
                         }}
                       >
-                        Solo
+                        Play only
                       </button>
                     </div>
                     <div className="automation-lane-mix" onClick={(event) => event.stopPropagation()}>
@@ -547,7 +547,7 @@ export default function Automation() {
 
                         return (
                           <label key={control}>
-                            <span>{isPan ? "Pan" : "Volume"}</span>
+                            <span>{isPan ? "Left / right" : "Volume"}</span>
                             <input
                               type="range"
                               aria-label={`${name} ${control}`}
@@ -599,8 +599,8 @@ export default function Automation() {
                                 <button
                                   className="automation-block-action"
                                   type="button"
-                                  title="Remove from arrangement"
-                                  aria-label={`Remove ${placedTrack.name} from bar ${blockIndex + 1}`}
+                                  title="Remove from song"
+                                  aria-label={`Remove ${placedTrack.name} from part ${blockIndex + 1}`}
                                   onClick={(event) => {
                                     event.stopPropagation();
                                     stopAllSequences();
