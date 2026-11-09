@@ -47,6 +47,8 @@ export function getNoteName(chromaticNum, key, sharpOrFlat) {
   return Notes[actualIndex][sharpOrFlat]
 }
 
+export const serviceUnavailableMessage = "Accounts and saving are currently out of service. You can still play the demo.";
+
 // backend API call 
 export async function apiRequest(path, body, token, method = "POST") {
   const headers = { "Content-Type": "application/json" }
@@ -59,13 +61,22 @@ export async function apiRequest(path, body, token, method = "POST") {
     method,
     headers,
     cache: "no-store",
+    signal: AbortSignal.timeout(12000),
   }
 
   if (body) {
     options.body = JSON.stringify(body)
   }
 
-  const response = await fetch(`${API_URL}${path}`, options);
+  let response;
+  try {
+    response = await fetch(`${API_URL}${path}`, options);
+  } catch {
+    throw new Error(serviceUnavailableMessage);
+  }
+  if ([502, 503, 504].includes(response.status)) {
+    throw new Error(serviceUnavailableMessage);
+  }
   if (response.status === 401 || response.status === 403) {
     throw new Error("Authentication required")
   }

@@ -102,3 +102,12 @@
 .song-list-delete-song-button:hover {
   background: var(--app-clay);
 }
+
+.song-list-content .song-list-service-notice {
+  margin: 0 0 20px;
+  padding: 12px 16px;
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-control-radius);
+  background: var(--app-gold);
+  color: var(--app-text);
+}

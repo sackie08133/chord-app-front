@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import LoginSignup from "../components/LoginSignup";
 import NewSong from "../components/NewSong";
 import { useAuth } from "../components/Context";
-import { apiRequest } from "../components/Utils";
+import { apiRequest, serviceUnavailableMessage } from "../components/Utils";
 import { demoSongInfo } from "../components/DemoData";
 
 function SongList() {
@@ -12,13 +12,15 @@ function SongList() {
   const [showCreate, setShowCreate] = useState(false);
   const { token, setToken } = useAuth();
   const [songs, setSongs] = useState([]);
+  const [serviceUnavailable, setServiceUnavailable] = useState(false);
 
   const fetchSongs = useCallback(async () => {
     try {
       const data = await apiRequest("/songs", null, token, "GET");
       setSongs(data);
+      setServiceUnavailable(false);
     } catch (error) {
-      console.error(error.message);
+      setServiceUnavailable(error.message === serviceUnavailableMessage);
     }
   }, [token]);
 
@@ -71,6 +73,9 @@ function SongList() {
       </header>
 
       <main className="song-list-content">
+        {serviceUnavailable && (
+          <p className="song-list-service-notice" role="status">{serviceUnavailableMessage}</p>
+        )}
         <div className="song-list-intro">
           <div>
             <h1>Songs</h1>
