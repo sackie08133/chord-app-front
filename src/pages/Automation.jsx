@@ -45,6 +45,7 @@ export default function Automation() {
   const [selectedTrack, setSelectedTrack] = useState(null);
   const [bpm, setBPM] = useState(null);
   const seqsRef = useRef([]);
+  const playbackVersion = useRef(0);
 
   const { token } = useAuth();
   const { id } = useParams();
@@ -157,6 +158,7 @@ export default function Automation() {
   };
 
   const stopAllSequences = () => {
+    playbackVersion.current += 1;
     seqsRef.current.forEach(({ seq }) => {
       if (!seq) return;
       try {
@@ -222,9 +224,9 @@ export default function Automation() {
     return runs;
   }
 
-  async function playRun(channel, run) {
+  async function playRun(channel, run, version) {
     const data = await fetchTrackData(channel, run.track);
-    if (!data) return null;
+    if (!data || version !== playbackVersion.current) return null;
 
     const startBar = run.startBlock * BLOCK_LENGTH_BARS;
     const numBlocks = run.endBlock - run.startBlock + 1;
@@ -272,28 +274,30 @@ export default function Automation() {
       return;
     }
 
+    stopAllSequences();
+    const version = playbackVersion.current;
     await Tone.start();
     await Tone.loaded();
-    stopAllSequences();
+    if (version !== playbackVersion.current) return;
     Tone.Transport.bpm.value = bpm;
 
     const channels = ["drum", "bass", "rhythm", "lead"];
-    const newSeqs = [];
 
     for (const channel of channels) {
       const runs = buildRuns(channel);
 
       for (const run of runs) {
         try {
-          const result = await playRun(channel, run);
-          if (result) newSeqs.push(result);
+          const result = await playRun(channel, run, version);
+          if (version !== playbackVersion.current) return;
+          if (result) seqsRef.current.push(result);
         } catch (error) {
           console.error(`Failed to schedule ${channel} run:`, error);
         }
       }
     }
 
-    seqsRef.current = newSeqs;
+    if (version !== playbackVersion.current) return;
     Tone.Transport.start();
   };
 
@@ -573,6 +577,7 @@ export default function Automation() {
                                   aria-label={`Remove ${placedTrack.name} from bar ${blockIndex + 1}`}
                                   onClick={(event) => {
                                     event.stopPropagation();
+                                    stopAllSequences();
                                     setPlacements((previous) => {
                                       const remaining = { ...previous };
                                       delete remaining[key];
