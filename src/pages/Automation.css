@@ -679,17 +679,6 @@ button {
   outline-offset: 0;
 }
 
-.automation-block.soloed {
-  background: var(--app-gold);
-  border-color: var(--app-active);
-  color: var(--app-text);
-}
-
-.automation-block-action[aria-pressed="true"] {
-  background: var(--app-active);
-  color: white;
-}
-
 .automation-channel-label {
   flex-direction: column;
   align-items: stretch;
@@ -717,4 +706,29 @@ button {
   width: 100%;
   height: 18px;
   cursor: pointer;
+}
+
+.automation-lane-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.automation-lane-solo {
+  min-height: 25px;
+  padding: 2px 8px;
+  border: 1px solid var(--app-border);
+  border-radius: 6px;
+  background: var(--app-tint);
+  color: var(--app-text);
+  font-size: 11px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.automation-lane-solo[aria-pressed="true"] {
+  border-color: var(--app-active);
+  background: var(--app-active);
+  color: white;
 }

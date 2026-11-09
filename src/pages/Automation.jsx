@@ -39,11 +39,8 @@ export default function Automation() {
   const [placements, setPlacements] = useState({});
   const [loadedSong, setLoadedSong] = useState(null);
   const [saving, setSaving] = useState(false);
-  const [solo, setSolo] = useState(null);
+  const [soloLane, setSoloLane] = useState(null);
   const [mix, setMix] = useState({});
-  const activeSolo = solo && Object.entries(placements).some(
-    ([key, track]) => key.startsWith(`${solo.channel}-`) && track.id === solo.id,
-  ) ? solo : null;
 
   const [tracks, setTracks] = useState([]);
   const [selectedInstrument, setSelectedInstrument] = useState(null);
@@ -210,10 +207,7 @@ export default function Automation() {
 
     for (let block = 0; block < NUM_OF_ROWS; block++) {
       const key = `${channel}-${block}`;
-      const placedTrack = placements[key];
-      const track = placedTrack && (!activeSolo || (
-        activeSolo.channel === channel && activeSolo.id === placedTrack.id
-      )) ? placedTrack : null;
+      const track = placements[key];
 
       if (track && currentRun && currentRun.track.id === track.id) {
         currentRun.endBlock = block;
@@ -286,7 +280,7 @@ export default function Automation() {
     if (version !== playbackVersion.current) return;
     Tone.Transport.bpm.value = bpm;
 
-    const channels = ["drum", "bass", "rhythm", "lead"];
+    const channels = soloLane ? [soloLane] : Object.keys(lanes);
 
     for (const channel of channels) {
       const runs = buildRuns(channel);
@@ -330,7 +324,7 @@ export default function Automation() {
         ]));
         setPlacements(loadedPlacements);
         setLoadedSong(id);
-        setSolo(null);
+        setSoloLane(null);
 
         const songBpm = isDemo ? demoSongInfo.bpm : await fetchBpm(id, token);
         if (!cancelled) setBPM(songBpm);
@@ -373,7 +367,7 @@ export default function Automation() {
               type="button"
               onClick={handlePlayAll}
             >
-              {activeSolo ? "PLAY SOLO" : "PLAY"}
+              {soloLane ? "PLAY SOLO" : "PLAY"}
             </button>
 
             <button
@@ -499,7 +493,7 @@ export default function Automation() {
               <span className="automation-section-label">ARRANGEMENT</span>
 
               <span className="automation-sequencer-subtitle">
-                {activeSolo ? `Solo: ${activeSolo.name}` : "Pick an instrument, then drag a track into a bar."}
+                {soloLane ? `Solo: ${lanes[soloLane]}` : "Pick an instrument, then drag a track into a bar."}
               </span>
             </div>
 
@@ -527,7 +521,22 @@ export default function Automation() {
                   onClick={() => handleInstrumentClick(channel)}
                 >
                   <div className="automation-channel-label">
-                    <span className="automation-channel-name">{name}</span>
+                    <div className="automation-lane-heading">
+                      <span className="automation-channel-name">{name}</span>
+                      <button
+                        className="automation-lane-solo"
+                        type="button"
+                        aria-label={`Solo ${name}`}
+                        aria-pressed={soloLane === channel}
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          stopAllSequences();
+                          setSoloLane(soloLane === channel ? null : channel);
+                        }}
+                      >
+                        Solo
+                      </button>
+                    </div>
                     <div className="automation-lane-mix" onClick={(event) => event.stopPropagation()}>
                       {["volume", "pan"].map((control) => {
                         const value = (mix[channel] ?? defaultMix)[control];
@@ -567,12 +576,10 @@ export default function Automation() {
                       (_, blockIndex) => {
                         const key = `${channel}-${blockIndex}`;
                         const placedTrack = placements[key];
-                        const isSoloed = placedTrack && activeSolo?.channel === channel
-                          && activeSolo.id === placedTrack.id;
                         return (
                           <div
                             key={blockIndex}
-                            className={`automation-block ${placedTrack ? "filled" : ""} ${isSoloed ? "soloed" : ""}`}
+                            className={`automation-block ${placedTrack ? "filled" : ""}`}
                             onDragOver={(e) => e.preventDefault()}
                             onDrop={(e) => {
                               const trackString =
@@ -589,20 +596,6 @@ export default function Automation() {
                                 <span className="automation-block-name" title={placedTrack.name}>
                                   {placedTrack.name}
                                 </span>
-                                <button
-                                  className="automation-block-action"
-                                  type="button"
-                                  title="Toggle solo for this track"
-                                  aria-label={`Solo ${placedTrack.name}`}
-                                  aria-pressed={Boolean(isSoloed)}
-                                  onClick={(event) => {
-                                    event.stopPropagation();
-                                    stopAllSequences();
-                                    setSolo(isSoloed ? null : { ...placedTrack, channel });
-                                  }}
-                                >
-                                  S
-                                </button>
                                 <button
                                   className="automation-block-action"
                                   type="button"
