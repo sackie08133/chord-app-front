@@ -60,7 +60,7 @@ function SongList() {
       )}
 
       <header className="song-list-header">
-        <span className="song-list-brand">Chord App</span>
+        <span className="song-list-brand">Mr. Savoy’s Rockwriter</span>
         <button
           className="song-list-login-signup"
           id="login"

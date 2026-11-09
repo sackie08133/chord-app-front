@@ -1,4 +1,4 @@
-#  Rockwriter
+# Mr. Savoy’s Rockwriter
 
 A web-based songwriting host, inspired by a Chrome Music Lab assignment I had back in elementary school. (Thank you, Mr. Savoy!)
 
@@ -16,7 +16,7 @@ A web-based songwriting host, inspired by a Chrome Music Lab assignment I had ba
 
 ## Local Installation
 
-If you'd prefer to run Rockwriter locally:
+If you'd prefer to run Mr. Savoy’s Rockwriter locally:
 
 1. Download both the `chord-app-front` and `chord-app-back` repositories.
 2. In each repository, run:
