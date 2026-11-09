@@ -37,7 +37,7 @@
 
 .song-instruments {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  grid-template-columns: minmax(0, 1fr);
   gap: 12px;
 }
 
@@ -51,7 +51,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  min-height: 104px;
+  min-height: 86px;
   padding: 16px;
   border: 1px solid var(--app-border);
   border-radius: var(--app-card-radius);
