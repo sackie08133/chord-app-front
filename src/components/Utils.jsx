@@ -47,7 +47,7 @@ export function getNoteName(chromaticNum, key, sharpOrFlat) {
   return Notes[actualIndex][sharpOrFlat]
 }
 
-export const serviceUnavailableMessage = "Accounts and saving are currently out of service. You can still play the demo.";
+export const serviceUnavailableMessage = "Accounts and saving are paused to keep costs down while Rockwriter is not in active use. You can still play the demo.";
 
 // backend API call 
 export async function apiRequest(path, body, token, method = "POST") {
