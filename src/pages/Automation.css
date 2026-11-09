@@ -678,3 +678,14 @@ button {
   background: var(--app-paper);
   outline-offset: 0;
 }
+
+.automation-block.soloed {
+  background: var(--app-gold);
+  border-color: var(--app-active);
+  color: var(--app-text);
+}
+
+.automation-block-action[aria-pressed="true"] {
+  background: var(--app-active);
+  color: white;
+}

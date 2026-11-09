@@ -33,6 +33,12 @@ export default function Automation() {
   const [sidebarWidth, setSidebarWidth] = useState(280);
   const resizing = useRef(false);
   const [placements, setPlacements] = useState({});
+  const [loadedSong, setLoadedSong] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [solo, setSolo] = useState(null);
+  const activeSolo = solo && Object.entries(placements).some(
+    ([key, track]) => key.startsWith(`${solo.channel}-`) && track.id === solo.id,
+  ) ? solo : null;
 
   const [tracks, setTracks] = useState([]);
   const [selectedInstrument, setSelectedInstrument] = useState(null);
@@ -129,11 +135,13 @@ export default function Automation() {
     if (isDemo) {
       return alert("Demo songs can't be saved.");
     }
+    if (loadedSong !== id || saving) return;
     if (!id) {
       alert("Song not found");
       return;
     }
     try {
+      setSaving(true);
       const slots = Object.entries(placements).map(([key, track]) => {
         const [trackType, col] = key.split("-");
         return { trackType, trackId: track.id, name: track.name, col: Number(col) };
@@ -143,6 +151,8 @@ export default function Automation() {
     } catch (error) {
       console.error(error);
       alert(error.message);
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -165,7 +175,7 @@ export default function Automation() {
       }
       setPlacements(loadedPlacements);
     } catch (error) {
-      console.error("Failed to load automation:", error);
+      throw error;
     }
   };
 
@@ -216,7 +226,10 @@ export default function Automation() {
 
     for (let block = 0; block < NUM_OF_ROWS; block++) {
       const key = `${channel}-${block}`;
-      const track = placements[key] || null;
+      const placedTrack = placements[key];
+      const track = placedTrack && (!activeSolo || (
+        activeSolo.channel === channel && activeSolo.id === placedTrack.id
+      )) ? placedTrack : null;
 
       if (track && currentRun && currentRun.track.id === track.id) {
         currentRun.endBlock = block;
@@ -320,6 +333,8 @@ export default function Automation() {
     const loadData = async () => {
       try {
         await loadAutomation();
+        setLoadedSong(id);
+        setSolo(null);
         if (isDemo) {
           setBPM(demoSongInfo.bpm);
         } else {
@@ -344,7 +359,7 @@ export default function Automation() {
               id="automation-save-button"
               type="button"
               onClick={handleSave}
-              disabled={isDemo}
+              disabled={isDemo || loadedSong !== id || saving}
             >
               SAVE
             </button>
@@ -364,7 +379,7 @@ export default function Automation() {
               type="button"
               onClick={handlePlayAll}
             >
-              PLAY
+              {activeSolo ? "PLAY SOLO" : "PLAY"}
             </button>
 
             <button
@@ -490,7 +505,7 @@ export default function Automation() {
               <span className="automation-section-label">ARRANGEMENT</span>
 
               <span className="automation-sequencer-subtitle">
-                Pick an instrument, then drag a track into a bar.
+                {activeSolo ? `Solo: ${activeSolo.name}` : "Pick an instrument, then drag a track into a bar."}
               </span>
             </div>
 
@@ -531,10 +546,12 @@ export default function Automation() {
                       (_, blockIndex) => {
                         const key = `${channel}-${blockIndex}`;
                         const placedTrack = placements[key];
+                        const isSoloed = placedTrack && activeSolo?.channel === channel
+                          && activeSolo.id === placedTrack.id;
                         return (
                           <div
                             key={blockIndex}
-                            className={`automation-block ${placedTrack ? "filled" : ""}`}
+                            className={`automation-block ${placedTrack ? "filled" : ""} ${isSoloed ? "soloed" : ""}`}
                             onDragOver={(e) => e.preventDefault()}
                             onDrop={(e) => {
                               const trackString =
@@ -551,6 +568,20 @@ export default function Automation() {
                                 <span className="automation-block-name" title={placedTrack.name}>
                                   {placedTrack.name}
                                 </span>
+                                <button
+                                  className="automation-block-action"
+                                  type="button"
+                                  title="Toggle solo for this track"
+                                  aria-label={`Solo ${placedTrack.name}`}
+                                  aria-pressed={Boolean(isSoloed)}
+                                  onClick={(event) => {
+                                    event.stopPropagation();
+                                    stopAllSequences();
+                                    setSolo(isSoloed ? null : { ...placedTrack, channel });
+                                  }}
+                                >
+                                  S
+                                </button>
                                 <button
                                   className="automation-block-action"
                                   type="button"
