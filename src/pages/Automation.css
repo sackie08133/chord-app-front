@@ -18,20 +18,8 @@ body,
   height: 100%;
 }
 
-body {
-  margin: 0;
-  background: var(--app-bg);
-  color: var(--app-text);
-  overflow: hidden;
-}
-
 button {
   font: inherit;
-}
-
-header {
-  display:flex;
-  flex-direction: row;
 }
 
 .automation-hud {
@@ -391,7 +379,7 @@ header {
   position: relative;
 
   flex: 1;
-
+  overflow-y: auto;
   min-width: 0;
 
   height: 100%;

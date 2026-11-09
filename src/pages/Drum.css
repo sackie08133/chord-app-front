@@ -6,11 +6,6 @@
   box-sizing: border-box;
 }
 
-body {
-  overflow-x: hidden;
-  overflow-x: auto;
-}
-
 .drum-page {
   width: 100vw;
   min-height: 100vh;
@@ -104,7 +99,6 @@ body {
   border: 1px solid var(--app-border);
   border-radius: var(--app-control-radius);
   cursor: pointer;
-
 }
 
 .drum-shot:hover {
