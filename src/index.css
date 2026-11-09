@@ -1,0 +1,20 @@
+@import "./pages/variables.css";
+
+body {
+  background: var(--app-bg);
+  color: var(--app-text);
+  font-family: "Segoe UI", system-ui, sans-serif;
+}
+
+button, input, select {
+  font-family: inherit;
+}
+
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible {
+  outline: 3px solid var(--app-active);
+  outline-offset: 3px;
+}
+
+input[type="range"] {
+  accent-color: var(--app-active);
+}

@@ -37,7 +37,7 @@ const FretboardNotes = ({ stringIndex, fretNumber, expectedFret, mode = "highlig
     >
     <circle
       className={isInScale ? "fretboard-notes-in-scale" : "fretboard-notes-non-scale"}
-      fill={isHovered ? "blue" : isInScale ? "#FFE5B4" : "skyblue"}
+      fill={isHovered ? "var(--app-accent-edge)" : isInScale ? "var(--app-gold)" : "var(--app-tint)"}
       cx={fretNumber === 0 ? startX - 80 : fretMidPoint}
       cy={fretYPos}
       r="13"

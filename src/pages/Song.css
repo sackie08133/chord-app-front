@@ -30,9 +30,9 @@
 .song-left-container-button {
   width: 80%;
   padding: 14px 0;
-  border: 1px solid var(--app-blue);
+  border: 1px solid var(--app-accent);
   border-radius: 8px;
-  background-color: var(--app-blue-light);
+  background-color: var(--app-tint);
   color: var(--app-text);
   font-size: 1rem;
   font-weight: 700;
@@ -41,8 +41,8 @@
 }
 
 .song-left-container-button:hover {
-  background-color: var(--app-blue);
-  border-color: var(--app-blue-dark);
+  background-color: var(--app-accent);
+  border-color: var(--app-active);
 }
 
 .song-left-container-button.play {
@@ -80,7 +80,7 @@
   padding: 20px 0;
   height: 20vh;
   box-sizing: border-box;
-  background-color: var(--app-blue-lighter);
+  background-color: var(--app-paper);
   border: 1px solid var(--app-border);
   border-radius: 8px;
 }

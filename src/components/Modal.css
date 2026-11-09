@@ -11,15 +11,15 @@
 .modal-close-button {
     display:inline-block;
     padding:2% 2%;
-    border:1px solid #4e6096;
-    background-color:#7892c2;
+    border:1px solid var(--app-accent-edge);
+    background-color:var(--app-tint);
     border-radius:24px;
     margin: 2% 0 0 90%;
     cursor:pointer;
 }
 
 .modal-close-button:hover {
-	background-color:#476e9e;
+	background-color:var(--app-accent);
 }
 .modal-close-button:active {
 	position:relative;
@@ -32,7 +32,7 @@
     outline: none;
     border: none;
     color: rgb(77, 77, 77);
-    background-color: rgb(240, 240, 240);
+    background-color: var(--app-grid);
     border-radius: 50px;
     padding-left: 30px;
     font-size: 18px;

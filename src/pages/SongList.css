@@ -36,17 +36,17 @@ html, body {
   color: var(--app-text);
   height: 36px;
   padding: 0 18px;
-  border: 1px solid var(--app-blue);
-  border-radius: 3px;
-  background: var(--app-blue-light);
-  font-size: 11px;
+  border: 1px solid var(--app-accent);
+  border-radius: var(--app-control-radius);
+  background: var(--app-tint);
+  font-size: 13px;
   font-weight: 700;
-  letter-spacing: 1.5px;
+  letter-spacing: 0.02em;
   cursor: pointer;
 }
 
 .song-list-login-signup:hover {
-  background: var(--app-blue);
+  background: var(--app-accent);
 }
 
 .song-list-delete-song-button {
@@ -71,7 +71,7 @@ html, body {
 }
 
 .song-list-song-object {
-  background-color: var(--app-blue-lighter);
+  background-color: var(--app-paper);
   border-bottom: 1px solid var(--app-border-light);
   display: flex;
   flex-direction: row;

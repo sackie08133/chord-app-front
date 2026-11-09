@@ -23,19 +23,19 @@
 .lead-header button {
   height: 36px;
   padding: 0 18px;
-  border: 1px solid var(--app-blue);
-  border-radius: 3px;
-  background: var(--app-blue-light);
+  border: 1px solid var(--app-accent);
+  border-radius: var(--app-control-radius);
+  background: var(--app-tint);
   color: var(--app-text);
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
-  letter-spacing: 1.5px;
+  letter-spacing: 0.02em;
   cursor: pointer;
 }
 
 .lead-header button:hover {
-  background: var(--app-blue);
-  border-color: var(--app-blue-dark);
+  background: var(--app-accent);
+  border-color: var(--app-active);
 }
 
 .lead-piano-roll {
@@ -51,7 +51,7 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  background: var(--app-blue-lighter);
+  background: var(--app-paper);
 }
 
 .lead-note-names div {
@@ -83,7 +83,7 @@
 }
 
 .lead-grid-cell:hover {
-  background-color: var(--app-blue-light);
+  background-color: var(--app-tint);
 }
 
 .lead-grid-cell.active {
@@ -105,11 +105,11 @@
 #lead-show-tracks-button {
   height: 36px;
   padding: 0 12px;
-  border: 1px solid var(--app-blue);
-  border-radius: 3px;
-  background: var(--app-blue-light);
+  border: 1px solid var(--app-accent);
+  border-radius: var(--app-control-radius);
+  background: var(--app-tint);
   color: var(--app-text);
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   letter-spacing: 1px;
   cursor: pointer;

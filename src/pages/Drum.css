@@ -37,13 +37,13 @@ body {
 #drum-delete-tracks-button {
   height: 36px;
   padding: 0 18px;
-  border: 1px solid var(--app-blue);
-  border-radius: 3px;
-  background: var(--app-blue-light);
+  border: 1px solid var(--app-accent);
+  border-radius: var(--app-control-radius);
+  background: var(--app-tint);
   color: var(--app-text);
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
-  letter-spacing: 1.5px;
+  letter-spacing: 0.02em;
   cursor: pointer;
 }
 
@@ -51,8 +51,8 @@ body {
 #drum-save-button:hover,
 #drum-play-all-button:hover,
 #drum-loop-button:hover {
-  background: var(--app-blue);
-  border-color: var(--app-blue-dark);
+  background: var(--app-accent);
+  border-color: var(--app-active);
 }
 
 .drum-sequencer {
@@ -69,7 +69,7 @@ body {
   grid-template-columns: repeat(16, 1fr);
   gap: 4px;
   padding: 14px;
-  background-color: var(--app-blue-lighter);
+  background-color: var(--app-paper);
   border: 1px solid var(--app-border);
   border-radius: 8px;
 }
@@ -106,7 +106,7 @@ body {
 }
 
 .drum-shot:hover {
-  background-color: var(--app-blue-light);
+  background-color: var(--app-tint);
 }
 
 .drum-shot:active {
