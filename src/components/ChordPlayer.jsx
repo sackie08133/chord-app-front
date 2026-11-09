@@ -8,12 +8,23 @@ function recordedNotes(midiNotes) {
   return Object.fromEntries(midiNotes.map((note) => [note, `${note}.mp3`]));
 }
 
+const mixer = Object.fromEntries(["drum", "bass", "rhythm", "lead"].map((lane) => {
+  const pan = new Tone.Panner(0).toDestination();
+  const volume = new Tone.Gain(1).connect(pan);
+  return [lane, { volume, pan }];
+}));
+
+export function setLaneMix(lane, { volume, pan }) {
+  mixer[lane].volume.gain.rampTo(volume / 100, 0.03);
+  mixer[lane].pan.pan.rampTo(pan / 100, 0.03);
+}
+
 const leadGuitarBus = new Tone.Compressor({
   threshold: -20,
   ratio: 3,
   attack: 0.003,
   release: 0.15,
-}).toDestination();
+}).connect(mixer.lead.volume);
 
 export const guitarSampler = new Tone.Sampler({
   urls: recordedNotes([
@@ -30,7 +41,7 @@ const rhythmGuitarBus = new Tone.Compressor({
   ratio: 2.5,
   attack: 0.005,
   release: 0.2,
-}).toDestination();
+}).connect(mixer.rhythm.volume);
 
 const rhythmGuitarSampler = new Tone.Sampler({
   urls: recordedNotes([
@@ -47,7 +58,7 @@ const bassBus = new Tone.Compressor({
   ratio: 4,
   attack: 0.005,
   release: 0.18,
-}).toDestination();
+}).connect(mixer.bass.volume);
 
 export const bassSampler = new Tone.Sampler({
   urls: recordedNotes([
@@ -69,7 +80,7 @@ const drumSampler = new Tone.Sampler({
   attack: 0,
   release: 0.08,
   volume: -2,
-}).toDestination();
+}).connect(mixer.drum.volume);
 
 const instruments = {
   guitar: guitarSampler,

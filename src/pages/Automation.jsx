@@ -1,3 +1,4 @@
+import { setLaneMix } from "../components/ChordPlayer";
 import { useEffect, useRef, useState } from "react";
 import {
   fetchDrumTracksFor,
@@ -26,6 +27,9 @@ import {
 import "./Automation.css";
 
 const BLOCK_LENGTH_BARS = 2;
+const lanes = { drum: "Drums", bass: "Bass", rhythm: "Rhythm", lead: "Lead" };
+const defaultMix = { volume: 100, pan: 0 };
+
 const NUM_OF_ROWS = 4;
 const NUM_OF_BARS = 4;
 
@@ -36,6 +40,7 @@ export default function Automation() {
   const [loadedSong, setLoadedSong] = useState(null);
   const [saving, setSaving] = useState(false);
   const [solo, setSolo] = useState(null);
+  const [mix, setMix] = useState({});
   const activeSolo = solo && Object.entries(placements).some(
     ([key, track]) => key.startsWith(`${solo.channel}-`) && track.id === solo.id,
   ) ? solo : null;
@@ -304,6 +309,7 @@ export default function Automation() {
   useEffect(() => {
     return () => {
       stopAllSequences();
+      Object.keys(lanes).forEach((lane) => setLaneMix(lane, defaultMix));
     };
   }, []);
 
@@ -508,7 +514,7 @@ export default function Automation() {
             </div>
 
             <div className="automation-channels">
-              {["drum", "bass", "rhythm", "lead"].map((channel, i) => (
+              {Object.entries(lanes).map(([channel, name]) => (
                 <div
                   key={channel}
                   className={`automation-channel-row ${
@@ -521,12 +527,39 @@ export default function Automation() {
                   onClick={() => handleInstrumentClick(channel)}
                 >
                   <div className="automation-channel-label">
-                    <span className="automation-channel-number">
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    <span className="automation-channel-name">
-                      {channel.toUpperCase()}
-                    </span>
+                    <span className="automation-channel-name">{name}</span>
+                    <div className="automation-lane-mix" onClick={(event) => event.stopPropagation()}>
+                      {["volume", "pan"].map((control) => {
+                        const value = (mix[channel] ?? defaultMix)[control];
+                        const isPan = control === "pan";
+                        const display = isPan
+                          ? value === 0 ? "Center" : `${value < 0 ? "L" : "R"} ${Math.abs(value)}`
+                          : `${value}%`;
+
+                        return (
+                          <label key={control}>
+                            <span>{isPan ? "Pan" : "Volume"}</span>
+                            <input
+                              type="range"
+                              aria-label={`${name} ${control}`}
+                              aria-valuetext={display}
+                              min={isPan ? -100 : 0}
+                              max={100}
+                              value={value}
+                              onChange={(event) => {
+                                const next = {
+                                  ...(mix[channel] ?? defaultMix),
+                                  [control]: Number(event.target.value),
+                                };
+                                setMix((previous) => ({ ...previous, [channel]: next }));
+                                setLaneMix(channel, next);
+                              }}
+                            />
+                            <span>{display}</span>
+                          </label>
+                        );
+                      })}
+                    </div>
                   </div>
 
                   <div className="automation-drop-zone-row">

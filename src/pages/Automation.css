@@ -1,7 +1,7 @@
 :root {
-  --automation-label-width: 100px;
+  --automation-label-width: 172px;
   --automation-header-height: 64px;
-  --automation-channel-height: clamp(62px, 15vh, 112px);
+  --automation-channel-height: clamp(92px, 15vh, 112px);
   --automation-timeline-height: 38px;
   --automation-footer-height: 60px;
 }
@@ -36,7 +36,7 @@ button {
   position: relative;
 
   width: 100%;
-  min-width: 760px;
+  min-width: 880px;
   height: 100vh;
 
   overflow: hidden;
@@ -688,4 +688,33 @@ button {
 .automation-block-action[aria-pressed="true"] {
   background: var(--app-active);
   color: white;
+}
+
+.automation-channel-label {
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  gap: 5px;
+  padding-right: 10px;
+}
+
+.automation-lane-mix {
+  display: grid;
+  gap: 3px;
+}
+
+.automation-lane-mix label {
+  display: grid;
+  grid-template-columns: 43px minmax(0, 1fr) 38px;
+  align-items: center;
+  gap: 4px;
+  color: var(--app-text-light);
+  font-size: 10px;
+  cursor: default;
+}
+
+.automation-lane-mix input {
+  width: 100%;
+  height: 18px;
+  cursor: pointer;
 }
