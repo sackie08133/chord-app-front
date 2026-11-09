@@ -1,100 +1,82 @@
-@import "variables.css";
-
-* {
-  box-sizing: border-box;
-}
-
 .song {
-  display: flex;
-  flex-direction: row;
-  width: 100vw;
-  height: 100vh;
-  box-sizing: border-box;
-  gap: 12px;
-  background: var(--app-bg);
+  width: min(960px, calc(100% - 40px));
+  margin: clamp(24px, 7vh, 72px) auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  gap: clamp(20px, 5vw, 56px);
+  align-items: start;
 }
 
 .song-left-container {
-  width: 35vw;
-  height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 16px;
-  padding: 24px 0;
-  box-sizing: border-box;
-  border-right: 1px solid var(--app-border);
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.song-left-container h1 {
+  margin: 0 0 10px;
+  font: bold clamp(2rem, 4vw, 3.5rem) Georgia, serif;
+  overflow-wrap: anywhere;
 }
 
 .song-left-container-button {
-  width: 80%;
-  padding: 14px 0;
-  border: 1px solid var(--app-accent);
-  border-radius: 8px;
-  background-color: var(--app-tint);
+  min-height: 42px;
+  padding: 8px 16px;
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-control-radius);
+  background: var(--app-tint);
   color: var(--app-text);
-  font-size: 1rem;
-  font-weight: 700;
-  letter-spacing: 1px;
+  font-weight: 650;
   cursor: pointer;
 }
 
 .song-left-container-button:hover {
-  background-color: var(--app-accent);
-  border-color: var(--app-active);
+  background: var(--app-accent);
 }
 
-.song-left-container-button.play {
-  width: 70px;
-  height: 70px;
-  border-radius: 50%;
-  padding: 0;
+.song-instruments {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+.song-instruments p {
+  grid-column: 1 / -1;
+  color: var(--app-text-light);
+}
+
+.song-instrument {
   display: flex;
   align-items: center;
-  justify-content: center;
-  background-color: var(--app-active);
-  border-color: var(--app-active-hover);
-  margin-top: auto;
-}
-
-.song-left-container-button.play:hover {
-  background-color: var(--app-active-hover);
-}
-
-.song-right-container {
-  width: 65vw;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  padding: 24px 0;
-}
-
-#song-drums-container,
-#song-bass-container,
-#song-rhythm-guitar-container,
-#song-lead-guitar-container {
-  display: flex;
-  width: 65vw;
-  padding: 20px 0;
-  height: 20vh;
-  box-sizing: border-box;
-  background-color: var(--app-paper);
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 104px;
+  padding: 16px;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
+  border-radius: var(--app-card-radius);
+  color: var(--app-text);
+  background: var(--app-paper);
+  font-weight: 700;
+  text-decoration: none;
 }
 
-#song-rhythm-guitar-container h2,
-#song-drums-container h2,
-#song-lead-guitar-container h2,
-#song-bass-container h2 {
-  height: 80%;
-  color: var(--app-text);
-  width: 50%;
-  cursor: pointer;
-  font-size: 1.2rem;
-  display: flex;
-  align-items: center;
-  padding-left: 20px;
+.song-instrument.drums { background: var(--app-gold); }
+.song-instrument.bass { background: var(--app-tint); }
+.song-instrument.rhythm { background: var(--app-clay); }
+
+.song-instrument::after {
+  content: "→";
+}
+
+.song-instrument:hover {
+  border-color: var(--app-active);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+@media (max-width: 600px) {
+  .song {
+    grid-template-columns: 1fr;
+  }
 }

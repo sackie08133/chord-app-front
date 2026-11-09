@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect, useCallback } from "react";
 import { apiRequest } from "../components/Utils";
 import { useAuth } from "../components/Context";
@@ -70,42 +70,13 @@ function Song() {
         </button>
       </div>
 
-      <div className="song-right-container">
-        <div id="song-drums-container">
-          <h2
-            onClick={() => navigate(`/song/${id}/drum`)}
-            style={{ cursor: "pointer" }}
-          >
-            Drums{" "}
-          </h2>
-        </div>
-        <div id="song-bass-container">
-          <h2
-            onClick={() => navigate(`/song/${id}/bass`)}
-            style={{ cursor: "pointer" }}
-          >
-            Bass Guitar
-          </h2>
-        </div>
-        <div id="song-rhythm-guitar-container">
-          <h2
-            onClick={() => navigate(`/song/${id}/rhythm-guitar`)}
-            style={{ cursor: "pointer" }}
-          >
-            {" "}
-            Rhythm Guitar{" "}
-          </h2>
-        </div>
-        <div id="song-lead-guitar-container">
-          <h2
-            onClick={() => navigate(`/song/${id}/lead-guitar`)}
-            style={{ cursor: "pointer" }}
-          >
-            {" "}
-            Lead Guitar{" "}
-          </h2>
-        </div>
-      </div>
+      <section className="song-instruments" aria-label="Instruments">
+        <p>Choose an instrument to start playing.</p>
+        <Link className="song-instrument drums" to={`/song/${id}/drum`}>Drums</Link>
+        <Link className="song-instrument bass" to={`/song/${id}/bass`}>Bass Guitar</Link>
+        <Link className="song-instrument rhythm" to={`/song/${id}/rhythm-guitar`}>Rhythm Guitar</Link>
+        <Link className="song-instrument lead" to={`/song/${id}/lead-guitar`}>Lead Guitar</Link>
+      </section>
     </div>
   );
 }
